@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# api_gateway documentation build configuration file, created by
+# minos documentation build configuration file, created by
 # sphinx-quickstart on Fri Jun  9 13:47:02 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -21,7 +21,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
-import minos
+from minos import api_gateway
 
 # -- General configuration ---------------------------------------------
 
@@ -46,9 +46,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'API Gateway'
-copyright = "2021, Vladyslav Fenchak"
-author = "Vladyslav Fenchak"
+project = 'Minos Api Gateway'
+copyright = "2021, Clariteia"
+author = "Clariteia Devs"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -100,7 +100,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'api_gatewaydoc'
+htmlhelp_basename = 'minosdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------
@@ -127,9 +127,9 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'api_gateway.tex',
-     'API Gateway Documentation',
-     'Vladyslav Fenchak', 'manual'),
+    (master_doc, 'minos.tex',
+     'Minos Api Gateway Documentation',
+     'Clariteia Devs', 'manual'),
 ]
 
 
@@ -138,8 +138,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'api_gateway',
-     'API Gateway Documentation',
+    (master_doc, 'minos',
+     'Minos Api Gateway Documentation',
      [author], 1)
 ]
 
@@ -150,10 +150,10 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'api_gateway',
-     'API Gateway Documentation',
+    (master_doc, 'minos',
+     'Minos Api Gateway Documentation',
      author,
-     'api_gateway',
+     'minos',
      'One line description of project.',
      'Miscellaneous'),
 ]

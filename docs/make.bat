@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=api_gateway
+set SPHINXPROJ=minos_api_gateway
 
 if "%1" == "" goto help
 

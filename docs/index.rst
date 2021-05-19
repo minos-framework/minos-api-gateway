@@ -1,4 +1,4 @@
-Welcome to API Gateway's documentation!
+Welcome to Minos Api Gateway's documentation!
 ======================================
 
 .. toctree::
@@ -7,7 +7,7 @@ Welcome to API Gateway's documentation!
 
    readme
    usage
-   modules
+   api/modules
    authors
    history
 
