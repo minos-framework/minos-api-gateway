@@ -104,4 +104,11 @@ ENV/
 # IDE settings
 .vscode/
 
+# Intellij IDEa / PyCharm / etc.
 .idea
+
+# lmdb database
+*.mdb
+
+# Sphinx Api Documentation
+docs/api
