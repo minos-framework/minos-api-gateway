@@ -1,29 +1,37 @@
-import json
-
 from aiohttp import (
     web,
 )
-from minos.api_gateway.rest import MicroserviceCallCoordinator
+
 from minos.api_gateway.common import (
     MinosConfig,
 )
-
+from minos.api_gateway.rest import (
+    MicroserviceCallCoordinator,
+)
 
 
 class ApiGatewayHandler(object):
     async def get_order(self, request: web.Request, config: MinosConfig, **kwargs):
-        response = MicroserviceCallCoordinator(config, request)
+        coordinator = MicroserviceCallCoordinator(config, request)
+        response = await coordinator.orchestrate()
         return response
 
     async def post_order(self, request: web.Request, config: MinosConfig, **kwargs):
-        response = MicroserviceCallCoordinator(config, request)
+        coordinator = MicroserviceCallCoordinator(config, request)
+        response = await coordinator.orchestrate()
         return response
 
     async def put_order(self, request: web.Request, config: MinosConfig, **kwargs):
-        return web.Response(text="Order added", status=200)
+        coordinator = MicroserviceCallCoordinator(config, request)
+        response = await coordinator.orchestrate()
+        return response
 
     async def patch_order(self, request: web.Request, config: MinosConfig, **kwargs):
-        return web.Response(text="Order added", status=200)
+        coordinator = MicroserviceCallCoordinator(config, request)
+        response = await coordinator.orchestrate()
+        return response
 
     async def delete_order(self, request: web.Request, config: MinosConfig, **kwargs):
-        return web.Response(text="Order added", status=200)
+        coordinator = MicroserviceCallCoordinator(config, request)
+        response = await coordinator.orchestrate()
+        return response
