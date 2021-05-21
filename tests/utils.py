@@ -5,7 +5,8 @@ This file is part of minos framework.
 
 Minos framework can not be copied and/or distributed without the express permission of Clariteia SL.
 """
+from pathlib import (
+    Path,
+)
 
-__author__ = """Clariteia Devs"""
-__email__ = "devs@clariteia.com"
-__version__ = "0.0.1"
+BASE_PATH = Path(__file__).parent
