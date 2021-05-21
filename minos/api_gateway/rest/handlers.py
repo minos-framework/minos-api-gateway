@@ -1,8 +1,15 @@
 import json
 
-from aiohttp import web
-from minos.api_gateway.rest import MicroserviceCallCoordinator
-from minos.api_gateway.common import MinosConfig
+from aiohttp import (
+    web,
+)
+
+from minos.api_gateway.common import (
+    MinosConfig,
+)
+from minos.api_gateway.rest import (
+    MicroserviceCallCoordinator,
+)
 
 
 class ApiGatewayHandler(object):

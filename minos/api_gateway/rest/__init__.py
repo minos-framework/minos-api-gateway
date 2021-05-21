@@ -1,2 +1,6 @@
-from .service import ApiGatewayRestService
-from .coordinator import MicroserviceCallCoordinator
+from .coordinator import (
+    MicroserviceCallCoordinator,
+)
+from .service import (
+    ApiGatewayRestService,
+)

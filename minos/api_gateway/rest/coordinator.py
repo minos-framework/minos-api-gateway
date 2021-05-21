@@ -1,7 +1,10 @@
 import json
 
-from aiohttp import web
 import aiohttp
+from aiohttp import (
+    web,
+)
+
 from minos.api_gateway.common import (
     ClientHttp,
     MinosConfig,

@@ -1,14 +1,22 @@
 import json
 
-from aiohttp import web
+from aiohttp import (
+    web,
+)
 from aiohttp.test_utils import (
     AioHTTPTestCase,
     unittest_run_loop,
 )
 
-from minos.api_gateway.rest import ApiGatewayRestService
-from minos.api_gateway.common import MinosConfig
-from tests.utils import BASE_PATH
+from minos.api_gateway.common import (
+    MinosConfig,
+)
+from minos.api_gateway.rest import (
+    ApiGatewayRestService,
+)
+from tests.utils import (
+    BASE_PATH,
+)
 
 
 class TestRestService(AioHTTPTestCase):
