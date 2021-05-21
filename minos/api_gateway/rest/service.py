@@ -7,9 +7,7 @@
 
 import typing as t
 
-from aiohttp import (
-    web,
-)
+from aiohttp import web
 
 from minos.api_gateway.common import (
     MinosConfig,

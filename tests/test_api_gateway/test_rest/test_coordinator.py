@@ -1,18 +1,12 @@
 import json
 
-from aiohttp import (
-    web,
-)
+from aiohttp import web
 from aiohttp.test_utils import (
     AioHTTPTestCase,
     unittest_run_loop,
 )
-from minos.api_gateway.common import (
-    MinosConfig,
-)
-from tests.utils import (
-    BASE_PATH,
-)
+from minos.api_gateway.common import MinosConfig
+from tests.utils import BASE_PATH
 from minos.api_gateway.rest import MicroserviceCallCoordinator
 
 
@@ -31,13 +25,23 @@ class TestRestCoordinator(AioHTTPTestCase):
             return web.Response(text="", status=200)
 
         async def discover(request):
-            if request.method == 'GET':
-                data = {"ip": self.client.host, "port": self.client.port, "name": "test_endpoint", "status": True,
-                        "subscribed": True}
+            if request.method == "GET":
+                data = {
+                    "ip": self.client.host,
+                    "port": self.client.port,
+                    "name": "test_endpoint",
+                    "status": True,
+                    "subscribed": True,
+                }
 
-            elif request.method == 'POST':
-                data = {"ip": self.client.host, "port": self.client.port, "name": "microservice_post", "status": True,
-                        "subscribed": True}
+            elif request.method == "POST":
+                data = {
+                    "ip": self.client.host,
+                    "port": self.client.port,
+                    "name": "microservice_post",
+                    "status": True,
+                    "subscribed": True,
+                }
             text = json.dumps(data)
             return web.Response(text=text)
 
@@ -64,15 +68,23 @@ class TestRestCoordinator(AioHTTPTestCase):
 
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
 
-        success, data = await coordinator.call_discovery_service(host=self.client.host,
-                                                            port=self.client.port,
-                                                            path="discover",
-                                                            name=incoming_response.url.name)
+        success, data = await coordinator.call_discovery_service(
+            host=self.client.host, port=self.client.port, path="discover", name=incoming_response.url.name
+        )
 
         self.assertTrue(success)
         self.assertNotEqual(data, None)
         result = json.loads(data)
-        self.assertDictEqual(result, {"ip": self.client.host, "port": self.client.port, "name": "test_endpoint", "status": True, "subscribed": True})
+        self.assertDictEqual(
+            result,
+            {
+                "ip": self.client.host,
+                "port": self.client.port,
+                "name": "test_endpoint",
+                "status": True,
+                "subscribed": True,
+            },
+        )
 
     @unittest_run_loop
     async def test_discovery_service_call_ko(self):
@@ -83,10 +95,9 @@ class TestRestCoordinator(AioHTTPTestCase):
 
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
 
-        success, data = await coordinator.call_discovery_service(host="aaa",
-                                                                 port=self.client.port,
-                                                                 path="discover",
-                                                                 name=incoming_response.url.name)
+        success, data = await coordinator.call_discovery_service(
+            host="aaa", port=self.client.port, path="discover", name=incoming_response.url.name
+        )
 
         self.assertFalse(success)
 
@@ -95,7 +106,13 @@ class TestRestCoordinator(AioHTTPTestCase):
         config = MinosConfig(self.CONFIG_FILE_PATH)
         url = "/get_test"
         incoming_response = await self.client.request("GET", url)
-        d = {"ip": self.client.host, "port": self.client.port, "name": "test_endpoint", "status": True, "subscribed": True}
+        d = {
+            "ip": self.client.host,
+            "port": self.client.port,
+            "name": "test_endpoint",
+            "status": True,
+            "subscribed": True,
+        }
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
         success, data = await coordinator.call_microservice(d)
 
@@ -106,8 +123,7 @@ class TestRestCoordinator(AioHTTPTestCase):
         config = MinosConfig(self.CONFIG_FILE_PATH)
         url = "/get_test"
         incoming_response = await self.client.request("GET", url)
-        d = {"ip": "aaa", "port": self.client.port, "name": "get_testsss", "status": True,
-             "subscribed": True}
+        d = {"ip": "aaa", "port": self.client.port, "name": "get_testsss", "status": True, "subscribed": True}
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
         success, data = await coordinator.call_microservice(d)
 
@@ -118,8 +134,16 @@ class TestRestCoordinator(AioHTTPTestCase):
         config = MinosConfig(self.CONFIG_FILE_PATH)
         url = "/get_test"
         incoming_response = await self.client.request("GET", url)
-        d = {"ip": self.client.host, "port": self.client.port, "name": "test_endpoint", "status": True, "subscribed": True}
-        coordinator = MicroserviceCallCoordinator(config, incoming_response, discovery_host= self.client.host, discovery_port=self.client.port)
+        d = {
+            "ip": self.client.host,
+            "port": self.client.port,
+            "name": "test_endpoint",
+            "status": True,
+            "subscribed": True,
+        }
+        coordinator = MicroserviceCallCoordinator(
+            config, incoming_response, discovery_host=self.client.host, discovery_port=self.client.port
+        )
         response = await coordinator.orchestrate()
 
         self.assertEqual(response.status, 200)
@@ -129,8 +153,16 @@ class TestRestCoordinator(AioHTTPTestCase):
         config = MinosConfig(self.CONFIG_FILE_PATH)
         url = "/post_test"
         incoming_response = await self.client.request("GET", url)
-        d = {"ip": self.client.host, "port": self.client.port, "name": "microservice_post", "status": True, "subscribed": True}
-        coordinator = MicroserviceCallCoordinator(config, incoming_response, discovery_host= self.client.host, discovery_port=self.client.port)
+        d = {
+            "ip": self.client.host,
+            "port": self.client.port,
+            "name": "microservice_post",
+            "status": True,
+            "subscribed": True,
+        }
+        coordinator = MicroserviceCallCoordinator(
+            config, incoming_response, discovery_host=self.client.host, discovery_port=self.client.port
+        )
         response = await coordinator.orchestrate()
 
         self.assertEqual(response.status, 200)

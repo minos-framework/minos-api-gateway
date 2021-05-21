@@ -1,22 +1,14 @@
 import json
 
-from aiohttp import (
-    web,
-)
+from aiohttp import web
 from aiohttp.test_utils import (
     AioHTTPTestCase,
     unittest_run_loop,
 )
 
-from minos.api_gateway.rest import (
-    ApiGatewayRestService,
-)
-from minos.api_gateway.common import (
-    MinosConfig,
-)
-from tests.utils import (
-    BASE_PATH,
-)
+from minos.api_gateway.rest import ApiGatewayRestService
+from minos.api_gateway.common import MinosConfig
+from tests.utils import BASE_PATH
 
 
 class TestRestService(AioHTTPTestCase):
@@ -32,18 +24,17 @@ class TestRestService(AioHTTPTestCase):
 
         return await rest_interface.create_application()
 
-    #@unittest_run_loop
-    #async def test_post(self):
+    # @unittest_run_loop
+    # async def test_post(self):
     #    url = "/order"
     #    resp = await self.client.request("POST", url)
     #    assert resp.status == 200
     #    text = await resp.text()
     #    assert "Order added" in text
 
-    #@unittest_run_loop
-    #async def test_get(self):
+    # @unittest_run_loop
+    # async def test_get(self):
     #    url = "/order/3"
     #    resp = await self.client.request("GET", url)
     #    assert resp.status == 200
     #    #text = await resp.text()
-

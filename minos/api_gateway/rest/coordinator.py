@@ -1,8 +1,6 @@
 import json
 
-from aiohttp import (
-    web,
-)
+from aiohttp import web
 import aiohttp
 from minos.api_gateway.common import (
     ClientHttp,
@@ -11,9 +9,9 @@ from minos.api_gateway.common import (
 
 
 class MicroserviceCallCoordinator:
-
-    def __init__(self, config: MinosConfig, request: web.Request, discovery_host: str = None,
-                 discovery_port: str = None):
+    def __init__(
+        self, config: MinosConfig, request: web.Request, discovery_host: str = None, discovery_port: str = None
+    ):
         self.name = request.url.name
         self.config = config
         self.original_req = request
@@ -22,10 +20,9 @@ class MicroserviceCallCoordinator:
 
     async def orchestrate(self):
         """ Orchestrate discovery and microservice call """
-        status, text = await self.call_discovery_service(host=self.discovery_host,
-                                                         port=self.discovery_port,
-                                                         path="discover",
-                                                         name=self.name)
+        status, text = await self.call_discovery_service(
+            host=self.discovery_host, port=self.discovery_port, path="discover", name=self.name
+        )
 
         if status:
             data = json.loads(text)
@@ -40,10 +37,9 @@ class MicroserviceCallCoordinator:
 
     async def call_discovery_service(self, host: str, port: int, path: str, name: str):
         """ Call discovery service and get microservice connection data. """
-        url = "http://{host}:{port}/{discovery_path}?name={name}".format(host=host,
-                                                                         port=port,
-                                                                         discovery_path=path,
-                                                                         name=name)
+        url = "http://{host}:{port}/{discovery_path}?name={name}".format(
+            host=host, port=port, discovery_path=path, name=name
+        )
         try:
             async with ClientHttp() as client:
                 response = await client.get(url=url)
@@ -57,13 +53,12 @@ class MicroserviceCallCoordinator:
 
         req_data = await self.original_req.text()
 
-        url = "http://{host}:{port}{path}".format(host=data["ip"],
-                                                  port=data["port"], path=self.original_req.url.path)
+        url = "http://{host}:{port}{path}".format(host=data["ip"], port=data["port"], path=self.original_req.url.path)
 
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.request(method=self.original_req.method, url=url, data=req_data) as resp:
-                  data = await resp.text()
+                    data = await resp.text()
 
             return True, data
         except Exception:
