@@ -3,6 +3,7 @@ from aiohttp import (
 )
 from aiohttp.test_utils import (
     AioHTTPTestCase,
+    unittest_run_loop,
 )
 
 from minos.api_gateway.common import (
@@ -29,17 +30,39 @@ class TestRestService(AioHTTPTestCase):
 
         return await rest_interface.create_application()
 
-    # @unittest_run_loop
-    # async def test_post(self):
-    #    url = "/order"
-    #    resp = await self.client.request("POST", url)
-    #    assert resp.status == 200
-    #    text = await resp.text()
-    #    assert "Order added" in text
+    @unittest_run_loop
+    async def test_discover(self):
+        url = "/discover"
+        resp = await self.client.request("GET", url)
+        assert resp.status == 200
+        # text = await resp.text()
 
-    # @unittest_run_loop
-    # async def test_get(self):
-    #    url = "/order/3"
-    #    resp = await self.client.request("GET", url)
-    #    assert resp.status == 200
-    #    #text = await resp.text()
+    @unittest_run_loop
+    async def test_get(self):
+        url = "/order/3"
+        resp = await self.client.request("GET", url)
+        assert resp.status == 200
+
+    @unittest_run_loop
+    async def test_post(self):
+        url = "/order"
+        resp = await self.client.request("POST", url)
+        assert resp.status == 200
+
+    @unittest_run_loop
+    async def test_put(self):
+        url = "/order/34"
+        resp = await self.client.request("PUT", url)
+        assert resp.status == 200
+
+    @unittest_run_loop
+    async def test_patch(self):
+        url = "/order/34"
+        resp = await self.client.request("PATCH", url)
+        assert resp.status == 200
+
+    @unittest_run_loop
+    async def test_delete(self):
+        url = "/order/34"
+        resp = await self.client.request("DELETE", url)
+        assert resp.status == 200

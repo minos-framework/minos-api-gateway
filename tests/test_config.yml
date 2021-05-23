@@ -1,6 +1,6 @@
 rest:
     host: localhost
-    port: 8900
+    port: 55909
     endpoints:
         - name: GetOrder
           route: /order/{id}
@@ -27,9 +27,29 @@ rest:
           method: DELETE
           controller: minos.api_gateway.rest.handlers.ApiGatewayHandler
           action: delete_order
+        - name: Discovery
+          route: /discover
+          method: GET
+          controller: tests.services.DiscoveryService.Discovery
+          action: discover
+        - name: OrderMicroservice
+          route: /order-microservice
+          method: GET
+          controller: tests.services.OrderMicroservice.Order
+          action: order
+        - name: OrderMicroservice
+          route: /order-microservice
+          method: POST
+          controller: tests.services.OrderMicroservice.Order
+          action: order
+        - name: TestGetOrder
+          route: /test-get-order/{id}
+          method: GET
+          controller: tests.services.TestService.TestService
+          action: test_get_order
 discovery:
     host: localhost
-    port: 8080
+    port: 55909
     path: /discover
     endpoints:
         - name: Discover

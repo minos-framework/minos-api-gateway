@@ -12,6 +12,7 @@ from minos.api_gateway.common import (
     MinosConfig,
 )
 from minos.api_gateway.rest import (
+    ApiGatewayRestService,
     MicroserviceCallCoordinator,
 )
 from tests.utils import (
@@ -26,60 +27,22 @@ class TestRestCoordinator(AioHTTPTestCase):
         """
         Override the get_app method to return your application.
         """
-
-        async def get_test(request):
-            return web.json_response(data="GET TEST CORRECT")
-
-        async def microservice(request):
-            return web.json_response(data="TEST ENDPOINT CORRECT")
-
-        async def discover(request):
-            if request.method == "GET":
-                data = {
-                    "ip": self.client.host,
-                    "port": self.client.port,
-                    "name": "test_endpoint",
-                    "status": True,
-                    "subscribed": True,
-                }
-
-            elif request.method == "POST":
-                data = {
-                    "ip": self.client.host,
-                    "port": self.client.port,
-                    "name": "microservice_post",
-                    "status": True,
-                    "subscribed": True,
-                }
-            # text = json.dumps(data)
-            return web.json_response(data=data)
-
-        async def post_test(request):
-            return web.json_response(data="POST TEST CORRECT")
-
-        async def microservice_post(request):
-            return web.json_response(data="MICROSERVICE POST CORRECT")
-
         app = web.Application()
-        app.router.add_get("/get_test", get_test)
-        app.router.add_get("/test_endpoint", microservice)
-        app.router.add_get("/post_test", post_test)
-        app.router.add_get("/microservice_post", microservice_post)
-        app.router.add_get("/discover", discover)
-        return app
+        config = MinosConfig(self.CONFIG_FILE_PATH)
+        rest_interface = ApiGatewayRestService(config=config, app=app)
+
+        return await rest_interface.create_application()
 
     @unittest_run_loop
     async def test_discovery_service_call(self):
         config = MinosConfig(self.CONFIG_FILE_PATH)
 
-        url = "/get_test"
+        url = "/test-get-order/32"
         incoming_response = await self.client.request("GET", url)
 
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
 
-        data = await coordinator.call_discovery_service(
-            host=self.client.host, port=self.client.port, path="discover", name=incoming_response.url.name
-        )
+        data = await coordinator.call_discovery_service(host=self.client.host, port=self.client.port, path="discover")
 
         result = json.loads(data)
         self.assertDictEqual(
@@ -87,7 +50,7 @@ class TestRestCoordinator(AioHTTPTestCase):
             {
                 "ip": self.client.host,
                 "port": self.client.port,
-                "name": "test_endpoint",
+                "name": "order-microservice",
                 "status": True,
                 "subscribed": True,
             },
@@ -97,37 +60,35 @@ class TestRestCoordinator(AioHTTPTestCase):
     async def test_discovery_service_call_ko(self):
         config = MinosConfig(self.CONFIG_FILE_PATH)
 
-        url = "/get_test"
+        url = "/test-get-order/32"
         incoming_response = await self.client.request("GET", url)
 
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
 
         with self.assertRaises(Exception):
-            await coordinator.call_discovery_service(
-                host="aaa", port=self.client.port, path="discover", name=incoming_response.url.name
-            )
+            await coordinator.call_discovery_service(host="aaa", port=self.client.port, path="discover")
 
     @unittest_run_loop
     async def test_microservice_call(self):
         config = MinosConfig(self.CONFIG_FILE_PATH)
-        url = "/get_test"
+        url = "/test-get-order/32"
         incoming_response = await self.client.request("GET", url)
         d = {
             "ip": self.client.host,
             "port": self.client.port,
-            "name": "test_endpoint",
+            "name": "order-microservice",
             "status": True,
             "subscribed": True,
         }
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
         response = await coordinator.call_microservice(d)
 
-        self.assertEqual(response, '"GET TEST CORRECT"')
+        self.assertEqual(response, "Order Microservice Response.")
 
     @unittest_run_loop
     async def test_microservice_call_ko(self):
         config = MinosConfig(self.CONFIG_FILE_PATH)
-        url = "/get_test"
+        url = "/test-get-order/32"
         incoming_response = await self.client.request("GET", url)
         d = {"ip": "aaa", "port": self.client.port, "name": "get_testsss", "status": True, "subscribed": True}
 
@@ -138,7 +99,7 @@ class TestRestCoordinator(AioHTTPTestCase):
     @unittest_run_loop
     async def test_orchestrator(self):
         config = MinosConfig(self.CONFIG_FILE_PATH)
-        url = "/get_test"
+        url = "/test-get-order/32"
         incoming_response = await self.client.request("GET", url)
         coordinator = MicroserviceCallCoordinator(
             config, incoming_response, discovery_host=self.client.host, discovery_port=self.client.port
@@ -150,7 +111,7 @@ class TestRestCoordinator(AioHTTPTestCase):
     @unittest_run_loop
     async def test_orchestrator_post(self):
         config = MinosConfig(self.CONFIG_FILE_PATH)
-        url = "/post_test"
+        url = "/test-get-order/32"
         incoming_response = await self.client.request("GET", url)
         coordinator = MicroserviceCallCoordinator(
             config, incoming_response, discovery_host=self.client.host, discovery_port=self.client.port
