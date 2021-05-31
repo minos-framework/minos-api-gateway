@@ -1,13 +1,13 @@
-Credits
-=======
+# Credits
 
-Development Lead
-----------------
+## Development Lead
 
 * Andrea Mucci <andrea@clariteia.com>
 
-Contributors
-------------
+## Core Devs
 
 * Sergio Garcia Prado <sergio.garcia@clariteia.com>
 * Vladyslav Fenchak <vladyslav.fenchak@clariteia.com>
+
+## Contributors
+None yet. Why not be the first?
