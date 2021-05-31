@@ -1,4 +1,4 @@
-Welcome to API Gateway's documentation!
+Welcome to Minos Api Gateway's documentation!
 =========================================
 
 .. toctree::

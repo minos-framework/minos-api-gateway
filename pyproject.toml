@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "api_gateway"
+name = "minos_api_gateway"
 version = "0.0.1"
 description = "Python Package with common Classes and Utilities used in Minos Microservices."
 readme = "README.md"
@@ -31,14 +31,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-aiomisc = "^14.0.3"
-fastavro = "^1.4.0"
-orjson = "^3.5.2"
-lmdb = "^1.2.1"
-PyYAML = "^5.4.1"
-aiopg = "^1.2.1"
-dependency-injector = "^4.32.2"
-cached-property = "^1.5.2"
+minos-apigateway-common = "^0.0.3"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b"

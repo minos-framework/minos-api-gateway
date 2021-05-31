@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
-SPHINXPROJ    = api_gateway
+SPHINXPROJ    = minos_api_gateway
 SOURCEDIR     = .
 BUILDDIR      = _build
 
