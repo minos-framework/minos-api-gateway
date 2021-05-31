@@ -2,10 +2,8 @@
 
 """Tests for `api_gateway` package."""
 
-
 import pytest
 
-from api_gateway import minos
 
 @pytest.fixture
 def response():
