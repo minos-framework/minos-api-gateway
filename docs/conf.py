@@ -104,7 +104,7 @@ html_theme = 'sphinx_rtd_theme'
 #     "description": "Reactive microservices for an asynchronous world",
 #     "github_button": True,
 #     "github_user": "Clariteia",
-#     "github_repo": "minos_microservice_common",
+#     "github_repo": "api_gateway",
 #     "github_type": "star",
 # }
 
