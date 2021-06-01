@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "minos_api_gateway"
-version = "0.0.11"
-description = "Minos Boilerplate contains all the boilerplate you need to create a Minos Python package."
+version = "0.0.1"
+description = "Python Package containing the main API Gateway implementation used in Minos Microservices."
 readme = "README.md"
-repository = "https://github.com/clariteia/minos_api_gateway"
+repository = "https://github.com/clariteia/api_gateway"
 homepage = "https://clariteia.com"
 authors = ["Clariteia Devs <devs@clariteia.com>"]
 license = "MIT"
@@ -18,7 +18,7 @@ keywords = [
     "clariteia",
     "minos",
     "microservice",
-    "saga",
+    "api_gateway"
 ]
 packages = [
     { include = "minos" }
@@ -41,6 +41,10 @@ coverage = "^5.5"
 flake8 = "^3.9.2"
 Sphinx = "^4.0.1"
 pre-commit = "^2.12.1"
+sphinx-autodoc-typehints = "^1.12.0"
+sphinxcontrib-apidoc = "^0.3.0"
+sphinx-rtd-theme = "^0.5.2"
+m2r2 = "^0.2.7"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
