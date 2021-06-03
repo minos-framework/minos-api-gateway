@@ -31,7 +31,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-minos-apigateway-common = "^0.0.3"
+minos-apigateway-common = "^0.0.4"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b"
