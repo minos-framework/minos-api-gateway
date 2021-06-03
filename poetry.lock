@@ -301,7 +301,7 @@ python-versions = "*"
 
 [[package]]
 name = "minos-apigateway-common"
-version = "0.0.3"
+version = "0.0.4"
 description = "Python Package with common Classes and Utilities used in Minos API Gateway."
 category = "main"
 optional = false
@@ -705,7 +705,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "7cc3022b62cdca640d67300562071d45581850486fd8c213a2db26034753bf52"
+content-hash = "4180c095e7a6d74b46c0473cc4e87540adfa46bb5b575ab785779757dc56884a"
 
 [metadata.files]
 aiohttp = [
@@ -938,8 +938,8 @@ mccabe = [
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 minos-apigateway-common = [
-    {file = "minos-apigateway-common-0.0.3.tar.gz", hash = "sha256:0555524eaa7d58f84be467d5c19d78b8ff1f3e019b210eab03412d3c5b51ded1"},
-    {file = "minos_apigateway_common-0.0.3-py3-none-any.whl", hash = "sha256:c61d2ca96bfbfbd764b321eef6e88fe02f0e56eeb4fb86717d21bd32d8abb046"},
+    {file = "minos-apigateway-common-0.0.4.tar.gz", hash = "sha256:dda4163c22ac29de063030ff28087ee7aeeabb673d8502afc014e3a45374f5ba"},
+    {file = "minos_apigateway_common-0.0.4-py3-none-any.whl", hash = "sha256:42be22d6a34ea6ece90ec7cabd19ab9587cadeee4e19c73a456482de261e3d88"},
 ]
 mistune = [
     {file = "mistune-0.8.4-py2.py3-none-any.whl", hash = "sha256:88a1051873018da288eee8538d476dffe1262495144b33ecb586c4ab266bb8d4"},

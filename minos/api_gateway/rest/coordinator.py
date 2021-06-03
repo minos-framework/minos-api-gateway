@@ -13,17 +13,25 @@ from minos.api_gateway.common import (
 
 class MicroserviceCallCoordinator:
     def __init__(
-        self, config: MinosConfig, request: web.Request, discovery_host: str = None, discovery_port: str = None
+        self,
+        config: MinosConfig,
+        request: web.Request,
+        discovery_host: str = None,
+        discovery_port: str = None,
+        discovery_path: str = None,
     ):
         self.name = request.url.parent.name if len(request.url.parent.name) > 0 else request.url.name
         self.config = config
         self.original_req = request
         self.discovery_host = config.discovery.connection.host if discovery_host is None else discovery_host
         self.discovery_port = config.discovery.connection.port if discovery_port is None else discovery_port
+        self.discovery_path = config.discovery.connection.path if discovery_path is None else discovery_path
 
     async def orchestrate(self):
         """ Orchestrate discovery and microservice call """
-        text = await self.call_discovery_service(host=self.discovery_host, port=self.discovery_port, path="discover")
+        text = await self.call_discovery_service(
+            host=self.discovery_host, port=self.discovery_port, path=self.discovery_path
+        )
 
         data = json.loads(text)
         response = await self.call_microservice(data)

@@ -50,7 +50,7 @@ rest:
 discovery:
     host: localhost
     port: 55909
-    path: /discover
+    path: discover
     endpoints:
         - name: Discover
           route: /discover
