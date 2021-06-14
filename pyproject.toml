@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "minos_api_gateway"
+name = "minos_apigateway"
 version = "0.0.1"
 description = "Python Package containing the main API Gateway implementation used in Minos Microservices."
 readme = "README.md"
