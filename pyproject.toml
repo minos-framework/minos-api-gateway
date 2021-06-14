@@ -32,6 +32,8 @@ include = [
 [tool.poetry.dependencies]
 python = "^3.9"
 minos-apigateway-common = "^0.0.4"
+typer = "^0.3.2"
+cached-property = "^1.5.2"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b"
@@ -49,3 +51,6 @@ m2r2 = "^0.2.7"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+api_gateway = "minos.api_gateway.rest.cli:main"
