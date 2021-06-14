@@ -2,6 +2,6 @@
 Usage
 =====
 
-To use API Gateway in a project::
+To use Minos Api Gateway in a project::
 
-    import api_gateway
+    import minos_api_gateway

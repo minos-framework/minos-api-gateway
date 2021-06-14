@@ -1,0 +1,78 @@
+rest:
+    host: localhost
+    port: 55909
+    endpoints:
+        - name: GetOrder
+          route: /order/{id}
+          method: GET
+          controller: minos.api_gateway.rest.handlers.ApiGatewayHandler
+          action: get_order
+        - name: AddOrder
+          route: /order
+          method: POST
+          controller: minos.api_gateway.rest.handlers.ApiGatewayHandler
+          action: post_order
+        - name: PutOrder
+          route: /order/{id}
+          method: PUT
+          controller: minos.api_gateway.rest.handlers.ApiGatewayHandler
+          action: put_order
+        - name: PatchOrder
+          route: /order/{id}
+          method: PATCH
+          controller: minos.api_gateway.rest.handlers.ApiGatewayHandler
+          action: patch_order
+        - name: DeleteOrder
+          route: /order/{id}
+          method: DELETE
+          controller: minos.api_gateway.rest.handlers.ApiGatewayHandler
+          action: delete_order
+        - name: Discovery
+          route: /discover
+          method: GET
+          controller: tests.services.DiscoveryService.Discovery
+          action: discover
+        - name: OrderMicroservice
+          route: /order-microservice
+          method: GET
+          controller: tests.services.OrderMicroservice.Order
+          action: order
+        - name: OrderMicroservice
+          route: /order-microservice
+          method: POST
+          controller: tests.services.OrderMicroservice.Order
+          action: order
+        - name: TestGetOrder
+          route: /test-get-order/{id}
+          method: GET
+          controller: tests.services.TestService.TestService
+          action: test_get_order
+discovery:
+    host: localhost
+    port: 55909
+    path: discover
+    endpoints:
+        - name: Discover
+          route: /discover
+          method: GET
+          controller: minos.api_gateway.discovery.handlers.DiscoveryHandlers
+          action: discover
+        - name: Subscribe
+          route: /subscribe
+          method: POST
+          controller: minos.api_gateway.discovery.handlers.DiscoveryHandlers
+          action: subscribe
+        - name: Unsubscribe
+          route: /unsubscribe
+          method: POST
+          controller: minos.api_gateway.discovery.handlers.DiscoveryHandlers
+          action: unsubscribe
+        - name: SystemHealth
+          route: /system/health
+          method: GET
+          controller: minos.api_gateway.discovery.handlers.DiscoveryHandlers
+          action: system_health
+    db:
+        host: localhost
+        port: 6379
+        password:
