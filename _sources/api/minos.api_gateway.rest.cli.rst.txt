@@ -1,0 +1,7 @@
+minos.api\_gateway.rest.cli module
+==================================
+
+.. automodule:: minos.api_gateway.rest.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:

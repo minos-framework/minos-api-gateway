@@ -1,0 +1,19 @@
+minos.api\_gateway.rest package
+===============================
+
+.. automodule:: minos.api_gateway.rest
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   minos.api_gateway.rest.cli
+   minos.api_gateway.rest.coordinator
+   minos.api_gateway.rest.handlers
+   minos.api_gateway.rest.launchers
+   minos.api_gateway.rest.service

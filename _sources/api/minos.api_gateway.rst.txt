@@ -1,0 +1,10 @@
+minos.api\_gateway namespace
+============================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   minos.api_gateway.rest

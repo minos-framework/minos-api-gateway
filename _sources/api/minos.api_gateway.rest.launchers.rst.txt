@@ -1,0 +1,7 @@
+minos.api\_gateway.rest.launchers module
+========================================
+
+.. automodule:: minos.api_gateway.rest.launchers
+   :members:
+   :undoc-members:
+   :show-inheritance:

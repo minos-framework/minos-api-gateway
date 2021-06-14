@@ -1,0 +1,7 @@
+minos.api\_gateway.rest.handlers module
+=======================================
+
+.. automodule:: minos.api_gateway.rest.handlers
+   :members:
+   :undoc-members:
+   :show-inheritance:

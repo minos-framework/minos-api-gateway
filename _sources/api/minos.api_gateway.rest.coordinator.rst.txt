@@ -1,0 +1,7 @@
+minos.api\_gateway.rest.coordinator module
+==========================================
+
+.. automodule:: minos.api_gateway.rest.coordinator
+   :members:
+   :undoc-members:
+   :show-inheritance:
