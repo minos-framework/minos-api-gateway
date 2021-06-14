@@ -10,6 +10,9 @@ __version__ = "0.0.1"
 from .coordinator import (
     MicroserviceCallCoordinator,
 )
+from .launchers import (
+    EntrypointLauncher,
+)
 from .service import (
     ApiGatewayRestService,
 )
