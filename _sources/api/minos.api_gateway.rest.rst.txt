@@ -14,6 +14,5 @@ Submodules
 
    minos.api_gateway.rest.cli
    minos.api_gateway.rest.coordinator
-   minos.api_gateway.rest.handlers
    minos.api_gateway.rest.launchers
    minos.api_gateway.rest.service
