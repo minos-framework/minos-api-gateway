@@ -56,7 +56,7 @@ class MicroserviceCallCoordinator:
 
         req_data = await self.original_req.text()
 
-        url = "http://{host}:{port}/{path}".format(host=data["ip"], port=data["port"], path=data["name"])
+        url = "http://{host}:{port}{path}".format(host=data["ip"], port=data["port"], path=self.original_req.url.path)
 
         try:
             async with aiohttp.ClientSession(headers=self.original_req.headers) as session:

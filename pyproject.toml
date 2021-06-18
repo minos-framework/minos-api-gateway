@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "minos_apigateway"
-version = "0.0.1"
+version = "0.0.2"
 description = "Python Package containing the main API Gateway implementation used in Minos Microservices."
 readme = "README.md"
 repository = "https://github.com/clariteia/api_gateway"
@@ -47,6 +47,7 @@ sphinx-autodoc-typehints = "^1.12.0"
 sphinxcontrib-apidoc = "^0.3.0"
 sphinx-rtd-theme = "^0.5.2"
 m2r2 = "^0.2.7"
+Flask = "^2.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
