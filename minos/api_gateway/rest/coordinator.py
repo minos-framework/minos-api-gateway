@@ -61,8 +61,7 @@ class MicroserviceCallCoordinator:
         try:
             async with aiohttp.ClientSession(headers=self.original_req.headers) as session:
                 async with session.request(method=self.original_req.method, url=url, data=req_data) as resp:
-                    data = await resp.text()
-                    return data
+                    return await resp.json()
 
         except Exception as e:
             raise aiohttp.web.HTTPBadRequest(text=str(e))
