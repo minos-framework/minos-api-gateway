@@ -1,4 +1,7 @@
 import json
+from json import (
+    JSONDecodeError,
+)
 
 import aiohttp
 from aiohttp import (
@@ -54,14 +57,18 @@ class MicroserviceCallCoordinator:
     async def call_microservice(self, data: dict):
         """ Call microservice (redirect the original call) """
 
-        req_data = await self.original_req.text()
-
-        url = "http://{host}:{port}{path}".format(host=data["ip"], port=data["port"], path=self.original_req.url.path)
+        headers = self.original_req.headers
+        url = self.original_req.url.with_scheme("http").with_host(data["ip"]).with_port(int(data["port"]))
+        method = self.original_req.method
+        try:
+            content = await self.original_req.json()
+        except JSONDecodeError:
+            content = None
 
         try:
-            async with aiohttp.ClientSession(headers=self.original_req.headers) as session:
-                async with session.request(method=self.original_req.method, url=url, data=req_data) as resp:
-                    return await resp.json()
-
+            async with aiohttp.ClientSession(headers=headers) as session:
+                request = session.request(method=method, url=url, json=content)
+                async with request as response:
+                    return await response.json()
         except Exception as e:
             raise aiohttp.web.HTTPBadRequest(text=str(e))
