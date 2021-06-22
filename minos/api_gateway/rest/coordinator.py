@@ -1,8 +1,5 @@
 import json
 import logging
-from json import (
-    JSONDecodeError,
-)
 
 import aiohttp
 from aiohttp import (
@@ -63,24 +60,14 @@ class MicroserviceCallCoordinator:
         headers = self.original_req.headers
         url = self.original_req.url.with_scheme("http").with_host(data["ip"]).with_port(int(data["port"]))
         method = self.original_req.method
-        try:
-            content = await self.original_req.json()
-        except JSONDecodeError:
-            content = None
 
-        # FIXME: remove
-        from yarl import (
-            URL,
-        )
+        content = await self.original_req.text()
 
-        url = URL(
-            "http://{host}:{port}{path}".format(host=data["ip"], port=data["port"], path=self.original_req.url.path)
-        )
         logger.info(f"Redirecting {method!r} request to {url!r}...")
 
         try:
             async with aiohttp.ClientSession(headers=headers) as session:
-                request = session.request(method=method, url=url, json=content)
+                request = session.request(method=method, url=url, data=content)
                 async with request as response:
                     return await response.json()
         except Exception as e:
