@@ -68,6 +68,14 @@ class MicroserviceCallCoordinator:
         except JSONDecodeError:
             content = None
 
+        # FIXME: remove
+        from yarl import (
+            URL,
+        )
+
+        url = URL(
+            "http://{host}:{port}{path}".format(host=data["ip"], port=data["port"], path=self.original_req.url.path)
+        )
         logger.info(f"Redirecting {method!r} request to {url!r}...")
 
         try:
