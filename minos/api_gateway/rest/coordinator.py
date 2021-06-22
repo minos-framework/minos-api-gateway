@@ -1,4 +1,5 @@
 import json
+import logging
 from json import (
     JSONDecodeError,
 )
@@ -12,6 +13,8 @@ from minos.api_gateway.common import (
     ClientHttp,
     MinosConfig,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class MicroserviceCallCoordinator:
@@ -64,6 +67,8 @@ class MicroserviceCallCoordinator:
             content = await self.original_req.json()
         except JSONDecodeError:
             content = None
+
+        logger.info(f"Redirecting {method!r} request to {url!r}...")
 
         try:
             async with aiohttp.ClientSession(headers=headers) as session:
