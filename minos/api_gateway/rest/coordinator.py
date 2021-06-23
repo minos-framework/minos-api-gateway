@@ -7,12 +7,17 @@ Minos framework can not be copied and/or distributed without the express permiss
 """
 import logging
 from typing import (
+    Any,
     Optional,
 )
 
 import aiohttp
 from aiohttp import (
+    ClientResponse,
     web,
+)
+from aiohttp.web_response import (
+    Response,
 )
 
 from minos.api_gateway.common import (
@@ -41,11 +46,11 @@ class MicroserviceCallCoordinator:
         self.discovery_port = config.discovery.connection.port if discovery_port is None else discovery_port
         self.discovery_path = config.discovery.connection.path if discovery_path is None else discovery_path
 
-    async def orchestrate(self):
+    async def orchestrate(self) -> Response:
         """ Orchestrate discovery and microservice call """
         discovery_data = await self.call_discovery_service()
-        microservice_data = await self.call_microservice(**discovery_data)
-        return web.json_response(data=microservice_data)
+        microservice_response = await self.call_microservice(**discovery_data)
+        return microservice_response
 
     async def call_discovery_service(
         self,
@@ -53,7 +58,7 @@ class MicroserviceCallCoordinator:
         port: Optional[int] = None,
         path: Optional[str] = None,
         name: Optional[str] = None,
-    ):
+    ) -> dict[str, Any]:
         """ Call discovery service and get microservice connection data. """
         if host is None:
             host = self.discovery_host
@@ -78,7 +83,7 @@ class MicroserviceCallCoordinator:
         return data
 
     # noinspection PyUnusedLocal
-    async def call_microservice(self, ip: str, port: int, **kwargs):
+    async def call_microservice(self, ip: str, port: int, **kwargs) -> Response:
         """ Call microservice (redirect the original call) """
 
         headers = self.original_req.headers
@@ -92,6 +97,12 @@ class MicroserviceCallCoordinator:
             async with aiohttp.ClientSession(headers=headers) as session:
                 request = session.request(method=method, url=url, data=content)
                 async with request as response:
-                    return await response.json()
+                    return await self._clone_response(response)
         except Exception as e:
             raise aiohttp.web.HTTPBadRequest(text=str(e))
+
+    # noinspection PyMethodMayBeStatic
+    async def _clone_response(self, response: ClientResponse) -> Response:
+        return Response(
+            body=await response.read(), status=response.status, reason=response.reason, headers=response.headers,
+        )
