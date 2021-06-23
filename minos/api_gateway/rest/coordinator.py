@@ -1,4 +1,14 @@
-import json
+"""
+Copyright (C) 2021 Clariteia SL
+
+This file is part of minos framework.
+
+Minos framework can not be copied and/or distributed without the express permission of Clariteia SL.
+"""
+import logging
+from typing import (
+    Optional,
+)
 
 import aiohttp
 from aiohttp import (
@@ -10,8 +20,12 @@ from minos.api_gateway.common import (
     MinosConfig,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class MicroserviceCallCoordinator:
+    """Microservice Call Coordinator class."""
+
     def __init__(
         self,
         config: MinosConfig,
@@ -29,40 +43,55 @@ class MicroserviceCallCoordinator:
 
     async def orchestrate(self):
         """ Orchestrate discovery and microservice call """
-        text = await self.call_discovery_service(
-            host=self.discovery_host, port=self.discovery_port, path=self.discovery_path
-        )
+        discovery_data = await self.call_discovery_service()
+        microservice_data = await self.call_microservice(**discovery_data)
+        return web.json_response(data=microservice_data)
 
-        data = json.loads(text)
-        response = await self.call_microservice(data)
-
-        return web.json_response(data=response)
-
-    async def call_discovery_service(self, host: str, port: int, path: str):
+    async def call_discovery_service(
+        self,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+        path: Optional[str] = None,
+        name: Optional[str] = None,
+    ):
         """ Call discovery service and get microservice connection data. """
-        url = "http://{host}:{port}/{discovery_path}?name={name}".format(
-            host=host, port=port, discovery_path=path, name=self.name
-        )
+        if host is None:
+            host = self.discovery_host
+        if port is None:
+            port = self.discovery_port
+        if path is None:
+            path = self.discovery_path
+        if name is None:
+            name = self.name
+
+        # noinspection HttpUrlsUsage
+        url = f"http://{host}:{port}/{path}?name={name}"
+
         try:
             async with ClientHttp() as client:
                 response = await client.get(url=url)
-                data = await response.text()
-            return data
+                data = await response.json()
         except Exception as e:
             raise aiohttp.web.HTTPBadRequest(text=str(e))
 
-    async def call_microservice(self, data: dict):
+        data["port"] = int(data["port"])
+        return data
+
+    # noinspection PyUnusedLocal
+    async def call_microservice(self, ip: str, port: int, **kwargs):
         """ Call microservice (redirect the original call) """
 
-        req_data = await self.original_req.text()
+        headers = self.original_req.headers
+        url = self.original_req.url.with_scheme("http").with_host(ip).with_port(port)
+        method = self.original_req.method
+        content = await self.original_req.text()
 
-        url = "http://{host}:{port}{path}".format(host=data["ip"], port=data["port"], path=self.original_req.url.path)
+        logger.info(f"Redirecting {method!r} request to {url!r}...")
 
         try:
-            async with aiohttp.ClientSession(headers=self.original_req.headers) as session:
-                async with session.request(method=self.original_req.method, url=url, data=req_data) as resp:
-                    data = await resp.text()
-                    return data
-
+            async with aiohttp.ClientSession(headers=headers) as session:
+                request = session.request(method=method, url=url, data=content)
+                async with request as response:
+                    return await response.json()
         except Exception as e:
             raise aiohttp.web.HTTPBadRequest(text=str(e))
