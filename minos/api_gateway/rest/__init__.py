@@ -16,3 +16,6 @@ from .launchers import (
 from .service import (
     ApiGatewayRestService,
 )
+from .utils import (
+    DefaultController,
+)

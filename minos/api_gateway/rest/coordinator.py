@@ -1,6 +1,13 @@
+"""
+Copyright (C) 2021 Clariteia SL
+
+This file is part of minos framework.
+
+Minos framework can not be copied and/or distributed without the express permission of Clariteia SL.
+"""
 import logging
 from typing import (
-    Any,
+    Optional,
 )
 
 import aiohttp
@@ -17,6 +24,8 @@ logger = logging.getLogger(__name__)
 
 
 class MicroserviceCallCoordinator:
+    """Microservice Call Coordinator class."""
+
     def __init__(
         self,
         config: MinosConfig,
@@ -34,19 +43,30 @@ class MicroserviceCallCoordinator:
 
     async def orchestrate(self):
         """ Orchestrate discovery and microservice call """
-        discovery_data = await self.call_discovery_service(
-            host=self.discovery_host, port=self.discovery_port, path=self.discovery_path
-        )
-
-        microservice_data = await self.call_microservice(discovery_data)
-
+        discovery_data = await self.call_discovery_service()
+        microservice_data = await self.call_microservice(**discovery_data)
         return web.json_response(data=microservice_data)
 
-    async def call_discovery_service(self, host: str, port: int, path: str):
+    async def call_discovery_service(
+        self,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+        path: Optional[str] = None,
+        name: Optional[str] = None,
+    ):
         """ Call discovery service and get microservice connection data. """
-        url = "http://{host}:{port}/{discovery_path}?name={name}".format(
-            host=host, port=port, discovery_path=path, name=self.name
-        )
+        if host is None:
+            host = self.discovery_host
+        if port is None:
+            port = self.discovery_port
+        if path is None:
+            path = self.discovery_path
+        if name is None:
+            name = self.name
+
+        # noinspection HttpUrlsUsage
+        url = f"http://{host}:{port}/{path}?name={name}"
+
         try:
             async with ClientHttp() as client:
                 response = await client.get(url=url)
@@ -57,13 +77,12 @@ class MicroserviceCallCoordinator:
         data["port"] = int(data["port"])
         return data
 
-    async def call_microservice(self, discovery_data: dict[str, Any]):
+    # noinspection PyUnusedLocal
+    async def call_microservice(self, ip: str, port: int, **kwargs):
         """ Call microservice (redirect the original call) """
 
         headers = self.original_req.headers
-        url = (
-            self.original_req.url.with_scheme("http").with_host(discovery_data["ip"]).with_port(discovery_data["port"])
-        )
+        url = self.original_req.url.with_scheme("http").with_host(ip).with_port(port)
         method = self.original_req.method
         content = await self.original_req.text()
 

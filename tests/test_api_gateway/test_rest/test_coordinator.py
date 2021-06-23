@@ -115,8 +115,7 @@ class TestRestCoordinator(AioHTTPTestCase):
         config = MinosConfig(self.CONFIG_FILE_PATH)
         url = "/test-get-order/32"
         incoming_response = await self.client.request("GET", url)
-        d = {"ip": "aaa", "port": self.client.port, "name": "get_testsss", "status": True, "subscribed": True}
 
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
         with self.assertRaises(Exception):
-            await coordinator.call_microservice(d)
+            await coordinator.call_microservice(ip="aaa", port=self.client.port)
