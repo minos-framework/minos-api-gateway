@@ -1,5 +1,3 @@
-import json
-
 import requests
 from aiohttp import (
     web,
@@ -85,13 +83,11 @@ class TestRestCoordinator(AioHTTPTestCase):
 
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
 
-        data = await coordinator.call_discovery_service(
+        result = await coordinator.call_discovery_service(
             host=self.config.discovery.connection.host, port=self.config.discovery.connection.port, path="discover"
         )
-
-        result = json.loads(data)
         self.assertDictEqual(
-            result, {"ip": "localhost", "port": "5568", "name": "order", "status": True, "subscribed": True},
+            result, {"ip": "localhost", "port": 5568, "name": "order", "status": True, "subscribed": True},
         )
 
     @unittest_run_loop

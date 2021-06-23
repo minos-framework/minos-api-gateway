@@ -1,5 +1,7 @@
-import json
 import logging
+from typing import (
+    Any,
+)
 
 import aiohttp
 from aiohttp import (
@@ -32,14 +34,13 @@ class MicroserviceCallCoordinator:
 
     async def orchestrate(self):
         """ Orchestrate discovery and microservice call """
-        text = await self.call_discovery_service(
+        discovery_data = await self.call_discovery_service(
             host=self.discovery_host, port=self.discovery_port, path=self.discovery_path
         )
 
-        data = json.loads(text)
-        response = await self.call_microservice(data)
+        microservice_data = await self.call_microservice(discovery_data)
 
-        return web.json_response(data=response)
+        return web.json_response(data=microservice_data)
 
     async def call_discovery_service(self, host: str, port: int, path: str):
         """ Call discovery service and get microservice connection data. """
@@ -49,18 +50,21 @@ class MicroserviceCallCoordinator:
         try:
             async with ClientHttp() as client:
                 response = await client.get(url=url)
-                data = await response.text()
-            return data
+                data = await response.json()
         except Exception as e:
             raise aiohttp.web.HTTPBadRequest(text=str(e))
 
-    async def call_microservice(self, data: dict):
+        data["port"] = int(data["port"])
+        return data
+
+    async def call_microservice(self, discovery_data: dict[str, Any]):
         """ Call microservice (redirect the original call) """
 
         headers = self.original_req.headers
-        url = self.original_req.url.with_scheme("http").with_host(data["ip"]).with_port(int(data["port"]))
+        url = (
+            self.original_req.url.with_scheme("http").with_host(discovery_data["ip"]).with_port(discovery_data["port"])
+        )
         method = self.original_req.method
-
         content = await self.original_req.text()
 
         logger.info(f"Redirecting {method!r} request to {url!r}...")
