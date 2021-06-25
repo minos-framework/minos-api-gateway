@@ -8,6 +8,7 @@ from aiohttp.test_utils import (
 )
 from aiohttp.web_exceptions import (
     HTTPGatewayTimeout,
+    HTTPServiceUnavailable,
 )
 
 from minos.api_gateway.common import (
@@ -112,11 +113,11 @@ class TestRestCoordinator(AioHTTPTestCase):
         self.assertTrue("Microservice call correct!!!" in text)
 
     @unittest_run_loop
-    async def test_microservice_call_ko(self):
+    async def test_microservice_raises_unavailable(self):
         config = MinosConfig(self.CONFIG_FILE_PATH)
         url = "/test-get-order/32"
         incoming_response = await self.client.request("GET", url)
 
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
-        with self.assertRaises(Exception):
+        with self.assertRaises(HTTPServiceUnavailable):
             await coordinator.call_microservice(ip="aaa", port=self.client.port)

@@ -78,15 +78,13 @@ class MicroserviceCallCoordinator:
             async with ClientSession() as session:
                 async with session.get(url=url) as response:
                     if not response.ok:
-                        raise aiohttp.web.HTTPBadGateway(
-                            text=f"There was an error on the discovery response about the {name!r} microservice status."
-                        )
+                        raise aiohttp.web.HTTPBadGateway(text="The discovery response is not okay.")
                     data = await response.json()
         except ClientConnectorError:
             raise aiohttp.web.HTTPGatewayTimeout(text="The discovery is not available.")
 
         if "status" not in data or not data["status"]:
-            raise aiohttp.web.HTTPServiceUnavailable(text=f"The {name!r} microservice is not available.")
+            raise aiohttp.web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
 
         data["port"] = int(data["port"])
 
@@ -105,11 +103,10 @@ class MicroserviceCallCoordinator:
 
         try:
             async with aiohttp.ClientSession(headers=headers) as session:
-                request = session.request(method=method, url=url, data=content)
-                async with request as response:
+                async with session.request(method=method, url=url, data=content) as response:
                     return await self._clone_response(response)
-        except Exception as e:
-            raise aiohttp.web.HTTPBadRequest(text=str(e))
+        except ClientConnectorError:
+            raise aiohttp.web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
 
     # noinspection PyMethodMayBeStatic
     async def _clone_response(self, response: ClientResponse) -> Response:
