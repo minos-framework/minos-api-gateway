@@ -11,15 +11,11 @@ from typing import (
     Optional,
 )
 
-import aiohttp
 from aiohttp import (
     ClientConnectorError,
     ClientResponse,
     ClientSession,
     web,
-)
-from aiohttp.web_response import (
-    Response,
 )
 from yarl import (
     URL,
@@ -50,7 +46,7 @@ class MicroserviceCallCoordinator:
         self.discovery_port = config.discovery.connection.port if discovery_port is None else discovery_port
         self.discovery_path = config.discovery.connection.path if discovery_path is None else discovery_path
 
-    async def orchestrate(self) -> Response:
+    async def orchestrate(self) -> web.Response:
         """ Orchestrate discovery and microservice call """
         discovery_data = await self.call_discovery_service()
         microservice_response = await self.call_microservice(**discovery_data)
@@ -78,20 +74,20 @@ class MicroserviceCallCoordinator:
             async with ClientSession() as session:
                 async with session.get(url=url) as response:
                     if not response.ok:
-                        raise aiohttp.web.HTTPBadGateway(text="The discovery response is not okay.")
+                        raise web.HTTPBadGateway(text="The discovery response is not okay.")
                     data = await response.json()
         except ClientConnectorError:
-            raise aiohttp.web.HTTPGatewayTimeout(text="The discovery is not available.")
+            raise web.HTTPGatewayTimeout(text="The discovery is not available.")
 
         if "status" not in data or not data["status"]:
-            raise aiohttp.web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
+            raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
 
         data["port"] = int(data["port"])
 
         return data
 
     # noinspection PyUnusedLocal
-    async def call_microservice(self, ip: str, port: int, **kwargs) -> Response:
+    async def call_microservice(self, ip: str, port: int, **kwargs) -> web.Response:
         """ Call microservice (redirect the original call) """
 
         headers = self.original_req.headers
@@ -102,14 +98,14 @@ class MicroserviceCallCoordinator:
         logger.info(f"Redirecting {method!r} request to {url!r}...")
 
         try:
-            async with aiohttp.ClientSession(headers=headers) as session:
+            async with ClientSession(headers=headers) as session:
                 async with session.request(method=method, url=url, data=content) as response:
                     return await self._clone_response(response)
         except ClientConnectorError:
-            raise aiohttp.web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
+            raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
 
     # noinspection PyMethodMayBeStatic
-    async def _clone_response(self, response: ClientResponse) -> Response:
-        return Response(
+    async def _clone_response(self, response: ClientResponse) -> web.Response:
+        return web.Response(
             body=await response.read(), status=response.status, reason=response.reason, headers=response.headers,
         )

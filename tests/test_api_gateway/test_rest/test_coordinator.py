@@ -1,3 +1,8 @@
+import unittest
+from unittest.mock import (
+    patch,
+)
+
 import requests
 from aiohttp import (
     web,
@@ -7,6 +12,7 @@ from aiohttp.test_utils import (
     unittest_run_loop,
 )
 from aiohttp.web_exceptions import (
+    HTTPBadGateway,
     HTTPGatewayTimeout,
     HTTPServiceUnavailable,
 )
@@ -24,6 +30,24 @@ from tests.mock_servers.server import (
 from tests.utils import (
     BASE_PATH,
 )
+
+
+class _FakeResponse:
+    """For testing purposes."""
+
+    def __init__(self, ok: bool = True, json=None):
+        self.ok = ok
+        self._json = json
+
+    async def json(self):
+        """For testing purposes."""
+        return self._json
+
+    async def __aexit__(self, exc_type, exc, tb):
+        pass
+
+    async def __aenter__(self):
+        return self
 
 
 class TestRestCoordinator(AioHTTPTestCase):
@@ -105,6 +129,28 @@ class TestRestCoordinator(AioHTTPTestCase):
             await coordinator.call_discovery_service(host="aaa", port=self.client.port, path="/discover")
 
     @unittest_run_loop
+    async def test_discovery_raises_bad_response(self):
+        config = MinosConfig(self.CONFIG_FILE_PATH)
+
+        incoming_response = await self.client.request("GET", "/fake/32")
+
+        coordinator = MicroserviceCallCoordinator(config, incoming_response)
+        with patch("aiohttp.ClientSession.get", return_value=_FakeResponse(ok=False)):
+            with self.assertRaises(HTTPBadGateway):
+                await coordinator.call_discovery_service()
+
+    @unittest_run_loop
+    async def test_discovery_raises_unavailable_microservice(self):
+        config = MinosConfig(self.CONFIG_FILE_PATH)
+
+        incoming_response = await self.client.request("GET", "/fake/32")
+
+        coordinator = MicroserviceCallCoordinator(config, incoming_response)
+        with patch("aiohttp.ClientSession.get", return_value=_FakeResponse(json={"status": False})):
+            with self.assertRaises(HTTPServiceUnavailable):
+                await coordinator.call_discovery_service()
+
+    @unittest_run_loop
     async def test_microservice_call(self):
         resp = await self.client.request("GET", "/order/5")
         assert resp.status == 200
@@ -121,3 +167,7 @@ class TestRestCoordinator(AioHTTPTestCase):
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
         with self.assertRaises(HTTPServiceUnavailable):
             await coordinator.call_microservice(ip="aaa", port=self.client.port)
+
+
+if __name__ == "__main__":
+    unittest.main()
