@@ -6,6 +6,9 @@ from aiohttp.test_utils import (
     AioHTTPTestCase,
     unittest_run_loop,
 )
+from aiohttp.web_exceptions import (
+    HTTPGatewayTimeout,
+)
 
 from minos.api_gateway.common import (
     MinosConfig,
@@ -89,7 +92,7 @@ class TestRestCoordinator(AioHTTPTestCase):
         )
 
     @unittest_run_loop
-    async def test_discovery_service_call_ko(self):
+    async def test_discovery_raises_unavailable(self):
         config = MinosConfig(self.CONFIG_FILE_PATH)
 
         url = "/test-get-order/32"
@@ -97,8 +100,8 @@ class TestRestCoordinator(AioHTTPTestCase):
 
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
 
-        with self.assertRaises(Exception):
-            await coordinator.call_discovery_service(host="aaa", port=self.client.port, path="discover")
+        with self.assertRaises(HTTPGatewayTimeout):
+            await coordinator.call_discovery_service(host="aaa", port=self.client.port, path="/discover")
 
     @unittest_run_loop
     async def test_microservice_call(self):
