@@ -13,15 +13,19 @@ from typing import (
 
 import aiohttp
 from aiohttp import (
+    ClientConnectorError,
     ClientResponse,
+    ClientSession,
     web,
 )
 from aiohttp.web_response import (
     Response,
 )
+from yarl import (
+    URL,
+)
 
 from minos.api_gateway.common import (
-    ClientHttp,
     MinosConfig,
 )
 
@@ -69,17 +73,23 @@ class MicroserviceCallCoordinator:
         if name is None:
             name = self.name
 
-        # noinspection HttpUrlsUsage
-        url = f"http://{host}:{port}/{path}?name={name}"
-
+        url = URL.build(scheme="http", host=host, port=port, path=path, query={"name": name})
         try:
-            async with ClientHttp() as client:
-                response = await client.get(url=url)
-                data = await response.json()
-        except Exception as e:
-            raise aiohttp.web.HTTPBadRequest(text=str(e))
+            async with ClientSession() as session:
+                async with session.get(url=url) as response:
+                    if not response.ok:
+                        raise aiohttp.web.HTTPBadGateway(
+                            text=f"There was an error on the discovery response about the {name!r} microservice status."
+                        )
+                    data = await response.json()
+        except ClientConnectorError:
+            raise aiohttp.web.HTTPGatewayTimeout(text="The discovery is not available.")
+
+        if "status" not in data or not data["status"]:
+            raise aiohttp.web.HTTPServiceUnavailable(text=f"The {name!r} microservice is not available.")
 
         data["port"] = int(data["port"])
+
         return data
 
     # noinspection PyUnusedLocal

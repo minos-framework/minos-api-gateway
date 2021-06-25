@@ -83,9 +83,7 @@ class TestRestCoordinator(AioHTTPTestCase):
 
         coordinator = MicroserviceCallCoordinator(config, incoming_response)
 
-        result = await coordinator.call_discovery_service(
-            host=self.config.discovery.connection.host, port=self.config.discovery.connection.port, path="discover"
-        )
+        result = await coordinator.call_discovery_service()
         self.assertDictEqual(
             result, {"ip": "localhost", "port": 5568, "name": "order", "status": True, "subscribed": True},
         )
