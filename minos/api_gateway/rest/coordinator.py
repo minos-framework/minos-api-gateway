@@ -31,35 +31,34 @@ logger = logging.getLogger(__name__)
 class MicroserviceCallCoordinator:
     """Microservice Call Coordinator class."""
 
-    def __init__(
-        self,
-        config: MinosConfig,
-        request: web.Request,
-        discovery_host: str = None,
-        discovery_port: str = None,
-        discovery_path: str = None,
-    ):
-        self.name = request.url.parent.name if len(request.url.parent.name) > 0 else request.url.name
-        self.config = config
+    def __init__(self, config: MinosConfig, request: web.Request):
+        self.name = request.url.parts[1]
         self.original_req = request
-        self.discovery_host = config.discovery.connection.host if discovery_host is None else discovery_host
-        self.discovery_port = config.discovery.connection.port if discovery_port is None else discovery_port
-        self.discovery_path = config.discovery.connection.path if discovery_path is None else discovery_path
+        self.discovery_host = config.discovery.connection.host
+        self.discovery_port = config.discovery.connection.port
+        self.discovery_path = config.discovery.connection.path
 
     async def orchestrate(self) -> web.Response:
         """ Orchestrate discovery and microservice call """
-        discovery_data = await self.call_discovery_service()
-        microservice_response = await self.call_microservice(**discovery_data)
+        discovery_data = await self.discover()
+        microservice_response = await self.call(**discovery_data)
         return microservice_response
 
-    async def call_discovery_service(
+    async def discover(
         self,
         host: Optional[str] = None,
         port: Optional[int] = None,
         path: Optional[str] = None,
         name: Optional[str] = None,
     ) -> dict[str, Any]:
-        """ Call discovery service and get microservice connection data. """
+        """Call discovery service and get microservice connection data.
+
+        :param host: Optional discovery host name.
+        :param port: Optional discovery port.
+        :param path: Optional discovery path.
+        :param name: Optional microservice name.
+        :return: The response of the discovery.
+        """
         if host is None:
             host = self.discovery_host
         if port is None:
@@ -87,8 +86,14 @@ class MicroserviceCallCoordinator:
         return data
 
     # noinspection PyUnusedLocal
-    async def call_microservice(self, ip: str, port: int, **kwargs) -> web.Response:
-        """ Call microservice (redirect the original call) """
+    async def call(self, ip: str, port: int, **kwargs) -> web.Response:
+        """Call microservice (redirect the original call)
+
+        :param ip: The ip of the microservices.
+        :param port: The port of the microservice.
+        :param kwargs: Additional named arguments.
+        :return: The web response to be retrieved to the client.
+        """
 
         headers = self.original_req.headers
         url = self.original_req.url.with_scheme("http").with_host(ip).with_port(port)
