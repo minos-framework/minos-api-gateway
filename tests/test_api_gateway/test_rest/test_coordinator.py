@@ -90,6 +90,48 @@ class TestRestCoordinator(AioHTTPTestCase):
         return await rest_interface.create_application()
 
     @unittest_run_loop
+    async def test_name(self):
+        request = await self.client.request("GET", "/order")
+        coordinator = MicroserviceCallCoordinator(self.config, request)
+        self.assertEqual("order", coordinator.name)
+
+    @unittest_run_loop
+    async def test_name_parameter(self):
+        request = await self.client.request("GET", "/order/32")
+        coordinator = MicroserviceCallCoordinator(self.config, request)
+        self.assertEqual("order", coordinator.name)
+
+    @unittest_run_loop
+    async def test_name_multiple_parts(self):
+        request = await self.client.request("GET", "/order/with/long/path/32")
+        coordinator = MicroserviceCallCoordinator(self.config, request)
+        self.assertEqual("order", coordinator.name)
+
+    @unittest_run_loop
+    async def test_original_req(self):
+        request = await self.client.request("GET", "/order/32")
+        coordinator = MicroserviceCallCoordinator(self.config, request)
+        self.assertEqual(request, coordinator.original_req)
+
+    @unittest_run_loop
+    async def test_discovery_host(self):
+        request = await self.client.request("GET", "/order/32")
+        coordinator = MicroserviceCallCoordinator(self.config, request)
+        self.assertEqual("localhost", coordinator.discovery_host)
+
+    @unittest_run_loop
+    async def test_discovery_port(self):
+        request = await self.client.request("GET", "/order/32")
+        coordinator = MicroserviceCallCoordinator(self.config, request)
+        self.assertEqual(5567, coordinator.discovery_port)
+
+    @unittest_run_loop
+    async def test_discovery_path(self):
+        request = await self.client.request("GET", "/order/32")
+        coordinator = MicroserviceCallCoordinator(self.config, request)
+        self.assertEqual("/discover", coordinator.discovery_path)
+
+    @unittest_run_loop
     async def test_discover(self):
         url = "/order/32"
         incoming_response = await self.client.request("GET", url)

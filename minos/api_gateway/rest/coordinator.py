@@ -32,19 +32,13 @@ class MicroserviceCallCoordinator:
     """Microservice Call Coordinator class."""
 
     def __init__(
-        self,
-        config: MinosConfig,
-        request: web.Request,
-        discovery_host: str = None,
-        discovery_port: str = None,
-        discovery_path: str = None,
+        self, config: MinosConfig, request: web.Request,
     ):
-        self.name = request.url.parent.name if len(request.url.parent.name) > 0 else request.url.name
-        self.config = config
+        self.name = request.url.parts[1]
         self.original_req = request
-        self.discovery_host = config.discovery.connection.host if discovery_host is None else discovery_host
-        self.discovery_port = config.discovery.connection.port if discovery_port is None else discovery_port
-        self.discovery_path = config.discovery.connection.path if discovery_path is None else discovery_path
+        self.discovery_host = config.discovery.connection.host
+        self.discovery_port = config.discovery.connection.port
+        self.discovery_path = config.discovery.connection.path
 
     async def orchestrate(self) -> web.Response:
         """ Orchestrate discovery and microservice call """
