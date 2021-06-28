@@ -48,11 +48,11 @@ class MicroserviceCallCoordinator:
 
     async def orchestrate(self) -> web.Response:
         """ Orchestrate discovery and microservice call """
-        discovery_data = await self.call_discovery_service()
-        microservice_response = await self.call_microservice(**discovery_data)
+        discovery_data = await self.discover()
+        microservice_response = await self.call(**discovery_data)
         return microservice_response
 
-    async def call_discovery_service(
+    async def discover(
         self,
         host: Optional[str] = None,
         port: Optional[int] = None,
@@ -87,7 +87,7 @@ class MicroserviceCallCoordinator:
         return data
 
     # noinspection PyUnusedLocal
-    async def call_microservice(self, ip: str, port: int, **kwargs) -> web.Response:
+    async def call(self, ip: str, port: int, **kwargs) -> web.Response:
         """ Call microservice (redirect the original call) """
 
         headers = self.original_req.headers
