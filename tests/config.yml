@@ -7,6 +7,7 @@ rest:
           method: GET
           controller: tests.handlers.ApiGatewayHandler
           action: get_order
+          
         - name: AddOrder
           route: /order
           method: POST
@@ -29,8 +30,8 @@ rest:
           action: delete_order
 discovery:
     host: localhost
-    port: 5567
-    path: /discover
+    port: 8080
+    path: /microservices
     endpoints:
         - name: Discover
           route: /discover
