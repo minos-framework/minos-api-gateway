@@ -178,7 +178,7 @@ class TestRestCoordinator(AioHTTPTestCase):
 
         coordinator = MicroserviceCallCoordinator(self.config, incoming_response)
         with self.assertRaises(HTTPServiceUnavailable):
-            await coordinator.call(ip="aaa", port=self.client.port)
+            await coordinator.call(address="aaa", port=self.client.port)
 
 
 if __name__ == "__main__":
