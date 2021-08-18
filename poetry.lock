@@ -499,20 +499,6 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
-name = "pyjwt"
-version = "2.1.0"
-description = "JSON Web Token implementation in Python"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.extras]
-crypto = ["cryptography (>=3.3.1,<4.0.0)"]
-dev = ["sphinx", "sphinx-rtd-theme", "zope.interface", "cryptography (>=3.3.1,<4.0.0)", "pytest (>=6.0.0,<7.0.0)", "coverage[toml] (==5.0.4)", "mypy", "pre-commit"]
-docs = ["sphinx", "sphinx-rtd-theme", "zope.interface"]
-tests = ["pytest (>=6.0.0,<7.0.0)", "coverage[toml] (==5.0.4)"]
-
-[[package]]
 name = "pyparsing"
 version = "2.4.7"
 description = "Python parsing module"
@@ -842,7 +828,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "d13a73148b8208fffa1f34222b9d38844c5e61ec7530baaf1a1431813095859b"
+content-hash = "4eab6c732c393a217e22cfb1f16f2c7e02706884105d648d4a12943b282a1c44"
 
 [metadata.files]
 aiohttp = [
@@ -1188,10 +1174,6 @@ pyflakes = [
 pygments = [
     {file = "Pygments-2.9.0-py3-none-any.whl", hash = "sha256:d66e804411278594d764fc69ec36ec13d9ae9147193a1740cd34d272ca383b8e"},
     {file = "Pygments-2.9.0.tar.gz", hash = "sha256:a18f47b506a429f6f4b9df81bb02beab9ca21d0a5fee38ed15aef65f0545519f"},
-]
-pyjwt = [
-    {file = "PyJWT-2.1.0-py3-none-any.whl", hash = "sha256:934d73fbba91b0483d3857d1aff50e96b2a892384ee2c17417ed3203f173fca1"},
-    {file = "PyJWT-2.1.0.tar.gz", hash = "sha256:fba44e7898bbca160a2b2b501f492824fc8382485d3a6f11ba5d0c1937ce6130"},
 ]
 pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},

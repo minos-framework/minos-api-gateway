@@ -22,24 +22,26 @@ async def orchestrate(request: web.Request) -> web.Response:
     discovery_port = request.app["config"].discovery.connection.port
     discovery_path = request.app["config"].discovery.connection.path
 
+    verb = request.method
     url = request.match_info["endpoint"]
-    discovery_data = await discover(discovery_host, int(discovery_port), discovery_path, url)
+    discovery_data = await discover(discovery_host, int(discovery_port), discovery_path, verb, url)
 
     microservice_response = await call(**discovery_data, original_req=request)
     return microservice_response
 
 
-async def discover(host: str, port: int, path: str, endpoint: str) -> dict[str, Any]:
+async def discover(host: str, port: int, path: str, verb: str, endpoint: str) -> dict[str, Any]:
     """Call discovery service and get microservice connection data.
 
     :param host: Optional discovery host name.
     :param port: Optional discovery port.
     :param path: Optional discovery path.
+    :param verb: Optional verb.
     :param endpoint: Optional microservice url.
     :return: The response of the discovery.
     """
 
-    url = URL.build(scheme="http", host=host, port=port, path=path, query={"url": endpoint})
+    url = URL.build(scheme="http", host=host, port=port, path=path, query={"verb": verb, "path": endpoint})
     try:
         async with ClientSession() as session:
             async with session.get(url=url) as response:

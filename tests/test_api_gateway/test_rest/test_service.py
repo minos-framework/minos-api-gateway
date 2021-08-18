@@ -31,7 +31,7 @@ class TestRestService(AioHTTPTestCase):
         )
         self.discovery_server.add_json_response(
             "/discover",
-            {"ip": "localhost", "port": "5568", "name": "order", "status": True, "subscribed": True},
+            {"ip": "localhost", "port": "5568", "status": True},
             methods=("GET",),
         )
 
@@ -54,9 +54,9 @@ class TestRestService(AioHTTPTestCase):
         """
         Override the get_app method to return your application.
         """
-        app = web.Application()
         config = MinosConfig(self.CONFIG_FILE_PATH)
-        rest_interface = ApiGatewayRestService(config=config, app=app)
+        rest_interface = ApiGatewayRestService(address=config.rest.connection.host, port=config.rest.connection.port,
+                                               config=config)
 
         return await rest_interface.create_application()
 
@@ -76,7 +76,7 @@ class TestRestService(AioHTTPTestCase):
 
     @unittest_run_loop
     async def test_get(self):
-        url = "/order/5"
+        url = "/order/5?verb=GET&path=12324"
         resp = await self.client.request("GET", url)
         assert resp.status == 200
         text = await resp.text()

@@ -11,10 +11,6 @@ from unittest.mock import (
     MagicMock,
 )
 
-from minos.api_gateway.rest import (
-    DefaultController,
-)
-
 
 class _Foo:
     def __init__(self, a, b):
