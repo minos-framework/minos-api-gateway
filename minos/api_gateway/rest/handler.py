@@ -24,7 +24,7 @@ async def orchestrate(request: web.Request) -> web.Response:
     discovery_port = request.app["config"].discovery.connection.port
 
     verb = request.method
-    url = str(request.rel_url.with_query({}).with_fragment(""))
+    url = f"/{request.match_info['endpoint']}"
 
     discovery_data = await discover(discovery_host, int(discovery_port), "/microservices", verb, url)
 
