@@ -5,7 +5,7 @@ rest:
 discovery:
     host: localhost
     port: 55656
-    path: /microservices
+    path: ""
     endpoints: []
     db:
         host: localhost
