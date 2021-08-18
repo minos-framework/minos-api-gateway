@@ -1,5 +1,7 @@
 import logging
-from typing import Any
+from typing import (
+    Any,
+)
 
 from aiohttp import (
     ClientConnectorError,
@@ -7,7 +9,9 @@ from aiohttp import (
     ClientSession,
     web,
 )
-from yarl import URL
+from yarl import (
+    URL,
+)
 
 logger = logging.getLogger(__name__)
 
