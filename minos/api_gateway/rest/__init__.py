@@ -7,9 +7,5 @@ Minos framework can not be copied and/or distributed without the express permiss
 """
 __version__ = "0.0.2"
 
-from .launchers import (
-    EntrypointLauncher,
-)
-from .service import (
-    ApiGatewayRestService,
-)
+from .launchers import EntrypointLauncher
+from .service import ApiGatewayRestService

@@ -1,19 +1,11 @@
 import asyncio
 import logging
 
-from aiohttp import (
-    web,
-)
-from aiomisc.service.aiohttp import (
-    AIOHTTPService,
-)
+from aiohttp import web
+from aiomisc.service.aiohttp import AIOHTTPService
 
-from minos.api_gateway.common import (
-    MinosConfig,
-)
-from minos.api_gateway.rest import (
-    handler,
-)
+from minos.api_gateway.common import MinosConfig
+from minos.api_gateway.rest import handler
 
 logger = logging.getLogger(__name__)
 
