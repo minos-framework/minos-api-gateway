@@ -30,9 +30,7 @@ class TestRestService(AioHTTPTestCase):
             host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
         )
         self.discovery_server.add_json_response(
-            "/discover",
-            {"ip": "localhost", "port": "5568", "status": True},
-            methods=("GET",),
+            "/discover", {"ip": "localhost", "port": "5568", "status": True}, methods=("GET",),
         )
 
         self.order_microservice = MockServer(host="localhost", port=5568)
@@ -55,8 +53,9 @@ class TestRestService(AioHTTPTestCase):
         Override the get_app method to return your application.
         """
         config = MinosConfig(self.CONFIG_FILE_PATH)
-        rest_interface = ApiGatewayRestService(address=config.rest.connection.host, port=config.rest.connection.port,
-                                               config=config)
+        rest_interface = ApiGatewayRestService(
+            address=config.rest.connection.host, port=config.rest.connection.port, config=config
+        )
 
         return await rest_interface.create_application()
 
