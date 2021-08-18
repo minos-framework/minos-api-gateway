@@ -1,4 +1,9 @@
+"""minos.api_gateway.rest.handler module."""
+
 import logging
+from asyncio import (
+    TimeoutError,
+)
 from typing import (
     Any,
 )
@@ -7,6 +12,7 @@ from aiohttp import (
     ClientConnectorError,
     ClientResponse,
     ClientSession,
+    ClientTimeout,
     web,
 )
 from yarl import (
@@ -20,35 +26,36 @@ async def orchestrate(request: web.Request) -> web.Response:
     """ Orchestrate discovery and microservice call """
     discovery_host = request.app["config"].discovery.connection.host
     discovery_port = request.app["config"].discovery.connection.port
-    discovery_path = request.app["config"].discovery.connection.path
 
     verb = request.method
-    url = request.match_info["endpoint"]
-    discovery_data = await discover(discovery_host, int(discovery_port), discovery_path, verb, url)
+    url = str(request.rel_url.with_query({}).with_fragment(""))
+
+    discovery_data = await discover(discovery_host, int(discovery_port), "/microservices", verb, url)
 
     microservice_response = await call(**discovery_data, original_req=request)
     return microservice_response
 
 
-async def discover(host: str, port: int, path: str, verb: str, endpoint: str) -> dict[str, Any]:
+async def discover(host: str, port: int, path: str, verb: str, endpoint: str, timeout: float = 5.0) -> dict[str, Any]:
     """Call discovery service and get microservice connection data.
 
-    :param host: Optional discovery host name.
-    :param port: Optional discovery port.
-    :param path: Optional discovery path.
-    :param verb: Optional verb.
-    :param endpoint: Optional microservice url.
+    :param host: Discovery host name.
+    :param port: Discovery port.
+    :param path: Discovery path.
+    :param verb: Endpoint Verb.
+    :param endpoint: Endpoint url.
+    :param timeout: Timeout in seconds.
     :return: The response of the discovery.
     """
 
     url = URL.build(scheme="http", host=host, port=port, path=path, query={"verb": verb, "path": endpoint})
     try:
-        async with ClientSession() as session:
+        async with ClientSession(timeout=ClientTimeout(total=timeout)) as session:
             async with session.get(url=url) as response:
                 if not response.ok:
                     raise web.HTTPBadGateway(text="The discovery response is not okay.")
                 data = await response.json()
-    except ClientConnectorError:
+    except (ClientConnectorError, TimeoutError):
         raise web.HTTPGatewayTimeout(text="The discovery is not available.")
 
     data["port"] = int(data["port"])

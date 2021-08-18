@@ -1,3 +1,5 @@
+"""tests.test_api_gateway.test_rest.test_cli module."""
+
 import unittest
 from unittest.mock import (
     PropertyMock,
@@ -50,3 +52,7 @@ class TestCli(unittest.TestCase):
             mock.return_value = entrypoint
             self.launcher.launch()
         self.assertEqual(1, entrypoint.call_count)
+
+
+if __name__ == "__main__":
+    unittest.main()

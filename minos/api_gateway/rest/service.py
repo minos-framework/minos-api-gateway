@@ -1,4 +1,5 @@
-import asyncio
+"""minos.api_gateway.rest.service module."""
+
 import logging
 
 from aiohttp import (
@@ -19,9 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 class ApiGatewayRestService(AIOHTTPService):
-    def __init__(self, address: str, port: int, config: MinosConfig, graceful_stop_timeout: int = 5):
+    def __init__(self, address: str, port: int, config: MinosConfig):
         self.config = config
-        self.graceful_stop_timeout = graceful_stop_timeout
         super().__init__(address, port)
 
     async def create_application(self) -> web.Application:
@@ -31,11 +31,3 @@ class ApiGatewayRestService(AIOHTTPService):
         app.router.add_route("*", "/{endpoint:.*}", handler.orchestrate)
 
         return app
-
-    async def stop(self, exception: Exception = None) -> None:
-        logger.info(
-            f"Stopping Discovery Service gracefully "
-            f"(waiting {self.graceful_stop_timeout} seconds for microservices unsubscription)..."
-        )
-        await asyncio.sleep(self.graceful_stop_timeout)
-        await super().stop(exception)

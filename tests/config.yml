@@ -1,58 +1,12 @@
 rest:
     host: localhost
     port: 55909
-    endpoints:
-        - name: GetOrder
-          route: /order/{id}
-          method: GET
-          controller: tests.handlers.ApiGatewayHandler
-          action: get_order
-          
-        - name: AddOrder
-          route: /order
-          method: POST
-          controller: tests.handlers.ApiGatewayHandler
-          action: post_order
-        - name: PutOrder
-          route: /order/{id}
-          method: PUT
-          controller: tests.handlers.ApiGatewayHandler
-          action: put_order
-        - name: PatchOrder
-          route: /order/{id}
-          method: PATCH
-          controller: tests.handlers.ApiGatewayHandler
-          action: patch_order
-        - name: DeleteOrder
-          route: /order/{id}
-          method: DELETE
-          controller: tests.handlers.ApiGatewayHandler
-          action: delete_order
+    endpoints: []
 discovery:
     host: localhost
-    port: 8080
+    port: 55656
     path: /microservices
-    endpoints:
-        - name: Discover
-          route: /discover
-          method: GET
-          controller: minos.api_gateway.discovery.handlers.DiscoveryHandlers
-          action: discover
-        - name: Subscribe
-          route: /subscribe
-          method: POST
-          controller: minos.api_gateway.discovery.handlers.DiscoveryHandlers
-          action: subscribe
-        - name: Unsubscribe
-          route: /unsubscribe
-          method: POST
-          controller: minos.api_gateway.discovery.handlers.DiscoveryHandlers
-          action: unsubscribe
-        - name: SystemHealth
-          route: /system/health
-          method: GET
-          controller: minos.api_gateway.discovery.handlers.DiscoveryHandlers
-          action: system_health
+    endpoints: []
     db:
         host: localhost
         port: 6379
