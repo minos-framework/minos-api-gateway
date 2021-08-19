@@ -5,11 +5,8 @@ This file is part of minos framework.
 
 Minos framework can not be copied and/or distributed without the express permission of Clariteia SL.
 """
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
-from .coordinator import (
-    MicroserviceCallCoordinator,
-)
 from .launchers import (
     EntrypointLauncher,
 )

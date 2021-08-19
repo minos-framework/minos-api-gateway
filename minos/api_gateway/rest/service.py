@@ -1,29 +1,33 @@
-# Copyright (C) 2020 Clariteia SL
-#
-# This file is part of minos framework.
-#
-# Minos framework can not be copied and/or distributed without the express
-# permission of Clariteia SL.
+"""minos.api_gateway.rest.service module."""
 
-import typing as t
+import logging
 
 from aiohttp import (
     web,
 )
+from aiomisc.service.aiohttp import (
+    AIOHTTPService,
+)
 
 from minos.api_gateway.common import (
     MinosConfig,
-    RESTService,
+)
+from minos.api_gateway.rest import (
+    handler,
 )
 
+logger = logging.getLogger(__name__)
 
-class ApiGatewayRestService(RESTService):
-    def __init__(self, config: MinosConfig, app: web.Application = web.Application(), **kwds: t.Any):
-        super().__init__(
-            address=config.rest.connection.host,
-            port=config.rest.connection.port,
-            endpoints=config.rest.endpoints,
-            config=config,
-            app=app,
-            **kwds
-        )
+
+class ApiGatewayRestService(AIOHTTPService):
+    def __init__(self, address: str, port: int, config: MinosConfig):
+        self.config = config
+        super().__init__(address, port)
+
+    async def create_application(self) -> web.Application:
+        app = web.Application()
+        app["config"] = self.config
+
+        app.router.add_route("*", "/{endpoint:.*}", handler.orchestrate)
+
+        return app

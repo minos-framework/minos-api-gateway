@@ -1,7 +1,7 @@
-import requests
-from aiohttp import (
-    web,
-)
+"""tests.test_api_gateway.test_rest.service module."""
+
+import unittest
+
 from aiohttp.test_utils import (
     AioHTTPTestCase,
     unittest_run_loop,
@@ -21,95 +21,184 @@ from tests.utils import (
 )
 
 
-class TestRestService(AioHTTPTestCase):
+class TestApiGatewayRestService(AioHTTPTestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
 
     def setUp(self) -> None:
         self.config = MinosConfig(self.CONFIG_FILE_PATH)
-        self.discovery_server = MockServer(
+
+        self.discovery = MockServer(
             host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
         )
-        self.discovery_server.add_json_response(
-            "/discover",
-            {"ip": "localhost", "port": "5568", "name": "order", "status": True, "subscribed": True},
-            methods=("GET",),
+        self.discovery.add_json_response(
+            "/microservices", {"address": "localhost", "port": "5568", "status": True},
         )
 
-        self.order_microservice = MockServer(host="localhost", port=5568)
-        self.order_microservice.add_json_response(
+        self.microservice = MockServer(host="localhost", port=5568)
+        self.microservice.add_json_response(
             "/order/5", "Microservice call correct!!!", methods=("GET", "PUT", "PATCH", "DELETE",)
         )
-        self.order_microservice.add_json_response("/order", "Microservice call correct!!!", methods=("POST",))
+        self.microservice.add_json_response("/order", "Microservice call correct!!!", methods=("POST",))
 
-        self.discovery_server.start()
-        self.order_microservice.start()
+        self.discovery.start()
+        self.microservice.start()
         super().setUp()
 
     def tearDown(self) -> None:
-        self.discovery_server.shutdown_server()
-        self.order_microservice.shutdown_server()
+        self.discovery.shutdown_server()
+        self.microservice.shutdown_server()
         super().tearDown()
 
     async def get_application(self):
         """
         Override the get_app method to return your application.
         """
-        app = web.Application()
-        config = MinosConfig(self.CONFIG_FILE_PATH)
-        rest_interface = ApiGatewayRestService(config=config, app=app)
-
-        return await rest_interface.create_application()
-
-    @unittest_run_loop
-    async def test_discovery_up_and_running(self):
-        response = requests.get(
-            "http://%s:%s/discover" % (self.config.discovery.connection.host, self.config.discovery.connection.port,)
+        rest_service = ApiGatewayRestService(
+            address=self.config.rest.connection.host, port=self.config.rest.connection.port, config=self.config
         )
 
-        self.assertEqual(200, response.status_code)
-
-    @unittest_run_loop
-    async def test_microservice_up_and_running(self):
-        response = requests.get("http://localhost:5568/order/5")
-
-        self.assertEqual(200, response.status_code)
+        return await rest_service.create_application()
 
     @unittest_run_loop
     async def test_get(self):
-        url = "/order/5"
-        resp = await self.client.request("GET", url)
-        assert resp.status == 200
-        text = await resp.text()
-        self.assertTrue("Microservice call correct!!!" in text)
+        url = "/order/5?verb=GET&path=12324"
+        response = await self.client.request("GET", url)
+
+        self.assertEqual(200, response.status)
+        self.assertIn("Microservice call correct!!!", await response.text())
 
     @unittest_run_loop
     async def test_post(self):
         url = "/order"
-        resp = await self.client.request("POST", url)
-        assert resp.status == 200
-        text = await resp.text()
-        self.assertTrue("Microservice call correct!!!" in text)
+        response = await self.client.request("POST", url)
+
+        self.assertEqual(200, response.status)
+        self.assertIn("Microservice call correct!!!", await response.text())
 
     @unittest_run_loop
     async def test_put(self):
         url = "/order/5"
-        resp = await self.client.request("PUT", url)
-        assert resp.status == 200
-        text = await resp.text()
-        self.assertTrue("Microservice call correct!!!" in text)
+        response = await self.client.request("PUT", url)
+
+        self.assertEqual(200, response.status)
+        self.assertIn("Microservice call correct!!!", await response.text())
 
     @unittest_run_loop
     async def test_patch(self):
         url = "/order/5"
-        resp = await self.client.request("PATCH", url)
-        assert resp.status == 200
-        text = await resp.text()
-        self.assertTrue("Microservice call correct!!!" in text)
+        response = await self.client.request("PATCH", url)
+
+        self.assertEqual(200, response.status)
+        self.assertIn("Microservice call correct!!!", await response.text())
 
     @unittest_run_loop
     async def test_delete(self):
         url = "/order/5"
-        resp = await self.client.request("DELETE", url)
-        assert resp.status == 200
-        text = await resp.text()
-        self.assertTrue("Microservice call correct!!!" in text)
+        response = await self.client.request("DELETE", url)
+        self.assertEqual(200, response.status)
+        self.assertIn("Microservice call correct!!!", await response.text())
+
+
+class TestApiGatewayRestServiceFailedDiscovery(AioHTTPTestCase):
+    CONFIG_FILE_PATH = BASE_PATH / "config.yml"
+
+    def setUp(self) -> None:
+        self.config = MinosConfig(self.CONFIG_FILE_PATH)
+
+        self.discovery = MockServer(
+            host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
+        )
+
+        self.discovery.start()
+        super().setUp()
+
+    def tearDown(self) -> None:
+        self.discovery.shutdown_server()
+        super().tearDown()
+
+    async def get_application(self):
+        """
+        Override the get_app method to return your application.
+        """
+        rest_service = ApiGatewayRestService(
+            address=self.config.rest.connection.host, port=self.config.rest.connection.port, config=self.config
+        )
+
+        return await rest_service.create_application()
+
+    @unittest_run_loop
+    async def test_get(self):
+        url = "/order/5?verb=GET&path=12324"
+        response = await self.client.request("GET", url)
+
+        self.assertEqual(502, response.status)
+        self.assertIn("The discovery response is not okay.", await response.text())
+
+
+class TestApiGatewayRestServiceUnreachableDiscovery(AioHTTPTestCase):
+    CONFIG_FILE_PATH = BASE_PATH / "config.yml"
+
+    def setUp(self) -> None:
+        self.config = MinosConfig(self.CONFIG_FILE_PATH)
+        super().setUp()
+
+    async def get_application(self):
+        """
+        Override the get_app method to return your application.
+        """
+        rest_service = ApiGatewayRestService(
+            address=self.config.rest.connection.host, port=self.config.rest.connection.port, config=self.config
+        )
+
+        return await rest_service.create_application()
+
+    @unittest_run_loop
+    async def test_get(self):
+        url = "/order/5?verb=GET&path=12324"
+        response = await self.client.request("GET", url)
+
+        self.assertEqual(504, response.status)
+        self.assertIn("The discovery is not available.", await response.text())
+
+
+class TestApiGatewayRestServiceUnreachableMicroservice(AioHTTPTestCase):
+    CONFIG_FILE_PATH = BASE_PATH / "config.yml"
+
+    def setUp(self) -> None:
+        self.config = MinosConfig(self.CONFIG_FILE_PATH)
+
+        self.discovery = MockServer(
+            host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
+        )
+        self.discovery.add_json_response(
+            "/microservices", {"address": "localhost", "port": "5568", "status": True},
+        )
+
+        self.discovery.start()
+        super().setUp()
+
+    def tearDown(self) -> None:
+        self.discovery.shutdown_server()
+        super().tearDown()
+
+    async def get_application(self):
+        """
+        Override the get_app method to return your application.
+        """
+        rest_service = ApiGatewayRestService(
+            address=self.config.rest.connection.host, port=self.config.rest.connection.port, config=self.config
+        )
+
+        return await rest_service.create_application()
+
+    @unittest_run_loop
+    async def test_get(self):
+        url = "/order/5?verb=GET&path=12324"
+        response = await self.client.request("GET", url)
+
+        self.assertEqual(503, response.status)
+        self.assertIn("The requested endpoint is not available.", await response.text())
+
+
+if __name__ == "__main__":
+    unittest.main()
