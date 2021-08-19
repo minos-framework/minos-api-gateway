@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>minos.api_gateway.rest.service module &mdash; API Gateway 0.0.2 documentation</title>
+  <title>minos.api_gateway.rest.service module &mdash; API Gateway 0.0.3 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.0.2
+                0.0.3
               </div>
             
           
@@ -165,15 +165,15 @@
             
   <div class="section" id="module-minos.api_gateway.rest.service">
 <span id="minos-api-gateway-rest-service-module"></span><h1>minos.api_gateway.rest.service module<a class="headerlink" href="#module-minos.api_gateway.rest.service" title="Permalink to this headline">¶</a></h1>
+<p>minos.api_gateway.rest.service module.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="minos.api_gateway.rest.service.ApiGatewayRestService">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.service.</span></span><span class="sig-name descname"><span class="pre">ApiGatewayRestService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">config</span></em>, <em class="sig-param"><span class="pre">app=&lt;Application</span> <span class="pre">0x7f6af10d82e0&gt;</span></em>, <em class="sig-param"><span class="pre">**kwds</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/service.html#ApiGatewayRestService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.service.ApiGatewayRestService" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">minos.api_gateway.common.rest.service.RESTService</span></code></p>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.service.</span></span><span class="sig-name descname"><span class="pre">ApiGatewayRestService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/service.html#ApiGatewayRestService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.service.ApiGatewayRestService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">aiomisc.service.aiohttp.AIOHTTPService</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="minos.api_gateway.rest.service.ApiGatewayRestService.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">config</span></em>, <em class="sig-param"><span class="pre">app=&lt;Application</span> <span class="pre">0x7f6af10d82e0&gt;</span></em>, <em class="sig-param"><span class="pre">**kwds</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/service.html#ApiGatewayRestService.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.service.ApiGatewayRestService.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/service.html#ApiGatewayRestService.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.service.ApiGatewayRestService.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="minos.api_gateway.rest.service.ApiGatewayRestService.context">
@@ -187,8 +187,13 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="minos.api_gateway.rest.service.ApiGatewayRestService.create_application">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">create_application</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#minos.api_gateway.rest.service.ApiGatewayRestService.create_application" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">create_application</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/service.html#ApiGatewayRestService.create_application"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.service.ApiGatewayRestService.create_application" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">aiohttp.web_app.Application</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="minos.api_gateway.rest.service.ApiGatewayRestService.create_site">

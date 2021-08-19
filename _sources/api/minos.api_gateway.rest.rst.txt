@@ -13,6 +13,6 @@ Submodules
    :maxdepth: 4
 
    minos.api_gateway.rest.cli
-   minos.api_gateway.rest.coordinator
+   minos.api_gateway.rest.handler
    minos.api_gateway.rest.launchers
    minos.api_gateway.rest.service
