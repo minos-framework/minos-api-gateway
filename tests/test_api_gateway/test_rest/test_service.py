@@ -72,7 +72,7 @@ class TestApiGatewayRestService(AioHTTPTestCase):
         url = "/order"
         response = await self.client.request("POST", url)
 
-        self.assertEqual(200, response.status)
+        self.assertEqual(300, response.status)
         self.assertIn("Microservice call correct!!!", await response.text())
 
     @unittest_run_loop
