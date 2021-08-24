@@ -7,10 +7,18 @@ from aiohttp.test_utils import (
     unittest_run_loop,
 )
 
-from minos.api_gateway.common import MinosConfig
-from minos.api_gateway.rest import ApiGatewayRestService
-from tests.mock_servers.server import MockServer
-from tests.utils import BASE_PATH
+from minos.api_gateway.common import (
+    MinosConfig,
+)
+from minos.api_gateway.rest import (
+    ApiGatewayRestService,
+)
+from tests.mock_servers.server import (
+    MockServer,
+)
+from tests.utils import (
+    BASE_PATH,
+)
 
 
 class TestApiGatewayRestService(AioHTTPTestCase):
