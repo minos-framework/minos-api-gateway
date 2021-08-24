@@ -34,6 +34,7 @@ python = "^3.9"
 minos-apigateway-common = "^0.0.4"
 typer = "^0.3.2"
 cached-property = "^1.5.2"
+aiohttp-middlewares = "^1.1.0"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b"
