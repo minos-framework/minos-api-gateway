@@ -7,18 +7,10 @@ from aiohttp.test_utils import (
     unittest_run_loop,
 )
 
-from minos.api_gateway.common import (
-    MinosConfig,
-)
-from minos.api_gateway.rest import (
-    ApiGatewayRestService,
-)
-from tests.mock_servers.server import (
-    MockServer,
-)
-from tests.utils import (
-    BASE_PATH,
-)
+from minos.api_gateway.common import MinosConfig
+from minos.api_gateway.rest import ApiGatewayRestService
+from tests.mock_servers.server import MockServer
+from tests.utils import BASE_PATH
 
 
 class TestApiGatewayRestService(AioHTTPTestCase):
@@ -242,10 +234,10 @@ class TestApiGatewayCORS(AioHTTPTestCase):
     async def test_cors(self):
         url = "/order/5?verb=GET&path=12324"
         headers = {
-            'Origin': 'https://client.example.com',
-            'Host': 'server.example.com',
-            'Access-Control-Request-Method': 'GET',
-            'Access-Control-Request-Headers': 'X-Client-Header',
+            "Origin": "https://client.example.com",
+            "Host": "server.example.com",
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "X-Client-Header",
         }
 
         response = await self.client.get(url, headers=headers)
