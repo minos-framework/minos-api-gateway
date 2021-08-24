@@ -242,10 +242,10 @@ class TestApiGatewayCORS(AioHTTPTestCase):
     async def test_cors(self):
         url = "/order/5?verb=GET&path=12324"
         headers = {
-            'Origin': 'https://client.example.com',
-            'Host': 'server.example.com',
-            'Access-Control-Request-Method': 'GET',
-            'Access-Control-Request-Headers': 'X-Client-Header',
+            "Origin": "https://client.example.com",
+            "Host": "server.example.com",
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "X-Client-Header",
         }
 
         response = await self.client.get(url, headers=headers)
