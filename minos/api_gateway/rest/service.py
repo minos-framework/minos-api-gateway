@@ -5,6 +5,9 @@ import logging
 from aiohttp import (
     web,
 )
+from aiohttp_middlewares import (
+    cors_middleware,
+)
 from aiomisc.service.aiohttp import (
     AIOHTTPService,
 )
@@ -25,7 +28,12 @@ class ApiGatewayRestService(AIOHTTPService):
         super().__init__(address, port)
 
     async def create_application(self) -> web.Application:
-        app = web.Application()
+        middlewares = list()
+        if self.config.cors.enabled:
+            middlewares = [cors_middleware(allow_all=True)]
+
+        app = web.Application(middlewares=middlewares)
+
         app["config"] = self.config
 
         app.router.add_route("*", "/{endpoint:.*}", handler.orchestrate)
