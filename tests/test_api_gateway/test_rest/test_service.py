@@ -1,12 +1,15 @@
 """tests.test_api_gateway.test_rest.service module."""
 
 import unittest
-
+from unittest import (
+    mock,
+)
 from aiohttp.test_utils import (
     AioHTTPTestCase,
     unittest_run_loop,
 )
-
+import os
+import attr
 from minos.api_gateway.common import (
     MinosConfig,
 )
@@ -18,6 +21,13 @@ from tests.mock_servers.server import (
 )
 from tests.utils import (
     BASE_PATH,
+)
+from aiohttp_middlewares.cors import (
+    ACCESS_CONTROL_ALLOW_HEADERS,
+    ACCESS_CONTROL_ALLOW_METHODS,
+    ACCESS_CONTROL_ALLOW_ORIGIN,
+    DEFAULT_ALLOW_HEADERS,
+    DEFAULT_ALLOW_METHODS,
 )
 
 
@@ -202,7 +212,10 @@ class TestApiGatewayRestServiceUnreachableMicroservice(AioHTTPTestCase):
 
 class TestApiGatewayCORS(AioHTTPTestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
+    TEST_DENIED_ORIGIN = "https://www.google.com"
+    TEST_ORIGIN = "http://localhost:3000"
 
+    @mock.patch.dict(os.environ, {"API_GATEWAY_CORS_ENABLED": "true"})
     def setUp(self) -> None:
         self.config = MinosConfig(self.CONFIG_FILE_PATH)
 
@@ -238,20 +251,46 @@ class TestApiGatewayCORS(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
+    @staticmethod
+    def check_allow_origin(
+        response,
+        origin,
+        *,
+        allow_headers=DEFAULT_ALLOW_HEADERS,
+        allow_methods=DEFAULT_ALLOW_METHODS,
+    ):
+        assert response.headers[ACCESS_CONTROL_ALLOW_ORIGIN] == origin
+        if allow_headers:
+            assert response.headers[ACCESS_CONTROL_ALLOW_HEADERS] == ", ".join(
+                allow_headers
+            )
+        if allow_methods:
+            assert response.headers[ACCESS_CONTROL_ALLOW_METHODS] == ", ".join(
+                allow_methods
+            )
+
     @unittest_run_loop
-    async def test_cors(self):
+    async def test_cors_enabled(self):
+        method = "GET"
+        extra_headers = {}
+        expected_origin = "*"
+        expected_allow_headers = None
+        expected_allow_methods = None
         url = "/order/5?verb=GET&path=12324"
-        headers = {
-            "Origin": "https://client.example.com",
-            "Host": "server.example.com",
-            "Access-Control-Request-Method": "GET",
-            "Access-Control-Request-Headers": "X-Client-Header",
-        }
 
-        response = await self.client.get(url, headers=headers)
+        kwargs = {}
+        if expected_allow_headers is not attr.NOTHING:
+            kwargs["allow_headers"] = expected_allow_headers
+        if expected_allow_methods is not attr.NOTHING:
+            kwargs["allow_methods"] = expected_allow_methods
 
-        self.assertEqual(200, response.status)
-        self.assertIn("Microservice call correct!!!", await response.text())
+        self.check_allow_origin(
+            await self.client.request(
+                method, url, headers={"Origin": self.TEST_ORIGIN, **extra_headers}
+            ),
+            expected_origin,
+            **kwargs,
+        )
 
 
 if __name__ == "__main__":

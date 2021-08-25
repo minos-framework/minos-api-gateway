@@ -12,5 +12,5 @@ discovery:
         port: 6379
         password:
 cors:
-  enabled: true
+  enabled: false
 
