@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>minos.api_gateway.rest.service &mdash; API Gateway 0.0.3 documentation</title>
+  <title>minos.api_gateway.rest.service &mdash; API Gateway 0.0.4 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.0.3
+                0.0.4
               </div>
             
           
@@ -169,6 +169,9 @@
 <span class="kn">from</span> <span class="nn">aiohttp</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">web</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">aiohttp_middlewares</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">cors_middleware</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">aiomisc.service.aiohttp</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">AIOHTTPService</span><span class="p">,</span>
 <span class="p">)</span>
@@ -189,7 +192,12 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ApiGatewayRestService.create_application"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.service.html#minos.api_gateway.rest.service.ApiGatewayRestService.create_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_application</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">:</span>
-        <span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">()</span>
+        <span class="n">middlewares</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">cors</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+            <span class="n">middlewares</span> <span class="o">=</span> <span class="p">[</span><span class="n">cors_middleware</span><span class="p">(</span><span class="n">allow_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">(</span><span class="n">middlewares</span><span class="o">=</span><span class="n">middlewares</span><span class="p">)</span>
+
         <span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span>
 
         <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;/{endpoint:.*}&quot;</span><span class="p">,</span> <span class="n">handler</span><span class="o">.</span><span class="n">orchestrate</span><span class="p">)</span>
