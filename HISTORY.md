@@ -15,5 +15,6 @@
 * Improve request forwarding to microservices.
 * Fix bug related with unnecessary `json` casting.
 
-## 0.0.4 (2021-08-54)
+## 0.0.4 (2021-08-25)
+
 * Add support to `CORS`.
