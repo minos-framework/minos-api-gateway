@@ -1,23 +1,35 @@
 """tests.test_api_gateway.test_rest.service module."""
 
+import os
 import unittest
-from unittest import mock
+from unittest import (
+    mock,
+)
+
+import attr
 from aiohttp.test_utils import (
     AioHTTPTestCase,
     unittest_run_loop,
 )
-import os
-import attr
-from minos.api_gateway.common import MinosConfig
-from minos.api_gateway.rest import ApiGatewayRestService
-from tests.mock_servers.server import MockServer
-from tests.utils import BASE_PATH
 from aiohttp_middlewares.cors import (
     ACCESS_CONTROL_ALLOW_HEADERS,
     ACCESS_CONTROL_ALLOW_METHODS,
     ACCESS_CONTROL_ALLOW_ORIGIN,
     DEFAULT_ALLOW_HEADERS,
     DEFAULT_ALLOW_METHODS,
+)
+
+from minos.api_gateway.common import (
+    MinosConfig,
+)
+from minos.api_gateway.rest import (
+    ApiGatewayRestService,
+)
+from tests.mock_servers.server import (
+    MockServer,
+)
+from tests.utils import (
+    BASE_PATH,
 )
 
 
