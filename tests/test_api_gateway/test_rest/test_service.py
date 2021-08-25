@@ -1,15 +1,24 @@
 """tests.test_api_gateway.test_rest.service module."""
 
+import os
 import unittest
 from unittest import (
     mock,
 )
+
+import attr
 from aiohttp.test_utils import (
     AioHTTPTestCase,
     unittest_run_loop,
 )
-import os
-import attr
+from aiohttp_middlewares.cors import (
+    ACCESS_CONTROL_ALLOW_HEADERS,
+    ACCESS_CONTROL_ALLOW_METHODS,
+    ACCESS_CONTROL_ALLOW_ORIGIN,
+    DEFAULT_ALLOW_HEADERS,
+    DEFAULT_ALLOW_METHODS,
+)
+
 from minos.api_gateway.common import (
     MinosConfig,
 )
@@ -21,13 +30,6 @@ from tests.mock_servers.server import (
 )
 from tests.utils import (
     BASE_PATH,
-)
-from aiohttp_middlewares.cors import (
-    ACCESS_CONTROL_ALLOW_HEADERS,
-    ACCESS_CONTROL_ALLOW_METHODS,
-    ACCESS_CONTROL_ALLOW_ORIGIN,
-    DEFAULT_ALLOW_HEADERS,
-    DEFAULT_ALLOW_METHODS,
 )
 
 
@@ -253,21 +255,13 @@ class TestApiGatewayCORS(AioHTTPTestCase):
 
     @staticmethod
     def check_allow_origin(
-        response,
-        origin,
-        *,
-        allow_headers=DEFAULT_ALLOW_HEADERS,
-        allow_methods=DEFAULT_ALLOW_METHODS,
+        response, origin, *, allow_headers=DEFAULT_ALLOW_HEADERS, allow_methods=DEFAULT_ALLOW_METHODS,
     ):
         assert response.headers[ACCESS_CONTROL_ALLOW_ORIGIN] == origin
         if allow_headers:
-            assert response.headers[ACCESS_CONTROL_ALLOW_HEADERS] == ", ".join(
-                allow_headers
-            )
+            assert response.headers[ACCESS_CONTROL_ALLOW_HEADERS] == ", ".join(allow_headers)
         if allow_methods:
-            assert response.headers[ACCESS_CONTROL_ALLOW_METHODS] == ", ".join(
-                allow_methods
-            )
+            assert response.headers[ACCESS_CONTROL_ALLOW_METHODS] == ", ".join(allow_methods)
 
     @unittest_run_loop
     async def test_cors_enabled(self):
@@ -285,9 +279,7 @@ class TestApiGatewayCORS(AioHTTPTestCase):
             kwargs["allow_methods"] = expected_allow_methods
 
         self.check_allow_origin(
-            await self.client.request(
-                method, url, headers={"Origin": self.TEST_ORIGIN, **extra_headers}
-            ),
+            await self.client.request(method, url, headers={"Origin": self.TEST_ORIGIN, **extra_headers}),
             expected_origin,
             **kwargs,
         )
