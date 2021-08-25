@@ -69,7 +69,16 @@ async def call(address: str, port: int, original_req: web.Request, **kwargs) -> 
     :return: The web response to be retrieved to the client.
     """
 
-    headers = original_req.headers
+    headers = original_req.headers.copy()
+    if "Authorization" in headers and "Bearer" in headers["Authorization"]:
+        parts = headers["Authorization"].split()
+        if len(parts) == 2:
+            headers["User"] = parts[1]
+        else:
+            headers["User"] = "None"
+    else:
+        headers["User"] = "None"
+
     url = original_req.url.with_scheme("http").with_host(address).with_port(port)
     method = original_req.method
     content = await original_req.text()
