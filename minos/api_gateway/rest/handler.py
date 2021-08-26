@@ -3,6 +3,7 @@
 import logging
 from typing import (
     Any,
+    Optional,
 )
 
 from aiohttp import (
@@ -10,6 +11,9 @@ from aiohttp import (
     ClientResponse,
     ClientSession,
     web,
+)
+from multidict._multidict import (
+    CIMultiDict,
 )
 from yarl import (
     URL,
@@ -28,8 +32,24 @@ async def orchestrate(request: web.Request) -> web.Response:
 
     discovery_data = await discover(discovery_host, int(discovery_port), "/microservices", verb, url)
 
-    microservice_response = await call(**discovery_data, original_req=request)
+    user = await get_user(request)
+
+    microservice_response = await call(**discovery_data, original_req=request, user=user)
     return microservice_response
+
+
+async def get_user(request):
+    user = "Anonymous"
+    token = await get_token(request)
+    if token:
+        try:
+            is_authenticated = await authenticate("localhost", "8082", "GET", "token", request.headers.copy())
+        except web.HTTPServiceUnavailable:
+            pass
+        else:
+            if is_authenticated:
+                user = token
+    return user
 
 
 async def discover(host: str, port: int, path: str, verb: str, endpoint: str) -> dict[str, Any]:
@@ -59,25 +79,19 @@ async def discover(host: str, port: int, path: str, verb: str, endpoint: str) ->
 
 
 # noinspection PyUnusedLocal
-async def call(address: str, port: int, original_req: web.Request, **kwargs) -> web.Response:
+async def call(address: str, port: int, original_req: web.Request, user: str, **kwargs) -> web.Response:
     """Call microservice (redirect the original call)
 
     :param address: The ip of the microservices.
     :param port: The port of the microservice.
     :param original_req: The original request.
     :param kwargs: Additional named arguments.
+    :param user: User that makes the request
     :return: The web response to be retrieved to the client.
     """
 
     headers = original_req.headers.copy()
-    if "Authorization" in headers and "Bearer" in headers["Authorization"]:
-        parts = headers["Authorization"].split()
-        if len(parts) == 2:
-            headers["User"] = parts[1]
-        else:
-            headers["User"] = "None"
-    else:
-        headers["User"] = "None"
+    headers["User"] = user
 
     url = original_req.url.with_scheme("http").with_host(address).with_port(port)
     method = original_req.method
@@ -86,8 +100,8 @@ async def call(address: str, port: int, original_req: web.Request, **kwargs) -> 
     logger.info(f"Redirecting {method!r} request to {url!r}...")
 
     try:
-        async with ClientSession(headers=headers) as session:
-            async with session.request(method=method, url=url, data=content) as response:
+        async with ClientSession() as session:
+            async with session.request(headers=headers, method=method, url=url, data=content) as response:
                 return await _clone_response(response)
     except ClientConnectorError:
         raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
@@ -98,3 +112,26 @@ async def _clone_response(response: ClientResponse) -> web.Response:
     return web.Response(
         body=await response.read(), status=response.status, reason=response.reason, headers=response.headers,
     )
+
+
+async def authenticate(address: str, port: str, method: str, path: str, authorization_headers: CIMultiDict) -> bool:
+    authentication_url = URL(f"http://{address}:{port}/{path}")
+    authentication_method = method
+    logger.info("Authenticating request...")
+
+    try:
+        async with ClientSession(headers=authorization_headers) as session:
+            async with session.request(method=authentication_method, url=authentication_url) as response:
+                return response.ok
+    except ClientConnectorError:
+        raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
+
+
+async def get_token(request: web.Request) -> Optional[str]:
+    headers = request.headers
+    if "Authorization" in headers and "Bearer" in headers["Authorization"]:
+        parts = headers["Authorization"].split()
+        if len(parts) == 2:
+            return parts[1]
+
+    return None
