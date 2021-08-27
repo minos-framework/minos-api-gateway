@@ -3,7 +3,6 @@
 import logging
 from typing import (
     Any,
-    Optional,
 )
 
 from aiohttp import (
@@ -18,6 +17,13 @@ from multidict._multidict import (
 from yarl import (
     URL,
 )
+
+from minos.api_gateway.rest.exceptions import (
+    InvalidAuthenticationException,
+    NoTokenException,
+)
+
+ANONYMOUS = "Anonymous"
 
 logger = logging.getLogger(__name__)
 
@@ -38,18 +44,21 @@ async def orchestrate(request: web.Request) -> web.Response:
     return microservice_response
 
 
-async def get_user(request):
-    user = "Anonymous"
-    token = await get_token(request)
-    if token:
+async def get_user(request) -> str:
+    try:
+        await get_token(request)
+    except NoTokenException:
+        return ANONYMOUS
+    else:
         try:
-            is_authenticated = await authenticate("localhost", "8082", "GET", "token", request.headers.copy())
-        except web.HTTPServiceUnavailable:
-            pass
+            jwt_payload = await authenticate("localhost", "8082", "POST", "token", request.headers.copy())
+        except (web.HTTPServiceUnavailable, InvalidAuthenticationException):
+            return ANONYMOUS
         else:
-            if is_authenticated:
-                user = token
-    return user
+            if "sub" in jwt_payload:
+                return jwt_payload["sub"]
+            else:
+                return ANONYMOUS
 
 
 async def discover(host: str, port: int, path: str, verb: str, endpoint: str) -> dict[str, Any]:
@@ -114,7 +123,9 @@ async def _clone_response(response: ClientResponse) -> web.Response:
     )
 
 
-async def authenticate(address: str, port: str, method: str, path: str, authorization_headers: CIMultiDict) -> bool:
+async def authenticate(
+    address: str, port: str, method: str, path: str, authorization_headers: CIMultiDict
+) -> dict[str, str]:
     authentication_url = URL(f"http://{address}:{port}/{path}")
     authentication_method = method
     logger.info("Authenticating request...")
@@ -122,16 +133,21 @@ async def authenticate(address: str, port: str, method: str, path: str, authoriz
     try:
         async with ClientSession(headers=authorization_headers) as session:
             async with session.request(method=authentication_method, url=authentication_url) as response:
-                return response.ok
+                if response.ok:
+                    return await response.json()
+                else:
+                    raise InvalidAuthenticationException
     except ClientConnectorError:
         raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
+    except web.HTTPError:
+        raise InvalidAuthenticationException
 
 
-async def get_token(request: web.Request) -> Optional[str]:
+async def get_token(request: web.Request) -> str:
     headers = request.headers
     if "Authorization" in headers and "Bearer" in headers["Authorization"]:
         parts = headers["Authorization"].split()
         if len(parts) == 2:
             return parts[1]
 
-    return None
+    raise NoTokenException
