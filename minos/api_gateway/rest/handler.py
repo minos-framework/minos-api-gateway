@@ -49,7 +49,7 @@ async def get_user(request) -> str:
     else:
         try:
             user_uuid = await authenticate("localhost", "8082", "POST", "token", dict(request.headers.copy()))
-        except (web.HTTPServiceUnavailable, InvalidAuthenticationException):
+        except InvalidAuthenticationException:
             return ANONYMOUS
         else:
             return user_uuid
@@ -130,9 +130,7 @@ async def authenticate(address: str, port: str, method: str, path: str, authoriz
                     return jwt_payload["sub"]
                 else:
                     raise InvalidAuthenticationException
-    except ClientConnectorError:
-        raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
-    except web.HTTPError:
+    except (ClientConnectorError, web.HTTPError):
         raise InvalidAuthenticationException
 
 
