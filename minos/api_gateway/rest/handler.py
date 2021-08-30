@@ -48,14 +48,11 @@ async def get_user(request) -> str:
         return ANONYMOUS
     else:
         try:
-            jwt_payload = await authenticate("localhost", "8082", "POST", "token", dict(request.headers.copy()))
+            user_uuid = await authenticate("localhost", "8082", "POST", "token", dict(request.headers.copy()))
         except (web.HTTPServiceUnavailable, InvalidAuthenticationException):
             return ANONYMOUS
         else:
-            if "sub" in jwt_payload:
-                return jwt_payload["sub"]
-            else:
-                return ANONYMOUS
+            return user_uuid
 
 
 async def discover(host: str, port: int, path: str, verb: str, endpoint: str) -> dict[str, Any]:
@@ -120,9 +117,7 @@ async def _clone_response(response: ClientResponse) -> web.Response:
     )
 
 
-async def authenticate(
-    address: str, port: str, method: str, path: str, authorization_headers: dict[str, str]
-) -> dict[str, str]:
+async def authenticate(address: str, port: str, method: str, path: str, authorization_headers: dict[str, str]) -> str:
     authentication_url = URL(f"http://{address}:{port}/{path}")
     authentication_method = method
     logger.info("Authenticating request...")
@@ -131,7 +126,8 @@ async def authenticate(
         async with ClientSession(headers=authorization_headers) as session:
             async with session.request(method=authentication_method, url=authentication_url) as response:
                 if response.ok:
-                    return await response.json()
+                    jwt_payload = await response.json()
+                    return jwt_payload["sub"]
                 else:
                     raise InvalidAuthenticationException
     except ClientConnectorError:
