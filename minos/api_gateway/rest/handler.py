@@ -11,9 +11,6 @@ from aiohttp import (
     ClientSession,
     web,
 )
-from multidict._multidict import (
-    CIMultiDict,
-)
 from yarl import (
     URL,
 )
@@ -51,7 +48,7 @@ async def get_user(request) -> str:
         return ANONYMOUS
     else:
         try:
-            jwt_payload = await authenticate("localhost", "8082", "POST", "token", request.headers.copy())
+            jwt_payload = await authenticate("localhost", "8082", "POST", "token", dict(request.headers.copy()))
         except (web.HTTPServiceUnavailable, InvalidAuthenticationException):
             return ANONYMOUS
         else:
@@ -124,7 +121,7 @@ async def _clone_response(response: ClientResponse) -> web.Response:
 
 
 async def authenticate(
-    address: str, port: str, method: str, path: str, authorization_headers: CIMultiDict
+    address: str, port: str, method: str, path: str, authorization_headers: dict[str, str]
 ) -> dict[str, str]:
     authentication_url = URL(f"http://{address}:{port}/{path}")
     authentication_method = method
