@@ -2,6 +2,9 @@ import os
 from unittest import (
     mock,
 )
+from uuid import (
+    uuid4,
+)
 
 from aiohttp.test_utils import (
     AioHTTPTestCase,
@@ -43,7 +46,7 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
         self.microservice.add_json_response("/order", "Microservice call correct!!!", methods=("POST",))
 
         self.authentication_service = MockServer(host="localhost", port=8082)
-        self.authentication_service.add_json_response("/token", "", methods=("GET",))
+        self.authentication_service.add_json_response("/token", {"sub": uuid4()}, methods=("POST",))
 
         self.discovery.start()
         self.microservice.start()
@@ -70,6 +73,7 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
     async def test_auth_headers(self):
         url = "/order"
         headers = {"Authorization": "Bearer test_token"}
+
         response = await self.client.request("POST", url, headers=headers)
 
         self.assertEqual(200, response.status)

@@ -48,7 +48,8 @@ async def get_user(request) -> str:
         return ANONYMOUS
     else:
         try:
-            user_uuid = await authenticate("localhost", "8082", "POST", "token", dict(request.headers.copy()))
+            original_headers = dict(request.headers.copy())
+            user_uuid = await authenticate("localhost", "8082", "POST", "token", original_headers)
         except InvalidAuthenticationException:
             return ANONYMOUS
         else:
