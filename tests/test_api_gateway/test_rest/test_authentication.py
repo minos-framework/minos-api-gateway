@@ -22,7 +22,7 @@ from tests.utils import (
 )
 
 
-class TestApiGatewayCORS(AioHTTPTestCase):
+class TestApiGatewayAuth(AioHTTPTestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
 
     @mock.patch.dict(os.environ, {"API_GATEWAY_CORS_ENABLED": "true"})
