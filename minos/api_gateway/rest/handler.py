@@ -143,7 +143,7 @@ async def authenticate(host: str, port: str, method: str, path: str, authorizati
         async with ClientSession(headers=authorization_headers) as session:
             async with session.request(method=authentication_method, url=authentication_url) as response:
                 if not response.ok:
-                    raise web.HTTPUnauthorized(text="The given does not have authorization to be forwarded.")
+                    raise web.HTTPUnauthorized(text="The given request does not have authorization to be forwarded.")
 
                 payload = await response.json()
                 return payload["sub"]

@@ -194,7 +194,7 @@ class TestAuthFailed(AioHTTPTestCase):
         response = await self.client.request("POST", url, headers=headers)
 
         self.assertEqual(401, response.status)
-        self.assertIn("The given does not have authorization to be forwarded", await response.text())
+        self.assertIn("The given request does not have authorization to be forwarded", await response.text())
 
 
 class TestAuthUnreachable(AioHTTPTestCase):
