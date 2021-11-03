@@ -1,0 +1,7 @@
+minos.api\_gateway.rest.config module
+=====================================
+
+.. automodule:: minos.api_gateway.rest.config
+   :members:
+   :undoc-members:
+   :show-inheritance:

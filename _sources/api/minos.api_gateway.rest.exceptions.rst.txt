@@ -1,0 +1,7 @@
+minos.api\_gateway.rest.exceptions module
+=========================================
+
+.. automodule:: minos.api_gateway.rest.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
