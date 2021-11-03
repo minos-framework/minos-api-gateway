@@ -6,7 +6,6 @@ from .config import (
 from .exceptions import (
     ApiGatewayConfigException,
     ApiGatewayException,
-    InvalidAuthenticationException,
     NoTokenException,
 )
 from .launchers import (
