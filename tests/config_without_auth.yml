@@ -1,0 +1,9 @@
+rest:
+    host: localhost
+    port: 55909
+    cors:
+      enabled: false
+discovery:
+    host: localhost
+    port: 5567
+
