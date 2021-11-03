@@ -1,10 +1,3 @@
-"""
-Copyright (C) 2021 Clariteia SL
-
-This file is part of minos framework.
-
-Minos framework can not be copied and/or distributed without the express permission of Clariteia SL.
-"""
 from pathlib import (
     Path,
 )
@@ -14,13 +7,13 @@ from typing import (
 
 import typer
 
-from minos.api_gateway.common import (
-    MinosConfig,
+from .config import (
+    ApiGatewayConfig,
 )
-from minos.api_gateway.rest.launchers import (
+from .launchers import (
     EntrypointLauncher,
 )
-from minos.api_gateway.rest.service import (
+from .service import (
     ApiGatewayRestService,
 )
 
@@ -36,14 +29,12 @@ def start(
     """Start Api Gateway services."""
 
     try:
-        config = MinosConfig(file_path)
+        config = ApiGatewayConfig(file_path)
     except Exception as exc:
         typer.echo(f"Error loading config: {exc!r}")
         raise typer.Exit(code=1)
 
-    services = (
-        ApiGatewayRestService(address=config.rest.connection.host, port=config.rest.connection.port, config=config),
-    )
+    services = (ApiGatewayRestService(address=config.rest.host, port=config.rest.port, config=config),)
     try:
         EntrypointLauncher(config=config, services=services).launch()
     except Exception as exc:

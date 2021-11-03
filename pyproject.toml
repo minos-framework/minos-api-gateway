@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "minos_apigateway"
-version = "0.0.4"
+version = "0.1.0"
 description = "Python Package containing the main API Gateway implementation used in Minos Microservices."
 readme = "README.md"
 repository = "https://github.com/clariteia/api_gateway"
@@ -31,10 +31,11 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-minos-apigateway-common = "^0.0.5"
 typer = "^0.3.2"
 cached-property = "^1.5.2"
 aiohttp-middlewares = "^1.1.0"
+aiomisc = "^15.2.16"
+PyYAML = "^6.0"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b"
