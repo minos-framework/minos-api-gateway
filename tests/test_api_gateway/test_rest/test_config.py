@@ -49,12 +49,12 @@ class TestApiGatewayConfig(unittest.TestCase):
         self.assertIsInstance(cors.enabled, bool)
         self.assertFalse(cors.enabled)
 
-    @mock.patch.dict(os.environ, {"DISCOVERY_SERVICE_HOST": "::1"})
+    @mock.patch.dict(os.environ, {"API_GATEWAY_DISCOVERY_HOST": "::1"})
     def test_overwrite_with_environment_discovery_host(self):
         config = ApiGatewayConfig(path=self.config_file_path)
         self.assertEqual("::1", config.discovery.host)
 
-    @mock.patch.dict(os.environ, {"DISCOVERY_SERVICE_PORT": "4040"})
+    @mock.patch.dict(os.environ, {"API_GATEWAY_DISCOVERY_PORT": "4040"})
     def test_overwrite_with_environment_discovery_port(self):
         config = ApiGatewayConfig(path=self.config_file_path)
         self.assertEqual(4040, config.discovery.port)

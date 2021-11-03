@@ -27,16 +27,16 @@ _ENVIRONMENT_MAPPER = {
     "rest.host": "API_GATEWAY_REST_HOST",
     "rest.port": "API_GATEWAY_REST_PORT",
     "rest.cors.enabled": "API_GATEWAY_REST_CORS_ENABLED",
-    "discovery.host": "DISCOVERY_SERVICE_HOST",
-    "discovery.port": "DISCOVERY_SERVICE_PORT",
+    "discovery.host": "API_GATEWAY_DISCOVERY_HOST",
+    "discovery.port": "API_GATEWAY_DISCOVERY_PORT",
 }
 
 _PARAMETERIZED_MAPPER = {
     "rest.host": "api_gateway_rest_host",
     "rest.port": "api_gateway_rest_port",
     "rest.cors.enabled": "api_gateway_rest_cors_enabled",
-    "discovery.host": "discovery_service_host",
-    "discovery.port": "discovery_service_port",
+    "discovery.host": "api_gateway_discovery_host",
+    "discovery.port": "api_gateway_discovery_port",
 }
 
 
