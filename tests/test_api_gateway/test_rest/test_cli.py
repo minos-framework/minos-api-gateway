@@ -10,8 +10,8 @@ from typer.testing import (
     CliRunner,
 )
 
-from minos.api_gateway.common import (
-    MinosConfig,
+from minos.api_gateway.rest import (
+    ApiGatewayConfig,
 )
 from minos.api_gateway.rest.cli import (
     app,
@@ -36,7 +36,7 @@ class TestCli(unittest.TestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
 
     def setUp(self):
-        self.config = MinosConfig(self.CONFIG_FILE_PATH)
+        self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
         self.services = ["a", "b", Foo]
         self.launcher = EntrypointLauncher(config=self.config, services=self.services)
 

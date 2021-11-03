@@ -1,6 +1,14 @@
-class InvalidAuthenticationException(Exception):
-    pass
+class ApiGatewayException(Exception):
+    """TODO"""
 
 
-class NoTokenException(Exception):
-    pass
+class InvalidAuthenticationException(ApiGatewayException):
+    """TODO"""
+
+
+class NoTokenException(ApiGatewayException):
+    """TODO"""
+
+
+class ApiGatewayConfigException(ApiGatewayException):
+    """Base config exception."""

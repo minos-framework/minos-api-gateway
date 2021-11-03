@@ -7,10 +7,8 @@ from aiohttp.test_utils import (
     unittest_run_loop,
 )
 
-from minos.api_gateway.common import (
-    MinosConfig,
-)
 from minos.api_gateway.rest import (
+    ApiGatewayConfig,
     ApiGatewayRestService,
 )
 from tests.mock_servers.server import (
@@ -25,7 +23,7 @@ class TestApiGatewayRestService(AioHTTPTestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
 
     def setUp(self) -> None:
-        self.config = MinosConfig(self.CONFIG_FILE_PATH)
+        self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
 
         self.discovery = MockServer(
             host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
@@ -103,7 +101,7 @@ class TestApiGatewayRestServiceFailedDiscovery(AioHTTPTestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
 
     def setUp(self) -> None:
-        self.config = MinosConfig(self.CONFIG_FILE_PATH)
+        self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
 
         self.discovery = MockServer(
             host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
@@ -139,7 +137,7 @@ class TestApiGatewayRestServiceUnreachableDiscovery(AioHTTPTestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
 
     def setUp(self) -> None:
-        self.config = MinosConfig(self.CONFIG_FILE_PATH)
+        self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
         super().setUp()
 
     async def get_application(self):
@@ -165,7 +163,7 @@ class TestApiGatewayRestServiceUnreachableMicroservice(AioHTTPTestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
 
     def setUp(self) -> None:
-        self.config = MinosConfig(self.CONFIG_FILE_PATH)
+        self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
 
         self.discovery = MockServer(
             host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,

@@ -1,5 +1,3 @@
-"""minos.api_gateway.rest.handler module."""
-
 import logging
 from typing import (
     Any,
@@ -15,7 +13,7 @@ from yarl import (
     URL,
 )
 
-from minos.api_gateway.rest.exceptions import (
+from .exceptions import (
     InvalidAuthenticationException,
     NoTokenException,
 )

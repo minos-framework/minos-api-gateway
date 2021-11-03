@@ -2,13 +2,13 @@ from aiohttp import (
     web,
 )
 
-from minos.api_gateway.common import (
-    MinosConfig,
+from minos.api_gateway.rest import (
+    ApiGatewayConfig,
 )
 
 
 class Discovery:
-    def discover(self, request: web.Request, config: MinosConfig, **kwargs):
+    def discover(self, request: web.Request, config: ApiGatewayConfig, **kwargs):
         data = {
             "ip": request.url.host,
             "port": request.url.port,

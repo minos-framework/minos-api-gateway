@@ -1,5 +1,3 @@
-"""minos.api_gateway.rest.service module."""
-
 import logging
 
 from aiohttp import (
@@ -12,18 +10,18 @@ from aiomisc.service.aiohttp import (
     AIOHTTPService,
 )
 
-from minos.api_gateway.common import (
-    MinosConfig,
+from .config import (
+    ApiGatewayConfig,
 )
-from minos.api_gateway.rest import (
-    handler,
+from .handler import (
+    orchestrate,
 )
 
 logger = logging.getLogger(__name__)
 
 
 class ApiGatewayRestService(AIOHTTPService):
-    def __init__(self, address: str, port: int, config: MinosConfig):
+    def __init__(self, address: str, port: int, config: ApiGatewayConfig):
         self.config = config
         super().__init__(address, port)
 
@@ -36,6 +34,6 @@ class ApiGatewayRestService(AIOHTTPService):
 
         app["config"] = self.config
 
-        app.router.add_route("*", "/{endpoint:.*}", handler.orchestrate)
+        app.router.add_route("*", "/{endpoint:.*}", orchestrate)
 
         return app

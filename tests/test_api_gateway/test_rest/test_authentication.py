@@ -11,10 +11,8 @@ from aiohttp.test_utils import (
     unittest_run_loop,
 )
 
-from minos.api_gateway.common import (
-    MinosConfig,
-)
 from minos.api_gateway.rest import (
+    ApiGatewayConfig,
     ApiGatewayRestService,
 )
 from tests.mock_servers.server import (
@@ -30,7 +28,7 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
 
     @mock.patch.dict(os.environ, {"API_GATEWAY_CORS_ENABLED": "true"})
     def setUp(self) -> None:
-        self.config = MinosConfig(self.CONFIG_FILE_PATH)
+        self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
 
         self.discovery = MockServer(
             host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
@@ -102,7 +100,7 @@ class TestAuthUnreachable(AioHTTPTestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
 
     def setUp(self) -> None:
-        self.config = MinosConfig(self.CONFIG_FILE_PATH)
+        self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
 
         self.discovery = MockServer(
             host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
