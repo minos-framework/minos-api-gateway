@@ -51,6 +51,10 @@ class TestApiGatewayConfig(unittest.TestCase):
         self.assertEqual("POST", auth.method)
         self.assertEqual("/token", auth.path)
 
+    def test_config_rest_auth_none(self):
+        config = ApiGatewayConfig(path=BASE_PATH / "config_without_auth.yml")
+        self.assertIsNone(config.rest.auth)
+
     def test_config_discovery(self):
         config = ApiGatewayConfig(path=self.config_file_path)
         discovery = config.discovery
