@@ -18,3 +18,8 @@
 ## 0.0.4 (2021-08-25)
 
 * Add support to `CORS`.
+
+## 0.1.0 (2021-11-03)
+
+* Add support for external Authentication systems based on tokens.
+* Remove `minos-apigateway-common` dependency.
