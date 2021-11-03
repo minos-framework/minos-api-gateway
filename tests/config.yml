@@ -3,6 +3,11 @@ rest:
     port: 55909
     cors:
       enabled: false
+    auth:
+        host: localhost
+        port: 8082
+        method: POST
+        path: /token
 discovery:
     host: localhost
     port: 5567

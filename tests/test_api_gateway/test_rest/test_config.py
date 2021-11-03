@@ -35,19 +35,28 @@ class TestApiGatewayConfig(unittest.TestCase):
         self.assertEqual("localhost", rest.host)
         self.assertEqual(55909, rest.port)
 
+    def test_config_rest_cors(self):
+        config = ApiGatewayConfig(path=self.config_file_path)
+        cors = config.rest.cors
+
+        self.assertIsInstance(cors.enabled, bool)
+        self.assertFalse(cors.enabled)
+
+    def test_config_rest_auth(self):
+        config = ApiGatewayConfig(path=self.config_file_path)
+        auth = config.rest.auth
+
+        self.assertEqual("localhost", auth.host)
+        self.assertEqual(8082, auth.port)
+        self.assertEqual("POST", auth.method)
+        self.assertEqual("/token", auth.path)
+
     def test_config_discovery(self):
         config = ApiGatewayConfig(path=self.config_file_path)
         discovery = config.discovery
 
         self.assertEqual("localhost", discovery.host)
         self.assertEqual(5567, discovery.port)
-
-    def test_config_cors(self):
-        config = ApiGatewayConfig(path=self.config_file_path)
-        cors = config.rest.cors
-
-        self.assertIsInstance(cors.enabled, bool)
-        self.assertFalse(cors.enabled)
 
     @mock.patch.dict(os.environ, {"DISCOVERY_SERVICE_HOST": "::1"})
     def test_overwrite_with_environment_discovery_host(self):
@@ -79,6 +88,34 @@ class TestApiGatewayConfig(unittest.TestCase):
         self.assertIsInstance(cors.enabled, bool)
         self.assertFalse(cors.enabled)
 
+    @mock.patch.dict(os.environ, {"API_GATEWAY_REST_AUTH_HOST": "auth"})
+    def test_overwrite_with_environment_rest_auth_host(self):
+        config = ApiGatewayConfig(path=self.config_file_path)
+        auth = config.rest.auth
+
+        self.assertEqual("auth", auth.host)
+
+    @mock.patch.dict(os.environ, {"API_GATEWAY_REST_AUTH_PORT": "9999"})
+    def test_overwrite_with_environment_rest_auth_port(self):
+        config = ApiGatewayConfig(path=self.config_file_path)
+        auth = config.rest.auth
+
+        self.assertEqual(9999, auth.port)
+
+    @mock.patch.dict(os.environ, {"API_GATEWAY_REST_AUTH_METHOD": "GET"})
+    def test_overwrite_with_environment_rest_auth_method(self):
+        config = ApiGatewayConfig(path=self.config_file_path)
+        auth = config.rest.auth
+
+        self.assertEqual("GET", auth.method)
+
+    @mock.patch.dict(os.environ, {"API_GATEWAY_REST_AUTH_PATH": "/auth"})
+    def test_overwrite_with_environment_rest_auth_path(self):
+        config = ApiGatewayConfig(path=self.config_file_path)
+        auth = config.rest.auth
+
+        self.assertEqual("/auth", auth.path)
+
     def test_overwrite_with_parameter(self):
         config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_host="::1")
         rest = config.rest
@@ -90,6 +127,30 @@ class TestApiGatewayConfig(unittest.TestCase):
 
         self.assertIsInstance(cors.enabled, bool)
         self.assertFalse(cors.enabled)
+
+    def test_overwrite_with_parameter_rest_auth_host(self):
+        config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_auth_host="auth")
+        auth = config.rest.auth
+
+        self.assertEqual("auth", auth.host)
+
+    def test_overwrite_with_parameter_rest_auth_port(self):
+        config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_auth_port="9999")
+        auth = config.rest.auth
+
+        self.assertEqual(9999, auth.port)
+
+    def test_overwrite_with_parameter_rest_auth_method(self):
+        config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_auth_method="GET")
+        auth = config.rest.auth
+
+        self.assertEqual("GET", auth.method)
+
+    def test_overwrite_with_parameter_rest_auth_path(self):
+        config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_auth_path="/auth")
+        auth = config.rest.auth
+
+        self.assertEqual("/auth", auth.path)
 
 
 if __name__ == "__main__":

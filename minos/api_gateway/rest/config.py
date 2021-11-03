@@ -19,14 +19,19 @@ from .exceptions import (
     ApiGatewayConfigException,
 )
 
-REST = collections.namedtuple("Rest", "host port cors")
+REST = collections.namedtuple("Rest", "host port cors auth")
 DISCOVERY = collections.namedtuple("Discovery", "host port")
 CORS = collections.namedtuple("Cors", "enabled")
+AUTH = collections.namedtuple("Auth", "host port method path")
 
 _ENVIRONMENT_MAPPER = {
     "rest.host": "API_GATEWAY_REST_HOST",
     "rest.port": "API_GATEWAY_REST_PORT",
     "rest.cors.enabled": "API_GATEWAY_REST_CORS_ENABLED",
+    "rest.auth.host": "API_GATEWAY_REST_AUTH_HOST",
+    "rest.auth.port": "API_GATEWAY_REST_AUTH_PORT",
+    "rest.auth.method": "API_GATEWAY_REST_AUTH_METHOD",
+    "rest.auth.path": "API_GATEWAY_REST_AUTH_PATH",
     "discovery.host": "DISCOVERY_SERVICE_HOST",
     "discovery.port": "DISCOVERY_SERVICE_PORT",
 }
@@ -35,6 +40,10 @@ _PARAMETERIZED_MAPPER = {
     "rest.host": "api_gateway_rest_host",
     "rest.port": "api_gateway_rest_port",
     "rest.cors.enabled": "api_gateway_rest_cors_enabled",
+    "rest.auth.host": "api_gateway_rest_auth_host",
+    "rest.auth.port": "api_gateway_rest_auth_port",
+    "rest.auth.method": "api_gateway_rest_auth_method",
+    "rest.auth.path": "api_gateway_rest_auth_path",
     "discovery.host": "discovery_service_host",
     "discovery.port": "discovery_service_port",
 }
@@ -93,7 +102,7 @@ class ApiGatewayConfig(abc.ABC):
 
         :return: A ``REST`` NamedTuple instance.
         """
-        return REST(host=self._get("rest.host"), port=int(self._get("rest.port")), cors=self._cors)
+        return REST(host=self._get("rest.host"), port=int(self._get("rest.port")), cors=self._cors, auth=self._auth)
 
     @property
     def _cors(self) -> CORS:
@@ -102,6 +111,18 @@ class ApiGatewayConfig(abc.ABC):
         :return: A ``CORS`` NamedTuple instance.
         """
         return CORS(enabled=self._get("rest.cors.enabled"))
+
+    @property
+    def _auth(self) -> t.Optional[AUTH]:
+        try:
+            return AUTH(
+                host=self._get("rest.auth.host"),
+                port=int(self._get("rest.auth.port")),
+                method=self._get("rest.auth.method"),
+                path=self._get("rest.auth.path"),
+            )
+        except KeyError:
+            return None
 
     @property
     def discovery(self) -> DISCOVERY:
