@@ -32,28 +32,19 @@ class TestApiGatewayConfig(unittest.TestCase):
         config = ApiGatewayConfig(path=self.config_file_path)
         rest = config.rest
 
-        broker = rest.connection
-        self.assertEqual("localhost", broker.host)
-        self.assertEqual(55909, broker.port)
+        self.assertEqual("localhost", rest.host)
+        self.assertEqual(55909, rest.port)
 
     def test_config_discovery(self):
         config = ApiGatewayConfig(path=self.config_file_path)
         discovery = config.discovery
 
-        conn = discovery.connection
-        self.assertEqual("localhost", conn.host)
-        self.assertEqual(5567, conn.port)
-
-        db = discovery.database
-        self.assertEqual("localhost", db.host)
-        self.assertEqual(6379, db.port)
-        self.assertEqual(None, db.password)
-
-        self.assertEqual("", discovery.connection.path)
+        self.assertEqual("localhost", discovery.host)
+        self.assertEqual(5567, discovery.port)
 
     def test_config_cors(self):
         config = ApiGatewayConfig(path=self.config_file_path)
-        cors = config.cors
+        cors = config.rest.cors
 
         self.assertIsInstance(cors.enabled, bool)
         self.assertFalse(cors.enabled)
@@ -61,49 +52,29 @@ class TestApiGatewayConfig(unittest.TestCase):
     @mock.patch.dict(os.environ, {"DISCOVERY_SERVICE_HOST": "::1"})
     def test_overwrite_with_environment_discovery_host(self):
         config = ApiGatewayConfig(path=self.config_file_path)
-        conn = config.discovery.connection
-        self.assertEqual("::1", conn.host)
+        self.assertEqual("::1", config.discovery.host)
 
     @mock.patch.dict(os.environ, {"DISCOVERY_SERVICE_PORT": "4040"})
     def test_overwrite_with_environment_discovery_port(self):
         config = ApiGatewayConfig(path=self.config_file_path)
-        conn = config.discovery.connection
-        self.assertEqual(4040, conn.port)
-
-    @mock.patch.dict(os.environ, {"DISCOVERY_SERVICE_DB_HOST": "::1"})
-    def test_overwrite_with_environment_discovery_db_host(self):
-        config = ApiGatewayConfig(path=self.config_file_path)
-        conn = config.discovery.database
-        self.assertEqual("::1", conn.host)
-
-    @mock.patch.dict(os.environ, {"DISCOVERY_SERVICE_DB_PORT": "3030"})
-    def test_overwrite_with_environment_discovery_db_port(self):
-        config = ApiGatewayConfig(path=self.config_file_path)
-        conn = config.discovery.database
-        self.assertEqual(3030, conn.port)
-
-    @mock.patch.dict(os.environ, {"DISCOVERY_SERVICE_DB_PASSWORD": "1234"})
-    def test_overwrite_with_environment_discovery_db_password(self):
-        config = ApiGatewayConfig(path=self.config_file_path)
-        conn = config.discovery.database
-        self.assertEqual("1234", conn.password)
+        self.assertEqual(4040, config.discovery.port)
 
     @mock.patch.dict(os.environ, {"API_GATEWAY_REST_HOST": "::1"})
     def test_overwrite_with_environment(self):
         config = ApiGatewayConfig(path=self.config_file_path)
         rest = config.rest
-        self.assertEqual("::1", rest.connection.host)
+        self.assertEqual("::1", rest.host)
 
     @mock.patch.dict(os.environ, {"API_GATEWAY_REST_HOST": "::1"})
     def test_overwrite_with_environment_false(self):
         config = ApiGatewayConfig(path=self.config_file_path, with_environment=False)
         rest = config.rest
-        self.assertEqual("localhost", rest.connection.host)
+        self.assertEqual("localhost", rest.host)
 
-    @mock.patch.dict(os.environ, {"API_GATEWAY_CORS_ENABLED": "false"})
+    @mock.patch.dict(os.environ, {"API_GATEWAY_REST_CORS_ENABLED": "false"})
     def test_overwrite_with_environment_cors(self):
         config = ApiGatewayConfig(path=self.config_file_path)
-        cors = config.cors
+        cors = config.rest.cors
 
         self.assertIsInstance(cors.enabled, bool)
         self.assertFalse(cors.enabled)
@@ -111,11 +82,11 @@ class TestApiGatewayConfig(unittest.TestCase):
     def test_overwrite_with_parameter(self):
         config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_host="::1")
         rest = config.rest
-        self.assertEqual("::1", rest.connection.host)
+        self.assertEqual("::1", rest.host)
 
     def test_overwrite_with_parameter_cors(self):
-        config = ApiGatewayConfig(path=self.config_file_path, api_gateway_cors_enabled=False)
-        cors = config.cors
+        config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_cors_enabled=False)
+        cors = config.rest.cors
 
         self.assertIsInstance(cors.enabled, bool)
         self.assertFalse(cors.enabled)

@@ -27,7 +27,7 @@ class ApiGatewayRestService(AIOHTTPService):
 
     async def create_application(self) -> web.Application:
         middlewares = list()
-        if self.config.cors.enabled:
+        if self.config.rest.cors.enabled:
             middlewares = [cors_middleware(allow_all=True)]
 
         app = web.Application(middlewares=middlewares)

@@ -19,34 +19,24 @@ from .exceptions import (
     ApiGatewayConfigException,
 )
 
-CONNECTION = collections.namedtuple("Connection", "host port")
-ENDPOINT = collections.namedtuple("Endpoint", "name route method controller action")
-REST = collections.namedtuple("Rest", "connection endpoints")
-DISCOVERY_CONNECTION = collections.namedtuple("DiscoveryConnection", "host port path")
-DATABASE = collections.namedtuple("Database", "host port password")
-DISCOVERY = collections.namedtuple("Discovery", "connection endpoints database")
+REST = collections.namedtuple("Rest", "host port cors")
+DISCOVERY = collections.namedtuple("Discovery", "host port")
 CORS = collections.namedtuple("Cors", "enabled")
 
 _ENVIRONMENT_MAPPER = {
     "rest.host": "API_GATEWAY_REST_HOST",
     "rest.port": "API_GATEWAY_REST_PORT",
-    "cors.enabled": "API_GATEWAY_CORS_ENABLED",
+    "rest.cors.enabled": "API_GATEWAY_REST_CORS_ENABLED",
     "discovery.host": "DISCOVERY_SERVICE_HOST",
     "discovery.port": "DISCOVERY_SERVICE_PORT",
-    "discovery.db.host": "DISCOVERY_SERVICE_DB_HOST",
-    "discovery.db.port": "DISCOVERY_SERVICE_DB_PORT",
-    "discovery.db.password": "DISCOVERY_SERVICE_DB_PASSWORD",
 }
 
 _PARAMETERIZED_MAPPER = {
     "rest.host": "api_gateway_rest_host",
     "rest.port": "api_gateway_rest_port",
-    "cors.enabled": "api_gateway_cors_enabled",
+    "rest.cors.enabled": "api_gateway_rest_cors_enabled",
     "discovery.host": "discovery_service_host",
     "discovery.port": "discovery_service_port",
-    "discovery.db.host": "discovery_service_db_host",
-    "discovery.db.port": "discovery_service_db_port",
-    "discovery.db.password": "discovery_service_db_password",
 }
 
 
@@ -103,38 +93,15 @@ class ApiGatewayConfig(abc.ABC):
 
         :return: A ``REST`` NamedTuple instance.
         """
-        connection = self._rest_connection
-        endpoints = self._rest_endpoints
-        return REST(connection=connection, endpoints=endpoints)
+        return REST(host=self._get("rest.host"), port=int(self._get("rest.port")), cors=self._cors)
 
     @property
-    def _rest_connection(self):
-        connection = CONNECTION(host=self._get("rest.host"), port=int(self._get("rest.port")))
-        return connection
-
-    @property
-    def _rest_endpoints(self) -> list[ENDPOINT]:
-        info = self._get("rest.endpoints")
-        endpoints = [self._rest_endpoints_entry(endpoint) for endpoint in info]
-        return endpoints
-
-    @staticmethod
-    def _rest_endpoints_entry(endpoint: dict[str, t.Any]) -> ENDPOINT:
-        return ENDPOINT(
-            name=endpoint["name"],
-            route=endpoint["route"],
-            method=endpoint["method"].upper(),
-            controller=endpoint["controller"],
-            action=endpoint["action"],
-        )
-
-    @property
-    def cors(self) -> CORS:
+    def _cors(self) -> CORS:
         """Get the cors config.
 
         :return: A ``CORS`` NamedTuple instance.
         """
-        return CORS(enabled=self._get("cors.enabled"))
+        return CORS(enabled=self._get("rest.cors.enabled"))
 
     @property
     def discovery(self) -> DISCOVERY:
@@ -142,39 +109,4 @@ class ApiGatewayConfig(abc.ABC):
 
         :return: A ``REST`` NamedTuple instance.
         """
-        connection = self._discovery_connection
-        endpoints = self._discovery_endpoints
-        database = self._discovery_database
-        return DISCOVERY(connection=connection, endpoints=endpoints, database=database)
-
-    @property
-    def _discovery_connection(self):
-        connection = DISCOVERY_CONNECTION(
-            host=self._get("discovery.host"), port=int(self._get("discovery.port")), path=self._get("discovery.path")
-        )
-        return connection
-
-    @property
-    def _discovery_database(self):
-        connection = DATABASE(
-            host=self._get("discovery.db.host"),
-            port=int(self._get("discovery.db.port")),
-            password=self._get("discovery.db.password"),
-        )
-        return connection
-
-    @property
-    def _discovery_endpoints(self) -> list[ENDPOINT]:
-        info = self._get("discovery.endpoints")
-        endpoints = [self._discovery_endpoints_entry(endpoint) for endpoint in info]
-        return endpoints
-
-    @staticmethod
-    def _discovery_endpoints_entry(endpoint: dict[str, t.Any]) -> ENDPOINT:
-        return ENDPOINT(
-            name=endpoint["name"],
-            route=endpoint["route"],
-            method=endpoint["method"].upper(),
-            controller=endpoint["controller"],
-            action=endpoint["action"],
-        )
+        return DISCOVERY(host=self._get("discovery.host"), port=int(self._get("discovery.port")))

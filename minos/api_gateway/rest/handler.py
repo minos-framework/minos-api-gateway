@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 
 async def orchestrate(request: web.Request) -> web.Response:
     """ Orchestrate discovery and microservice call """
-    discovery_host = request.app["config"].discovery.connection.host
-    discovery_port = request.app["config"].discovery.connection.port
+    discovery_host = request.app["config"].discovery.host
+    discovery_port = request.app["config"].discovery.port
 
     verb = request.method
     url = f"/{request.match_info['endpoint']}"

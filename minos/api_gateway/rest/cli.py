@@ -34,9 +34,7 @@ def start(
         typer.echo(f"Error loading config: {exc!r}")
         raise typer.Exit(code=1)
 
-    services = (
-        ApiGatewayRestService(address=config.rest.connection.host, port=config.rest.connection.port, config=config),
-    )
+    services = (ApiGatewayRestService(address=config.rest.host, port=config.rest.port, config=config),)
     try:
         EntrypointLauncher(config=config, services=services).launch()
     except Exception as exc:

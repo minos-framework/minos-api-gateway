@@ -25,9 +25,7 @@ class TestApiGatewayRestService(AioHTTPTestCase):
     def setUp(self) -> None:
         self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
 
-        self.discovery = MockServer(
-            host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
-        )
+        self.discovery = MockServer(host=self.config.discovery.host, port=self.config.discovery.port,)
         self.discovery.add_json_response(
             "/microservices", {"address": "localhost", "port": "5568", "status": True},
         )
@@ -52,7 +50,7 @@ class TestApiGatewayRestService(AioHTTPTestCase):
         Override the get_app method to return your application.
         """
         rest_service = ApiGatewayRestService(
-            address=self.config.rest.connection.host, port=self.config.rest.connection.port, config=self.config
+            address=self.config.rest.host, port=self.config.rest.port, config=self.config
         )
 
         return await rest_service.create_application()
@@ -103,9 +101,7 @@ class TestApiGatewayRestServiceFailedDiscovery(AioHTTPTestCase):
     def setUp(self) -> None:
         self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
 
-        self.discovery = MockServer(
-            host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
-        )
+        self.discovery = MockServer(host=self.config.discovery.host, port=self.config.discovery.port,)
 
         self.discovery.start()
         super().setUp()
@@ -119,7 +115,7 @@ class TestApiGatewayRestServiceFailedDiscovery(AioHTTPTestCase):
         Override the get_app method to return your application.
         """
         rest_service = ApiGatewayRestService(
-            address=self.config.rest.connection.host, port=self.config.rest.connection.port, config=self.config
+            address=self.config.rest.host, port=self.config.rest.port, config=self.config
         )
 
         return await rest_service.create_application()
@@ -145,7 +141,7 @@ class TestApiGatewayRestServiceUnreachableDiscovery(AioHTTPTestCase):
         Override the get_app method to return your application.
         """
         rest_service = ApiGatewayRestService(
-            address=self.config.rest.connection.host, port=self.config.rest.connection.port, config=self.config
+            address=self.config.rest.host, port=self.config.rest.port, config=self.config
         )
 
         return await rest_service.create_application()
@@ -165,9 +161,7 @@ class TestApiGatewayRestServiceUnreachableMicroservice(AioHTTPTestCase):
     def setUp(self) -> None:
         self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
 
-        self.discovery = MockServer(
-            host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
-        )
+        self.discovery = MockServer(host=self.config.discovery.host, port=self.config.discovery.port,)
         self.discovery.add_json_response(
             "/microservices", {"address": "localhost", "port": "5568", "status": True},
         )
@@ -184,7 +178,7 @@ class TestApiGatewayRestServiceUnreachableMicroservice(AioHTTPTestCase):
         Override the get_app method to return your application.
         """
         rest_service = ApiGatewayRestService(
-            address=self.config.rest.connection.host, port=self.config.rest.connection.port, config=self.config
+            address=self.config.rest.host, port=self.config.rest.port, config=self.config
         )
 
         return await rest_service.create_application()

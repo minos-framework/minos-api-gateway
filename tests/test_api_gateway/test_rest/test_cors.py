@@ -33,13 +33,11 @@ class TestApiGatewayCORS(AioHTTPTestCase):
     TEST_DENIED_ORIGIN = "https://www.google.com"
     TEST_ORIGIN = "http://localhost:3000"
 
-    @mock.patch.dict(os.environ, {"API_GATEWAY_CORS_ENABLED": "true"})
+    @mock.patch.dict(os.environ, {"API_GATEWAY_REST_CORS_ENABLED": "true"})
     def setUp(self) -> None:
         self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
 
-        self.discovery = MockServer(
-            host=self.config.discovery.connection.host, port=self.config.discovery.connection.port,
-        )
+        self.discovery = MockServer(host=self.config.discovery.host, port=self.config.discovery.port,)
         self.discovery.add_json_response(
             "/microservices", {"address": "localhost", "port": "5568", "status": True},
         )
@@ -64,7 +62,7 @@ class TestApiGatewayCORS(AioHTTPTestCase):
         Override the get_app method to return your application.
         """
         rest_service = ApiGatewayRestService(
-            address=self.config.rest.connection.host, port=self.config.rest.connection.port, config=self.config
+            address=self.config.rest.host, port=self.config.rest.port, config=self.config
         )
 
         return await rest_service.create_application()

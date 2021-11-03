@@ -1,16 +1,9 @@
 rest:
     host: localhost
     port: 55909
-    endpoints: []
+    cors:
+      enabled: false
 discovery:
     host: localhost
     port: 5567
-    path: ""
-    endpoints: []
-    db:
-        host: localhost
-        port: 6379
-        password:
-cors:
-  enabled: false
 
