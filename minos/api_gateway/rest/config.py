@@ -33,8 +33,8 @@ _ENVIRONMENT_MAPPER = {
     "rest.auth.port": "API_GATEWAY_REST_AUTH_PORT",
     "rest.auth.method": "API_GATEWAY_REST_AUTH_METHOD",
     "rest.auth.path": "API_GATEWAY_REST_AUTH_PATH",
-    "discovery.host": "DISCOVERY_SERVICE_HOST",
-    "discovery.port": "DISCOVERY_SERVICE_PORT",
+    "discovery.host": "API_GATEWAY_DISCOVERY_HOST",
+    "discovery.port": "API_GATEWAY_DISCOVERY_PORT",
 }
 
 _PARAMETERIZED_MAPPER = {
@@ -46,8 +46,8 @@ _PARAMETERIZED_MAPPER = {
     "rest.auth.port": "api_gateway_rest_auth_port",
     "rest.auth.method": "api_gateway_rest_auth_method",
     "rest.auth.path": "api_gateway_rest_auth_path",
-    "discovery.host": "discovery_service_host",
-    "discovery.port": "discovery_service_port",
+    "discovery.host": "api_gateway_discovery_host",
+    "discovery.port": "api_gateway_discovery_port",
 }
 
 
