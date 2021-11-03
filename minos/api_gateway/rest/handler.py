@@ -15,7 +15,6 @@ from yarl import (
 )
 
 from .exceptions import (
-    InvalidAuthenticationException,
     NoTokenException,
 )
 
@@ -53,11 +52,8 @@ async def get_user(request: web.Request) -> Optional[str]:
     except NoTokenException:
         return None
 
-    try:
-        original_headers = dict(request.headers.copy())
-        return await authenticate(auth.host, auth.port, auth.method, auth.path, original_headers)
-    except InvalidAuthenticationException:
-        return None
+    original_headers = dict(request.headers.copy())
+    return await authenticate(auth.host, auth.port, auth.method, auth.path, original_headers)
 
 
 async def discover(host: str, port: int, path: str, verb: str, endpoint: str) -> dict[str, Any]:
@@ -76,10 +72,13 @@ async def discover(host: str, port: int, path: str, verb: str, endpoint: str) ->
         async with ClientSession() as session:
             async with session.get(url=url) as response:
                 if not response.ok:
-                    raise web.HTTPBadGateway(text="The discovery response is not okay.")
+                    if response.status == 404:
+                        raise web.HTTPNotFound(text=f"The {endpoint!r} path is not available for {verb!r} method.")
+                    raise web.HTTPBadGateway(text="The Discovery Service response is wrong.")
+
                 data = await response.json()
     except ClientConnectorError:
-        raise web.HTTPGatewayTimeout(text="The discovery is not available.")
+        raise web.HTTPGatewayTimeout(text="The Discovery Service is not available.")
 
     data["port"] = int(data["port"])
 
@@ -127,6 +126,15 @@ async def _clone_response(response: ClientResponse) -> web.Response:
 
 
 async def authenticate(host: str, port: str, method: str, path: str, authorization_headers: dict[str, str]) -> str:
+    """Authenticate a request based on its headers.
+
+    :param host: The authentication service host.
+    :param port: The authentication Service port.
+    :param method: The Authentication Service method.
+    :param path: The Authentication Service path.
+    :param authorization_headers: The headers that contain the authentication metadata.
+    :return: The authenticated user identifier.
+    """
     authentication_url = URL(f"http://{host}:{port}{path}")
     authentication_method = method
     logger.info("Authenticating request...")
@@ -134,13 +142,14 @@ async def authenticate(host: str, port: str, method: str, path: str, authorizati
     try:
         async with ClientSession(headers=authorization_headers) as session:
             async with session.request(method=authentication_method, url=authentication_url) as response:
-                if response.ok:
-                    jwt_payload = await response.json()
-                    return jwt_payload["sub"]
-                else:
-                    raise InvalidAuthenticationException
-    except (ClientConnectorError, web.HTTPError):
-        raise InvalidAuthenticationException
+                if not response.ok:
+                    raise web.HTTPUnauthorized(text="The given does not have authorization to be forwarded.")
+
+                payload = await response.json()
+                return payload["sub"]
+
+    except ClientConnectorError:
+        raise web.HTTPGatewayTimeout(text="The Authentication Service is not available.")
 
 
 async def get_token(request: web.Request) -> str:

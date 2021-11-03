@@ -6,6 +6,9 @@ from aiohttp.test_utils import (
     AioHTTPTestCase,
     unittest_run_loop,
 )
+from werkzeug.exceptions import (
+    abort,
+)
 
 from minos.api_gateway.rest import (
     ApiGatewayConfig,
@@ -95,7 +98,7 @@ class TestApiGatewayRestService(AioHTTPTestCase):
         self.assertIn("Microservice call correct!!!", await response.text())
 
 
-class TestApiGatewayRestServiceFailedDiscovery(AioHTTPTestCase):
+class TestApiGatewayRestServiceNotFoundDiscovery(AioHTTPTestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
 
     def setUp(self) -> None:
@@ -125,8 +128,43 @@ class TestApiGatewayRestServiceFailedDiscovery(AioHTTPTestCase):
         url = "/order/5?verb=GET&path=12324"
         response = await self.client.request("GET", url)
 
+        self.assertEqual(404, response.status)
+        self.assertIn("The '/order/5' path is not available for 'GET' method.", await response.text())
+
+
+class TestApiGatewayRestServiceFailedDiscovery(AioHTTPTestCase):
+    CONFIG_FILE_PATH = BASE_PATH / "config.yml"
+
+    def setUp(self) -> None:
+        self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
+
+        self.discovery = MockServer(host=self.config.discovery.host, port=self.config.discovery.port,)
+        self.discovery.add_callback_response("/microservices", lambda: abort(400), methods=("GET",))
+
+        self.discovery.start()
+        super().setUp()
+
+    def tearDown(self) -> None:
+        self.discovery.shutdown_server()
+        super().tearDown()
+
+    async def get_application(self):
+        """
+        Override the get_app method to return your application.
+        """
+        rest_service = ApiGatewayRestService(
+            address=self.config.rest.host, port=self.config.rest.port, config=self.config
+        )
+
+        return await rest_service.create_application()
+
+    @unittest_run_loop
+    async def test_get(self):
+        url = "/order/5?verb=GET&path=12324"
+        response = await self.client.request("GET", url)
+
         self.assertEqual(502, response.status)
-        self.assertIn("The discovery response is not okay.", await response.text())
+        self.assertIn("The Discovery Service response is wrong.", await response.text())
 
 
 class TestApiGatewayRestServiceUnreachableDiscovery(AioHTTPTestCase):
@@ -152,7 +190,7 @@ class TestApiGatewayRestServiceUnreachableDiscovery(AioHTTPTestCase):
         response = await self.client.request("GET", url)
 
         self.assertEqual(504, response.status)
-        self.assertIn("The discovery is not available.", await response.text())
+        self.assertIn("The Discovery Service is not available.", await response.text())
 
 
 class TestApiGatewayRestServiceUnreachableMicroservice(AioHTTPTestCase):
