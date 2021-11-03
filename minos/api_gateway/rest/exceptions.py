@@ -1,13 +1,13 @@
 class ApiGatewayException(Exception):
-    """TODO"""
+    """Base Api Gateway Exception."""
 
 
 class InvalidAuthenticationException(ApiGatewayException):
-    """TODO"""
+    """Exception to be raised when authentication is not valid."""
 
 
 class NoTokenException(ApiGatewayException):
-    """TODO"""
+    """Exception to be raised when token is not available."""
 
 
 class ApiGatewayConfigException(ApiGatewayException):

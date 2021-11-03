@@ -2,8 +2,9 @@ rest:
     host: localhost
     port: 55909
     cors:
-      enabled: false
+      enabled: true
     auth:
+        enabled: true
         host: localhost
         port: 8082
         method: POST

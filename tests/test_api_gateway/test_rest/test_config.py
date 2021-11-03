@@ -39,13 +39,13 @@ class TestApiGatewayConfig(unittest.TestCase):
         config = ApiGatewayConfig(path=self.config_file_path)
         cors = config.rest.cors
 
-        self.assertIsInstance(cors.enabled, bool)
-        self.assertFalse(cors.enabled)
+        self.assertEqual(True, cors.enabled)
 
     def test_config_rest_auth(self):
         config = ApiGatewayConfig(path=self.config_file_path)
         auth = config.rest.auth
 
+        self.assertEqual(True, auth.enabled)
         self.assertEqual("localhost", auth.host)
         self.assertEqual(8082, auth.port)
         self.assertEqual("POST", auth.method)
@@ -89,8 +89,14 @@ class TestApiGatewayConfig(unittest.TestCase):
         config = ApiGatewayConfig(path=self.config_file_path)
         cors = config.rest.cors
 
-        self.assertIsInstance(cors.enabled, bool)
-        self.assertFalse(cors.enabled)
+        self.assertEqual(False, cors.enabled)
+
+    @mock.patch.dict(os.environ, {"API_GATEWAY_REST_AUTH_ENABLED": "false"})
+    def test_overwrite_with_environment_rest_auth_enabled(self):
+        config = ApiGatewayConfig(path=self.config_file_path)
+        auth = config.rest.auth
+
+        self.assertEqual(False, auth.enabled)
 
     @mock.patch.dict(os.environ, {"API_GATEWAY_REST_AUTH_HOST": "auth"})
     def test_overwrite_with_environment_rest_auth_host(self):
@@ -125,12 +131,15 @@ class TestApiGatewayConfig(unittest.TestCase):
         rest = config.rest
         self.assertEqual("::1", rest.host)
 
-    def test_overwrite_with_parameter_cors(self):
+    def test_overwrite_with_parameter_rest_cors(self):
         config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_cors_enabled=False)
         cors = config.rest.cors
+        self.assertEqual(False, cors.enabled)
 
-        self.assertIsInstance(cors.enabled, bool)
-        self.assertFalse(cors.enabled)
+    def test_overwrite_with_parameter_rest_auth_enabled(self):
+        config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_auth_enabled=False)
+        auth = config.rest.auth
+        self.assertEqual(False, auth.enabled)
 
     def test_overwrite_with_parameter_rest_auth_host(self):
         config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_auth_host="auth")

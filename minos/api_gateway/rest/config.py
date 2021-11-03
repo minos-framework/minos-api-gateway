@@ -22,12 +22,13 @@ from .exceptions import (
 REST = collections.namedtuple("Rest", "host port cors auth")
 DISCOVERY = collections.namedtuple("Discovery", "host port")
 CORS = collections.namedtuple("Cors", "enabled")
-AUTH = collections.namedtuple("Auth", "host port method path")
+AUTH = collections.namedtuple("Auth", "enabled host port method path")
 
 _ENVIRONMENT_MAPPER = {
     "rest.host": "API_GATEWAY_REST_HOST",
     "rest.port": "API_GATEWAY_REST_PORT",
     "rest.cors.enabled": "API_GATEWAY_REST_CORS_ENABLED",
+    "rest.auth.enabled": "API_GATEWAY_REST_AUTH_ENABLED",
     "rest.auth.host": "API_GATEWAY_REST_AUTH_HOST",
     "rest.auth.port": "API_GATEWAY_REST_AUTH_PORT",
     "rest.auth.method": "API_GATEWAY_REST_AUTH_METHOD",
@@ -40,6 +41,7 @@ _PARAMETERIZED_MAPPER = {
     "rest.host": "api_gateway_rest_host",
     "rest.port": "api_gateway_rest_port",
     "rest.cors.enabled": "api_gateway_rest_cors_enabled",
+    "rest.auth.enabled": "api_gateway_rest_auth_enabled",
     "rest.auth.host": "api_gateway_rest_auth_host",
     "rest.auth.port": "api_gateway_rest_auth_port",
     "rest.auth.method": "api_gateway_rest_auth_method",
@@ -116,6 +118,7 @@ class ApiGatewayConfig(abc.ABC):
     def _auth(self) -> t.Optional[AUTH]:
         try:
             return AUTH(
+                enabled=self._get("rest.auth.enabled"),
                 host=self._get("rest.auth.host"),
                 port=int(self._get("rest.auth.port")),
                 method=self._get("rest.auth.method"),

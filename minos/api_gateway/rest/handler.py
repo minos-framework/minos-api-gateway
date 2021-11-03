@@ -45,7 +45,7 @@ async def get_user(request: web.Request) -> Optional[str]:
     :return: An string value containing the user identifier or ``None`` if no user information is available.
     """
     auth = request.app["config"].rest.auth
-    if auth is None:
+    if auth is None or not auth.enabled:
         return None
 
     try:
