@@ -106,13 +106,13 @@ async def call(address: str, port: int, original_req: web.Request, user: Optiona
 
     url = original_req.url.with_scheme("http").with_host(address).with_port(port)
     method = original_req.method
-    content = await original_req.text()
+    data = await original_req.read()
 
     logger.info(f"Redirecting {method!r} request to {url!r}...")
 
     try:
         async with ClientSession() as session:
-            async with session.request(headers=headers, method=method, url=url, data=content) as response:
+            async with session.request(headers=headers, method=method, url=url, data=data) as response:
                 return await _clone_response(response)
     except ClientConnectorError:
         raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
