@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>minos.api_gateway.rest.handler &mdash; API Gateway 0.1.1 documentation</title>
+  <title>minos.api_gateway.rest.handler &mdash; API Gateway 0.1.2 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.2
               </div>
             
           
@@ -270,13 +270,13 @@
 
     <span class="n">url</span> <span class="o">=</span> <span class="n">original_req</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">with_scheme</span><span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">with_host</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">with_port</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
     <span class="n">method</span> <span class="o">=</span> <span class="n">original_req</span><span class="o">.</span><span class="n">method</span>
-    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">original_req</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">original_req</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Redirecting </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2"> request to </span><span class="si">{</span><span class="n">url</span><span class="si">!r}</span><span class="s2">...&quot;</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">content</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
                 <span class="k">return</span> <span class="k">await</span> <span class="n">_clone_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ClientConnectorError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">web</span><span class="o">.</span><span class="n">HTTPServiceUnavailable</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;The requested endpoint is not available.&quot;</span><span class="p">)</span></div>
