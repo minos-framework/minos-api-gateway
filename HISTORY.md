@@ -28,3 +28,7 @@
 
 * Enforce Authentication Service validation if enabled.
 * Improve error messages and use more appropriate status codes.
+
+## 0.1.2 (2021-11-04)
+
+* Fix bug related with byte-encoded requests forwarding.
