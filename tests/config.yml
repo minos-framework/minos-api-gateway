@@ -1,15 +1,15 @@
 rest:
-    host: localhost
-    port: 55909
-    cors:
+  host: 0.0.0.0
+  port: 5566
+  cors:
+    enabled: true
+  auth:
       enabled: true
-    auth:
-        enabled: true
-        host: localhost
-        port: 8082
-        method: POST
-        path: /token
+      host: localhost
+      port: 55909
+      method: POST
+      path: /auth/validate-token
 discovery:
-    host: localhost
-    port: 5567
+  host: localhost
+  port: 5567
 
