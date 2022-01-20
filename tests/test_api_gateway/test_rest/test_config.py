@@ -33,7 +33,7 @@ class TestApiGatewayConfig(unittest.TestCase):
         rest = config.rest
 
         self.assertEqual("localhost", rest.host)
-        self.assertEqual(55909, rest.port)
+        self.assertEqual(5566, rest.port)
 
     def test_config_rest_cors(self):
         config = ApiGatewayConfig(path=self.config_file_path)
@@ -47,9 +47,9 @@ class TestApiGatewayConfig(unittest.TestCase):
 
         self.assertEqual(True, auth.enabled)
         self.assertEqual("localhost", auth.host)
-        self.assertEqual(8082, auth.port)
+        self.assertEqual(55909, auth.port)
         self.assertEqual("POST", auth.method)
-        self.assertEqual("/token", auth.path)
+        self.assertEqual("/auth/validate-token", auth.path)
 
     def test_config_rest_auth_none(self):
         config = ApiGatewayConfig(path=BASE_PATH / "config_without_auth.yml")

@@ -46,7 +46,7 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
         self.microservice.add_json_response("/order", "Microservice call correct!!!", methods=("POST",))
 
         self.authentication_service = MockServer(host="localhost", port=8082)
-        self.authentication_service.add_json_response("/token", {"sub": uuid4()}, methods=("POST",))
+        self.authentication_service.add_json_response("/validate-token", {"sub": uuid4()}, methods=("POST",))
 
         self.discovery.start()
         self.microservice.start()
