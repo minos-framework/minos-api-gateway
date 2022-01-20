@@ -1,18 +1,23 @@
+import json
 import logging
 from typing import (
     Any,
     Optional,
 )
-import json
+
 from aiohttp import (
     ClientConnectorError,
     ClientResponse,
     ClientSession,
     web,
 )
-from yarl import URL
+from yarl import (
+    URL,
+)
 
-from .exceptions import NoTokenException
+from .exceptions import (
+    NoTokenException,
+)
 
 logger = logging.getLogger(__name__)
 
