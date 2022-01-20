@@ -10,13 +10,9 @@ from aiohttp import (
     ClientSession,
     web,
 )
-from yarl import (
-    URL,
-)
+from yarl import URL
 
-from .exceptions import (
-    NoTokenException,
-)
+from .exceptions import NoTokenException
 
 logger = logging.getLogger(__name__)
 
@@ -53,15 +49,11 @@ async def validate_token(request: web.Request, data: dict):
     auth_port = request.app["config"].rest.auth.port
     auth_path = request.app["config"].rest.auth.path
 
-    auth_url = URL(
-        f"http://{auth_host}:{auth_port}{auth_path}"
-    )
+    auth_url = URL(f"http://{auth_host}:{auth_port}{auth_path}")
 
     try:
         async with ClientSession() as session:
-            async with session.request(
-                method='POST', url=auth_url, data=json.dumps(data)
-            ) as response:
+            async with session.request(method="POST", url=auth_url, data=json.dumps(data)) as response:
                 resp = await _clone_response(response)
 
                 if response.status == 200:
@@ -70,6 +62,7 @@ async def validate_token(request: web.Request, data: dict):
                 raise web.HTTPError(text="Some error occurred during token validation.")
     except ClientConnectorError:
         raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
+
 
 async def get_user(request: web.Request) -> Optional[str]:
     """Get The user identifier if it is available.
