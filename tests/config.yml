@@ -7,8 +7,11 @@ rest:
       enabled: true
       host: localhost
       port: 55909
-      method: POST
-      path: /auth/validate-token
+      path: /auth
+      services:
+          - name: token
+          - name: credentials
+      default: token
 discovery:
   host: localhost
   port: 5567

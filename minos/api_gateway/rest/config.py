@@ -1,7 +1,9 @@
 from __future__ import (
     annotations,
 )
-
+from typing import (
+    Any,
+)
 import abc
 import collections
 import os
@@ -22,7 +24,8 @@ from .exceptions import (
 REST = collections.namedtuple("Rest", "host port cors auth")
 DISCOVERY = collections.namedtuple("Discovery", "host port")
 CORS = collections.namedtuple("Cors", "enabled")
-AUTH = collections.namedtuple("Auth", "enabled host port method path")
+AUTH_SERVICE = collections.namedtuple("AuthService", "name")
+AUTH = collections.namedtuple("Auth", "enabled host port path services default")
 
 _ENVIRONMENT_MAPPER = {
     "rest.host": "API_GATEWAY_REST_HOST",
@@ -117,15 +120,29 @@ class ApiGatewayConfig(abc.ABC):
     @property
     def _auth(self) -> t.Optional[AUTH]:
         try:
+            services = self._auth_services
             return AUTH(
                 enabled=self._get("rest.auth.enabled"),
                 host=self._get("rest.auth.host"),
                 port=int(self._get("rest.auth.port")),
-                method=self._get("rest.auth.method"),
                 path=self._get("rest.auth.path"),
+                services=services,
+                default=self._get("rest.auth.default"),
             )
         except KeyError:
             return None
+
+    @property
+    def _auth_services(self) -> list[AUTH_SERVICE]:
+        info = self._get("rest.auth.services")
+        services = [self._auth_service_entry(service) for service in info]
+        return services
+
+    @staticmethod
+    def _auth_service_entry(service: dict[str, Any]) -> AUTH_SERVICE:
+        return AUTH_SERVICE(
+            name=service["name"],
+        )
 
     @property
     def discovery(self) -> DISCOVERY:

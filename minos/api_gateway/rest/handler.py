@@ -35,9 +35,11 @@ async def orchestrate(request: web.Request) -> web.Response:
     if auth is None or not auth.enabled:
         user = None
     else:
-        token = request.headers.get("token")
-        if token is None:
-            return web.json_response(status=404, text="Please provide token on headers.")
+        try:
+            token = await get_token(request)
+        except Exception:
+            return web.json_response(status=401, text="Please provide Authorization header with correct token.")
+
         data = {"token": token}
         response = await validate_token(request, data)
         user = json.loads(response)
@@ -45,6 +47,48 @@ async def orchestrate(request: web.Request) -> web.Response:
 
     microservice_response = await call(**discovery_data, original_req=request, user=user)
     return microservice_response
+
+
+async def authentication_default(request: web.Request) -> web.Response:
+    """ Orchestrate discovery and microservice call """
+    auth_host = request.app["config"].rest.auth.host
+    auth_port = request.app["config"].rest.auth.port
+    auth_path = request.app["config"].rest.auth.path
+    default_service = request.app["config"].rest.auth.default
+
+    url = URL(
+        f"http://{auth_host}:{auth_port}{auth_path}/{default_service}"
+    )
+
+    return await authentication_call(request, url)
+
+
+async def authentication(request: web.Request) -> web.Response:
+    """ Orchestrate discovery and microservice call """
+
+    auth_host = request.app["config"].rest.auth.host
+    auth_port = request.app["config"].rest.auth.port
+
+    url = URL(
+        f"http://{auth_host}:{auth_port}{request.path}"
+    )
+
+    return await authentication_call(request, url)
+
+
+async def authentication_call(request: web.Request, url: URL) -> web.Response:
+    """ Orchestrate discovery and microservice call """
+    headers = request.headers.copy()
+    data = await request.read()
+
+    try:
+        async with ClientSession() as session:
+            async with session.request(
+                headers=headers, method=request.method, url=url, data=data
+            ) as response:
+                return await _clone_response(response)
+    except ClientConnectorError:
+        raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
 
 
 async def validate_token(request: web.Request, data: dict):
