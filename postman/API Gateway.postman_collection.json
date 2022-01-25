@@ -1,0 +1,257 @@
+{
+	"info": {
+		"_postman_id": "c572cc69-d69d-4378-880f-d74e0b2cb867",
+		"name": "API Gateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Credentials",
+					"item": [
+						{
+							"name": "Register with Credentials",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Test\",\n    \"surname\": \"User\",\n    \"email\": \"15@gmail.com\",\n    \"telephone\": \"3243242332\",\n    \"role\": 2,\n    \"username\": \"test_user3\",\n    \"password\": \"Test_User_1234\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5566/auth/credentials",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5566",
+									"path": [
+										"auth",
+										"credentials"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Credentials LogIn",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "username",
+											"value": "test_user3",
+											"type": "string"
+										},
+										{
+											"key": "password",
+											"value": "Test_User_1234",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:55909/auth/credentials/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "55909",
+									"path": [
+										"auth",
+										"credentials",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Credentials",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "username",
+											"value": "test_user3",
+											"type": "string"
+										},
+										{
+											"key": "password",
+											"value": "Test_User_1234",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:55909/auth/credentials",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "55909",
+									"path": [
+										"auth",
+										"credentials"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Token",
+					"item": [
+						{
+							"name": "Register with Token",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Test\",\n    \"surname\": \"User\",\n    \"email\": \"15@gmail.com\",\n    \"telephone\": \"3243242332\",\n    \"role\": 2,\n    \"username\": \"test_user23\",\n    \"password\": \"Test_User_1234\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5566/auth/token",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5566",
+									"path": [
+										"auth",
+										"token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Token LogIn",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "532262b9d1f79a48e40fc68cb54af574baaf4152",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:55909/auth/token/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "55909",
+									"path": [
+										"auth",
+										"token",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Token",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "59d74df41db7caacfd6e4c4b7bbdcec7eafc3450",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:55909/auth/token",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "55909",
+									"path": [
+										"auth",
+										"token"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Merchant ms",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "59d74df41db7caacfd6e4c4b7bbdcec7eafc3450",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "fc6da8e1db82417ebde897a6b7267fe75dc8b800",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5566/merchants/72b0a7a3-6e96-4be8-8f6b-fa4ce9d5b395",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5566",
+					"path": [
+						"merchants",
+						"72b0a7a3-6e96-4be8-8f6b-fa4ce9d5b395"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
