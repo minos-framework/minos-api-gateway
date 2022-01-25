@@ -29,7 +29,7 @@ from tests.utils import (
 
 
 class TestApiGatewayCORS(AioHTTPTestCase):
-    CONFIG_FILE_PATH = BASE_PATH / "config.yml"
+    CONFIG_FILE_PATH = BASE_PATH / "config-auth-disabled.yml"
     TEST_DENIED_ORIGIN = "https://www.google.com"
     TEST_ORIGIN = "http://localhost:3000"
 

@@ -1,9 +1,7 @@
 from __future__ import (
     annotations,
 )
-from typing import (
-    Any,
-)
+
 import abc
 import collections
 import os
@@ -13,6 +11,9 @@ from distutils import (
 )
 from pathlib import (
     Path,
+)
+from typing import (
+    Any,
 )
 
 import yaml
@@ -34,7 +35,6 @@ _ENVIRONMENT_MAPPER = {
     "rest.auth.enabled": "API_GATEWAY_REST_AUTH_ENABLED",
     "rest.auth.host": "API_GATEWAY_REST_AUTH_HOST",
     "rest.auth.port": "API_GATEWAY_REST_AUTH_PORT",
-    "rest.auth.method": "API_GATEWAY_REST_AUTH_METHOD",
     "rest.auth.path": "API_GATEWAY_REST_AUTH_PATH",
     "discovery.host": "API_GATEWAY_DISCOVERY_HOST",
     "discovery.port": "API_GATEWAY_DISCOVERY_PORT",
@@ -47,7 +47,6 @@ _PARAMETERIZED_MAPPER = {
     "rest.auth.enabled": "api_gateway_rest_auth_enabled",
     "rest.auth.host": "api_gateway_rest_auth_host",
     "rest.auth.port": "api_gateway_rest_auth_port",
-    "rest.auth.method": "api_gateway_rest_auth_method",
     "rest.auth.path": "api_gateway_rest_auth_path",
     "discovery.host": "api_gateway_discovery_host",
     "discovery.port": "api_gateway_discovery_port",
@@ -140,9 +139,7 @@ class ApiGatewayConfig(abc.ABC):
 
     @staticmethod
     def _auth_service_entry(service: dict[str, Any]) -> AUTH_SERVICE:
-        return AUTH_SERVICE(
-            name=service["name"],
-        )
+        return AUTH_SERVICE(name=service["name"],)
 
     @property
     def discovery(self) -> DISCOVERY:

@@ -14,9 +14,9 @@ from .config import (
     ApiGatewayConfig,
 )
 from .handler import (
-    orchestrate,
     authentication,
     authentication_default,
+    orchestrate,
 )
 
 logger = logging.getLogger(__name__)

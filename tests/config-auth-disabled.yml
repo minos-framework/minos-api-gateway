@@ -1,0 +1,18 @@
+rest:
+  host: localhost
+  port: 5566
+  cors:
+    enabled: true
+  auth:
+      enabled: false
+      host: localhost
+      port: 55909
+      path: /auth
+      services:
+          - name: token
+          - name: credentials
+      default: token
+discovery:
+  host: localhost
+  port: 5567
+

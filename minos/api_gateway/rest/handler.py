@@ -1,9 +1,10 @@
+import json
 import logging
 from typing import (
     Any,
     Optional,
 )
-import json
+
 from aiohttp import (
     ClientConnectorError,
     ClientResponse,
@@ -12,10 +13,6 @@ from aiohttp import (
 )
 from yarl import (
     URL,
-)
-
-from .exceptions import (
-    NoTokenException,
 )
 
 logger = logging.getLogger(__name__)
@@ -50,9 +47,7 @@ async def authentication_default(request: web.Request) -> web.Response:
     auth_path = request.app["config"].rest.auth.path
     default_service = request.app["config"].rest.auth.default
 
-    url = URL(
-        f"http://{auth_host}:{auth_port}{auth_path}/{default_service}"
-    )
+    url = URL(f"http://{auth_host}:{auth_port}{auth_path}/{default_service}")
 
     return await authentication_call(request, url)
 
@@ -63,9 +58,7 @@ async def authentication(request: web.Request) -> web.Response:
     auth_host = request.app["config"].rest.auth.host
     auth_port = request.app["config"].rest.auth.port
 
-    url = URL(
-        f"http://{auth_host}:{auth_port}{request.path}"
-    )
+    url = URL(f"http://{auth_host}:{auth_port}{request.path}")
 
     return await authentication_call(request, url)
 
@@ -77,9 +70,7 @@ async def authentication_call(request: web.Request, url: URL) -> web.Response:
 
     try:
         async with ClientSession() as session:
-            async with session.request(
-                headers=headers, method=request.method, url=url, data=data
-            ) as response:
+            async with session.request(headers=headers, method=request.method, url=url, data=data) as response:
                 return await _clone_response(response)
     except ClientConnectorError:
         raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
@@ -91,44 +82,22 @@ async def validate_token(request: web.Request):
     auth_port = request.app["config"].rest.auth.port
     auth_path = request.app["config"].rest.auth.path
 
-    auth_url = URL(
-        f"http://{auth_host}:{auth_port}{auth_path}/validate-token"
-    )
+    auth_url = URL(f"http://{auth_host}:{auth_port}{auth_path}/validate-token")
 
     headers = request.headers.copy()
     data = await request.read()
 
     try:
         async with ClientSession() as session:
-            async with session.request(
-                method='POST', url=auth_url, data=data, headers=headers
-            ) as response:
+            async with session.request(method="POST", url=auth_url, data=data, headers=headers) as response:
                 resp = await _clone_response(response)
 
-                if response.status == 200:
-                    return resp.text
+                if not response.ok:
+                    raise web.HTTPUnauthorized(text="The given request does not have authorization to be forwarded.")
+                return resp.text
 
-                raise web.HTTPError(text="Some error occurred during token validation.")
     except ClientConnectorError:
         raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
-
-async def get_user(request: web.Request) -> Optional[str]:
-    """Get The user identifier if it is available.
-
-    :param request: The external request.
-    :return: An string value containing the user identifier or ``None`` if no user information is available.
-    """
-    auth = request.app["config"].rest.auth
-    if auth is None or not auth.enabled:
-        return None
-
-    try:
-        await get_token(request)
-    except NoTokenException:
-        return None
-
-    original_headers = dict(request.headers.copy())
-    return await authenticate(auth.host, auth.port, auth.method, auth.path, original_headers)
 
 
 async def discover(host: str, port: int, path: str, verb: str, endpoint: str) -> dict[str, Any]:
@@ -198,40 +167,3 @@ async def _clone_response(response: ClientResponse) -> web.Response:
     return web.Response(
         body=await response.read(), status=response.status, reason=response.reason, headers=response.headers,
     )
-
-
-async def authenticate(host: str, port: str, method: str, path: str, authorization_headers: dict[str, str]) -> str:
-    """Authenticate a request based on its headers.
-
-    :param host: The authentication service host.
-    :param port: The authentication Service port.
-    :param method: The Authentication Service method.
-    :param path: The Authentication Service path.
-    :param authorization_headers: The headers that contain the authentication metadata.
-    :return: The authenticated user identifier.
-    """
-    authentication_url = URL(f"http://{host}:{port}{path}")
-    authentication_method = method
-    logger.info("Authenticating request...")
-
-    try:
-        async with ClientSession(headers=authorization_headers) as session:
-            async with session.request(method=authentication_method, url=authentication_url) as response:
-                if not response.ok:
-                    raise web.HTTPUnauthorized(text="The given request does not have authorization to be forwarded.")
-
-                payload = await response.json()
-                return payload["sub"]
-
-    except ClientConnectorError:
-        raise web.HTTPGatewayTimeout(text="The Authentication Service is not available.")
-
-
-async def get_token(request: web.Request) -> str:
-    headers = request.headers
-    if "Authorization" in headers and "Bearer" in headers["Authorization"]:
-        parts = headers["Authorization"].split()
-        if len(parts) == 2:
-            return parts[1]
-
-    raise NoTokenException

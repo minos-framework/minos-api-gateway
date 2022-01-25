@@ -1,5 +1,6 @@
 """tests.test_api_gateway.test_rest.service module."""
 
+import os
 import unittest
 
 from aiohttp.test_utils import (
@@ -26,6 +27,7 @@ class TestApiGatewayRestService(AioHTTPTestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
 
     def setUp(self) -> None:
+        os.environ["API_GATEWAY_REST_AUTH_ENABLED"] = "false"
         self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
 
         self.discovery = MockServer(host=self.config.discovery.host, port=self.config.discovery.port,)
@@ -171,6 +173,7 @@ class TestApiGatewayRestServiceUnreachableDiscovery(AioHTTPTestCase):
     CONFIG_FILE_PATH = BASE_PATH / "config.yml"
 
     def setUp(self) -> None:
+        os.environ["API_GATEWAY_REST_AUTH_ENABLED"] = "false"
         self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
         super().setUp()
 
