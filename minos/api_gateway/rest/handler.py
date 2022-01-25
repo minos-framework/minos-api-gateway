@@ -35,13 +35,7 @@ async def orchestrate(request: web.Request) -> web.Response:
     if auth is None or not auth.enabled:
         user = None
     else:
-        try:
-            token = await get_token(request)
-        except Exception:
-            return web.json_response(status=401, text="Please provide Authorization header with correct token.")
-
-        data = {"token": token}
-        response = await validate_token(request, data)
+        response = await validate_token(request)
         user = json.loads(response)
         user = user["uuid"]
 
@@ -91,20 +85,23 @@ async def authentication_call(request: web.Request, url: URL) -> web.Response:
         raise web.HTTPServiceUnavailable(text="The requested endpoint is not available.")
 
 
-async def validate_token(request: web.Request, data: dict):
+async def validate_token(request: web.Request):
     """ Orchestrate discovery and microservice call """
     auth_host = request.app["config"].rest.auth.host
     auth_port = request.app["config"].rest.auth.port
     auth_path = request.app["config"].rest.auth.path
 
     auth_url = URL(
-        f"http://{auth_host}:{auth_port}{auth_path}"
+        f"http://{auth_host}:{auth_port}{auth_path}/validate-token"
     )
+
+    headers = request.headers.copy()
+    data = await request.read()
 
     try:
         async with ClientSession() as session:
             async with session.request(
-                method='POST', url=auth_url, data=json.dumps(data)
+                method='POST', url=auth_url, data=data, headers=headers
             ) as response:
                 resp = await _clone_response(response)
 
