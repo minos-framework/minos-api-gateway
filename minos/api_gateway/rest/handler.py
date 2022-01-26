@@ -11,9 +11,13 @@ from aiohttp import (
     ClientSession,
     web,
 )
-from yarl import URL
+from yarl import (
+    URL,
+)
 
-from minos.api_gateway.rest.urlmatch.authmatch import AuthMatch
+from minos.api_gateway.rest.urlmatch.authmatch import (
+    AuthMatch,
+)
 
 logger = logging.getLogger(__name__)
 
