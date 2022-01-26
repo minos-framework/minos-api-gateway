@@ -15,6 +15,10 @@ from yarl import (
     URL,
 )
 
+from minos.api_gateway.rest.urlmatch.authmatch import (
+    AuthMatch,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -29,12 +33,14 @@ async def orchestrate(request: web.Request) -> web.Response:
     discovery_data = await discover(discovery_host, int(discovery_port), "/microservices", verb, url)
 
     auth = request.app["config"].rest.auth
-    if auth is None or not auth.enabled:
-        user = None
-    else:
-        response = await validate_token(request)
-        user = json.loads(response)
-        user = user["uuid"]
+    user = None
+    if auth is not None and auth.enabled:
+        if AuthMatch.match(
+            url=str(request.url), method=request.method, endpoints=request.app["config"].rest.auth.endpoints
+        ):
+            response = await validate_token(request)
+            user = json.loads(response)
+            user = user["uuid"]
 
     microservice_response = await call(**discovery_data, original_req=request, user=user)
     return microservice_response

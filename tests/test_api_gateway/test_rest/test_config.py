@@ -50,6 +50,9 @@ class TestApiGatewayConfig(unittest.TestCase):
         self.assertEqual(55909, auth.port)
         self.assertEqual("/auth", auth.path)
 
+        endpoints = auth.endpoints
+        self.assertGreater(len(endpoints), 0)
+
     def test_config_rest_auth_none(self):
         config = ApiGatewayConfig(path=BASE_PATH / "config_without_auth.yml")
         self.assertIsNone(config.rest.auth)

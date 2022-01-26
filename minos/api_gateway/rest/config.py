@@ -15,9 +15,7 @@ from pathlib import (
 from typing import (
     Any,
 )
-
 import yaml
-
 from .exceptions import (
     ApiGatewayConfigException,
 )
@@ -26,7 +24,8 @@ REST = collections.namedtuple("Rest", "host port cors auth")
 DISCOVERY = collections.namedtuple("Discovery", "host port")
 CORS = collections.namedtuple("Cors", "enabled")
 AUTH_SERVICE = collections.namedtuple("AuthService", "name")
-AUTH = collections.namedtuple("Auth", "enabled host port path services default")
+ENDPOINT = collections.namedtuple("Endpoint", "url methods")
+AUTH = collections.namedtuple("Auth", "enabled host port path services default endpoints")
 
 _ENVIRONMENT_MAPPER = {
     "rest.host": "API_GATEWAY_REST_HOST",
@@ -120,6 +119,7 @@ class ApiGatewayConfig(abc.ABC):
     def _auth(self) -> t.Optional[AUTH]:
         try:
             services = self._auth_services
+            endpoints = self._auth_endpoints
             return AUTH(
                 enabled=self._get("rest.auth.enabled"),
                 host=self._get("rest.auth.host"),
@@ -127,6 +127,7 @@ class ApiGatewayConfig(abc.ABC):
                 path=self._get("rest.auth.path"),
                 services=services,
                 default=self._get("rest.auth.default"),
+                endpoints=endpoints,
             )
         except KeyError:
             return None
@@ -140,6 +141,18 @@ class ApiGatewayConfig(abc.ABC):
     @staticmethod
     def _auth_service_entry(service: dict[str, Any]) -> AUTH_SERVICE:
         return AUTH_SERVICE(name=service["name"],)
+
+    @property
+    def _auth_endpoints(self) -> list[ENDPOINT]:
+        info = self._get("rest.auth.endpoints")
+        endpoints = [self._auth_endpoint_entry(service) for service in info]
+        return endpoints
+
+    def _auth_endpoint_entry(self, service: dict[str, Any]) -> ENDPOINT:
+        return ENDPOINT(url=service["url"], methods=self._service_methods(service))
+
+    def _service_methods(self, service: dict[str, Any]) -> list[str]:
+        return service["methods"]
 
     @property
     def discovery(self) -> DISCOVERY:

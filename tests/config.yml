@@ -12,6 +12,20 @@ rest:
           - name: token
           - name: credentials
       default: token
+      endpoints:
+          - url: "*://*/merchants/*"
+            methods:
+          - url: "*://*/categories/*"
+            methods:
+                - GET
+          - url: "*://test_2/*"
+            methods:
+                - GET
+                - PUT
+                - POST
+          - url: "*://test_1/order*"
+            methods:
+                - GET
 discovery:
   host: localhost
   port: 5567
