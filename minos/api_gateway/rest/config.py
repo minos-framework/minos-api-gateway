@@ -15,7 +15,9 @@ from pathlib import (
 from typing import (
     Any,
 )
+
 import yaml
+
 from .exceptions import (
     ApiGatewayConfigException,
 )

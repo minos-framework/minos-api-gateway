@@ -46,9 +46,7 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
         self.microservice.add_json_response(
             "/merchants/5", "Microservice call correct!!!", methods=("GET", "PUT", "PATCH", "DELETE",)
         )
-        self.microservice.add_json_response(
-            "/categories/5", "Microservice call correct!!!", methods=("GET",)
-        )
+        self.microservice.add_json_response("/categories/5", "Microservice call correct!!!", methods=("GET",))
         self.microservice.add_json_response("/order", "Microservice call correct!!!", methods=("POST",))
 
         self.authentication_service = MockServer(host=self.config.rest.auth.host, port=self.config.rest.auth.port)
