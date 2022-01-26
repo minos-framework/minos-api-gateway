@@ -14,6 +14,8 @@ from .config import (
     ApiGatewayConfig,
 )
 from .handler import (
+    authentication,
+    authentication_default,
     orchestrate,
 )
 
@@ -33,6 +35,12 @@ class ApiGatewayRestService(AIOHTTPService):
         app = web.Application(middlewares=middlewares)
 
         app["config"] = self.config
+
+        auth = self.config.rest.auth
+        if auth is not None and auth.enabled:
+            app.router.add_route("*", "/auth", authentication_default)
+            for service in auth.services:
+                app.router.add_route("*", f"/auth/{service.name}", authentication)
 
         app.router.add_route("*", "/{endpoint:.*}", orchestrate)
 

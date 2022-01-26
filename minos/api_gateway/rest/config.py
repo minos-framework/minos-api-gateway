@@ -12,6 +12,9 @@ from distutils import (
 from pathlib import (
     Path,
 )
+from typing import (
+    Any,
+)
 
 import yaml
 
@@ -22,7 +25,9 @@ from .exceptions import (
 REST = collections.namedtuple("Rest", "host port cors auth")
 DISCOVERY = collections.namedtuple("Discovery", "host port")
 CORS = collections.namedtuple("Cors", "enabled")
-AUTH = collections.namedtuple("Auth", "enabled host port method path")
+AUTH_SERVICE = collections.namedtuple("AuthService", "name")
+ENDPOINT = collections.namedtuple("Endpoint", "url methods")
+AUTH = collections.namedtuple("Auth", "enabled host port path services default endpoints")
 
 _ENVIRONMENT_MAPPER = {
     "rest.host": "API_GATEWAY_REST_HOST",
@@ -31,7 +36,6 @@ _ENVIRONMENT_MAPPER = {
     "rest.auth.enabled": "API_GATEWAY_REST_AUTH_ENABLED",
     "rest.auth.host": "API_GATEWAY_REST_AUTH_HOST",
     "rest.auth.port": "API_GATEWAY_REST_AUTH_PORT",
-    "rest.auth.method": "API_GATEWAY_REST_AUTH_METHOD",
     "rest.auth.path": "API_GATEWAY_REST_AUTH_PATH",
     "discovery.host": "API_GATEWAY_DISCOVERY_HOST",
     "discovery.port": "API_GATEWAY_DISCOVERY_PORT",
@@ -44,7 +48,6 @@ _PARAMETERIZED_MAPPER = {
     "rest.auth.enabled": "api_gateway_rest_auth_enabled",
     "rest.auth.host": "api_gateway_rest_auth_host",
     "rest.auth.port": "api_gateway_rest_auth_port",
-    "rest.auth.method": "api_gateway_rest_auth_method",
     "rest.auth.path": "api_gateway_rest_auth_path",
     "discovery.host": "api_gateway_discovery_host",
     "discovery.port": "api_gateway_discovery_port",
@@ -117,15 +120,41 @@ class ApiGatewayConfig(abc.ABC):
     @property
     def _auth(self) -> t.Optional[AUTH]:
         try:
+            services = self._auth_services
+            endpoints = self._auth_endpoints
             return AUTH(
                 enabled=self._get("rest.auth.enabled"),
                 host=self._get("rest.auth.host"),
                 port=int(self._get("rest.auth.port")),
-                method=self._get("rest.auth.method"),
                 path=self._get("rest.auth.path"),
+                services=services,
+                default=self._get("rest.auth.default"),
+                endpoints=endpoints,
             )
         except KeyError:
             return None
+
+    @property
+    def _auth_services(self) -> list[AUTH_SERVICE]:
+        info = self._get("rest.auth.services")
+        services = [self._auth_service_entry(service) for service in info]
+        return services
+
+    @staticmethod
+    def _auth_service_entry(service: dict[str, Any]) -> AUTH_SERVICE:
+        return AUTH_SERVICE(name=service["name"],)
+
+    @property
+    def _auth_endpoints(self) -> list[ENDPOINT]:
+        info = self._get("rest.auth.endpoints")
+        endpoints = [self._auth_endpoint_entry(service) for service in info]
+        return endpoints
+
+    def _auth_endpoint_entry(self, service: dict[str, Any]) -> ENDPOINT:
+        return ENDPOINT(url=service["url"], methods=self._service_methods(service))
+
+    def _service_methods(self, service: dict[str, Any]) -> list[str]:
+        return service["methods"]
 
     @property
     def discovery(self) -> DISCOVERY:

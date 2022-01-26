@@ -33,7 +33,7 @@ class TestApiGatewayConfig(unittest.TestCase):
         rest = config.rest
 
         self.assertEqual("localhost", rest.host)
-        self.assertEqual(55909, rest.port)
+        self.assertEqual(5566, rest.port)
 
     def test_config_rest_cors(self):
         config = ApiGatewayConfig(path=self.config_file_path)
@@ -47,9 +47,11 @@ class TestApiGatewayConfig(unittest.TestCase):
 
         self.assertEqual(True, auth.enabled)
         self.assertEqual("localhost", auth.host)
-        self.assertEqual(8082, auth.port)
-        self.assertEqual("POST", auth.method)
-        self.assertEqual("/token", auth.path)
+        self.assertEqual(55909, auth.port)
+        self.assertEqual("/auth", auth.path)
+
+        endpoints = auth.endpoints
+        self.assertGreater(len(endpoints), 0)
 
     def test_config_rest_auth_none(self):
         config = ApiGatewayConfig(path=BASE_PATH / "config_without_auth.yml")
@@ -112,13 +114,6 @@ class TestApiGatewayConfig(unittest.TestCase):
 
         self.assertEqual(9999, auth.port)
 
-    @mock.patch.dict(os.environ, {"API_GATEWAY_REST_AUTH_METHOD": "GET"})
-    def test_overwrite_with_environment_rest_auth_method(self):
-        config = ApiGatewayConfig(path=self.config_file_path)
-        auth = config.rest.auth
-
-        self.assertEqual("GET", auth.method)
-
     @mock.patch.dict(os.environ, {"API_GATEWAY_REST_AUTH_PATH": "/auth"})
     def test_overwrite_with_environment_rest_auth_path(self):
         config = ApiGatewayConfig(path=self.config_file_path)
@@ -152,12 +147,6 @@ class TestApiGatewayConfig(unittest.TestCase):
         auth = config.rest.auth
 
         self.assertEqual(9999, auth.port)
-
-    def test_overwrite_with_parameter_rest_auth_method(self):
-        config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_auth_method="GET")
-        auth = config.rest.auth
-
-        self.assertEqual("GET", auth.method)
 
     def test_overwrite_with_parameter_rest_auth_path(self):
         config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_auth_path="/auth")

@@ -1,15 +1,32 @@
 rest:
-    host: localhost
-    port: 55909
-    cors:
+  host: localhost
+  port: 5566
+  cors:
+    enabled: true
+  auth:
       enabled: true
-    auth:
-        enabled: true
-        host: localhost
-        port: 8082
-        method: POST
-        path: /token
+      host: localhost
+      port: 55909
+      path: /auth
+      services:
+          - name: token
+          - name: credentials
+      default: token
+      endpoints:
+          - url: "*://*/merchants/*"
+            methods:
+          - url: "*://*/categories/*"
+            methods:
+                - GET
+          - url: "*://test_2/*"
+            methods:
+                - GET
+                - PUT
+                - POST
+          - url: "*://test_1/order*"
+            methods:
+                - GET
 discovery:
-    host: localhost
-    port: 5567
+  host: localhost
+  port: 5567
 
