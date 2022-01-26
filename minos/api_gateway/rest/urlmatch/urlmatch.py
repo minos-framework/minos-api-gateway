@@ -58,7 +58,7 @@ class UrlMatch:
             safe_characters = r"[^\/:.]"
             pattern_regex += r"(?:{safe}+(?:\:{safe}+)?@)?".format(safe=safe_characters)
 
-        pattern = pattern[len(result.group(0)):]
+        pattern = pattern[len(result.group(0)) :]
 
         domain_and_path_regex = r"^(?:\*|(\*\.)?([^\/*]+))"
         if path_required:
@@ -68,7 +68,7 @@ class UrlMatch:
         if not result:
             raise BadMatchPattern("Invalid domain or path: {}".format(pattern))
 
-        pattern = pattern[len(result.group(0)):]
+        pattern = pattern[len(result.group(0)) :]
 
         if result.group(0) == "*":
             pattern_regex += "[^/]+"

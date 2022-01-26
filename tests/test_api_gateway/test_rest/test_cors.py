@@ -1,7 +1,5 @@
 import os
-from unittest import (
-    mock,
-)
+from unittest import mock
 
 import attr
 from aiohttp.test_utils import (
@@ -20,12 +18,8 @@ from minos.api_gateway.rest import (
     ApiGatewayConfig,
     ApiGatewayRestService,
 )
-from tests.mock_servers.server import (
-    MockServer,
-)
-from tests.utils import (
-    BASE_PATH,
-)
+from tests.mock_servers.server import MockServer
+from tests.utils import BASE_PATH
 
 
 class TestApiGatewayCORS(AioHTTPTestCase):

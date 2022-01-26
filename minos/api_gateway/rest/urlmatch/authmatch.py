@@ -1,6 +1,4 @@
-from .urlmatch import (
-    UrlMatch,
-)
+from .urlmatch import UrlMatch
 
 
 class AuthMatch(UrlMatch):

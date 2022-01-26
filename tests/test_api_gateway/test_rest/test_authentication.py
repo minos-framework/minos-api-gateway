@@ -1,30 +1,20 @@
 import os
 import unittest
-from unittest import (
-    mock,
-)
-from uuid import (
-    uuid4,
-)
+from unittest import mock
+from uuid import uuid4
 
 from aiohttp.test_utils import (
     AioHTTPTestCase,
     unittest_run_loop,
 )
-from werkzeug.exceptions import (
-    abort,
-)
+from werkzeug.exceptions import abort
 
 from minos.api_gateway.rest import (
     ApiGatewayConfig,
     ApiGatewayRestService,
 )
-from tests.mock_servers.server import (
-    MockServer,
-)
-from tests.utils import (
-    BASE_PATH,
-)
+from tests.mock_servers.server import MockServer
+from tests.utils import BASE_PATH
 
 
 class TestApiGatewayAuthentication(AioHTTPTestCase):
@@ -46,9 +36,7 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
         self.microservice.add_json_response(
             "/merchants/5", "Microservice call correct!!!", methods=("GET", "PUT", "PATCH", "DELETE",)
         )
-        self.microservice.add_json_response(
-            "/categories/5", "Microservice call correct!!!", methods=("GET",)
-        )
+        self.microservice.add_json_response("/categories/5", "Microservice call correct!!!", methods=("GET",))
         self.microservice.add_json_response("/order", "Microservice call correct!!!", methods=("POST",))
 
         self.authentication_service = MockServer(host=self.config.rest.auth.host, port=self.config.rest.auth.port)

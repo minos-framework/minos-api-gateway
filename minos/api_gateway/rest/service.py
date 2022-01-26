@@ -1,18 +1,10 @@
 import logging
 
-from aiohttp import (
-    web,
-)
-from aiohttp_middlewares import (
-    cors_middleware,
-)
-from aiomisc.service.aiohttp import (
-    AIOHTTPService,
-)
+from aiohttp import web
+from aiohttp_middlewares import cors_middleware
+from aiomisc.service.aiohttp import AIOHTTPService
 
-from .config import (
-    ApiGatewayConfig,
-)
+from .config import ApiGatewayConfig
 from .handler import (
     authentication,
     authentication_default,
