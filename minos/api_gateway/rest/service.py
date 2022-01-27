@@ -14,6 +14,7 @@ from .config import (
     ApiGatewayConfig,
 )
 from .handler import (
+    AdminHandler,
     authentication,
     authentication_default,
     orchestrate,
@@ -42,6 +43,7 @@ class ApiGatewayRestService(AIOHTTPService):
             for service in auth.services:
                 app.router.add_route("*", f"/auth/{service.name}", authentication)
 
+        app.router.add_route("POST", "/admin/login", AdminHandler.login)
         app.router.add_route("*", "/{endpoint:.*}", orchestrate)
 
         return app

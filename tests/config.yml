@@ -1,6 +1,9 @@
 rest:
   host: localhost
   port: 5566
+  admin:
+      username: test_user
+      password: Admin1234
   cors:
     enabled: true
   auth:
