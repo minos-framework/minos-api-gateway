@@ -5,17 +5,21 @@ from typing import (
     Any,
     Optional,
 )
-
+from datetime import (
+    datetime,
+)
 from aiohttp import (
     ClientConnectorError,
     ClientResponse,
     ClientSession,
     web,
 )
+from sqlalchemy.orm import sessionmaker
 from yarl import (
     URL,
 )
 
+from minos.api_gateway.rest.database.models import Endpoint
 from minos.api_gateway.rest.urlmatch.authmatch import (
     AuthMatch,
 )
@@ -197,3 +201,27 @@ class AdminHandler:
             return web.json_response({"error": "Wrong username or password!."}, status=web.HTTPUnauthorized.status_code)
         except Exception:
             return web.json_response({"error": "Something went wrong!."}, status=web.HTTPUnauthorized.status_code)
+
+
+async def create_endpoint(engine):
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+
+    now = datetime.now()
+
+    # Add a new book
+    endpoint = Endpoint(
+        endpoint="Test",
+        created_at=now,
+        updated_at=now,
+    )
+
+    session.add(endpoint)
+
+    # Commit to the database
+    session.commit()
+
+    r = session.query(Endpoint).first()
+    if r is not None:
+        pass
