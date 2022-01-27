@@ -41,6 +41,13 @@ class TestApiGatewayConfig(unittest.TestCase):
 
         self.assertEqual(True, cors.enabled)
 
+    def test_config_rest_admin(self):
+        config = ApiGatewayConfig(path=self.config_file_path)
+        admin = config.rest.admin
+
+        self.assertEqual("test_user", admin.username)
+        self.assertEqual("Admin1234", admin.password)
+
     def test_config_rest_auth(self):
         config = ApiGatewayConfig(path=self.config_file_path)
         auth = config.rest.auth

@@ -22,11 +22,12 @@ from .exceptions import (
     ApiGatewayConfigException,
 )
 
-REST = collections.namedtuple("Rest", "host port cors auth")
+REST = collections.namedtuple("Rest", "host port cors auth admin")
 DISCOVERY = collections.namedtuple("Discovery", "host port")
 CORS = collections.namedtuple("Cors", "enabled")
 AUTH_SERVICE = collections.namedtuple("AuthService", "name")
 ENDPOINT = collections.namedtuple("Endpoint", "url methods")
+REST_ADMIN = collections.namedtuple("RestAdmin", "username password")
 AUTH = collections.namedtuple("Auth", "enabled host port path services default endpoints")
 
 _ENVIRONMENT_MAPPER = {
@@ -107,7 +108,13 @@ class ApiGatewayConfig(abc.ABC):
 
         :return: A ``REST`` NamedTuple instance.
         """
-        return REST(host=self._get("rest.host"), port=int(self._get("rest.port")), cors=self._cors, auth=self._auth)
+        return REST(
+            host=self._get("rest.host"),
+            port=int(self._get("rest.port")),
+            cors=self._cors,
+            auth=self._auth,
+            admin=self._admin,
+        )
 
     @property
     def _cors(self) -> CORS:
@@ -116,6 +123,14 @@ class ApiGatewayConfig(abc.ABC):
         :return: A ``CORS`` NamedTuple instance.
         """
         return CORS(enabled=self._get("rest.cors.enabled"))
+
+    @property
+    def _admin(self) -> REST_ADMIN:
+        """Get the cors config.
+
+        :return: A ``CORS`` NamedTuple instance.
+        """
+        return REST_ADMIN(username=self._get("rest.admin.username"), password=self._get("rest.admin.password"))
 
     @property
     def _auth(self) -> t.Optional[AUTH]:

@@ -1,5 +1,6 @@
 import json
 import logging
+import secrets
 from typing import (
     Any,
     Optional,
@@ -173,3 +174,26 @@ async def _clone_response(response: ClientResponse) -> web.Response:
     return web.Response(
         body=await response.read(), status=response.status, reason=response.reason, headers=response.headers,
     )
+
+
+class AdminHandler:
+    @staticmethod
+    async def login(request: web.Request) -> web.Response:
+        """ Orchestrate discovery and microservice call """
+        username = request.app["config"].rest.admin.username
+        password = request.app["config"].rest.admin.password
+
+        try:
+            content = await request.json()
+
+            if "user" not in content and "password" not in content:
+                return web.json_response(
+                    {"error": "Wrong data. Provide user and password."}, status=web.HTTPUnauthorized.status_code
+                )
+
+            if username == content["username"] and password == content["password"]:
+                return web.json_response({"id": 1, "token": secrets.token_hex(20)})
+
+            return web.json_response({"error": "Wrong username or password!."}, status=web.HTTPUnauthorized.status_code)
+        except Exception:
+            return web.json_response({"error": "Something went wrong!."}, status=web.HTTPUnauthorized.status_code)
