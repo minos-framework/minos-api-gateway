@@ -54,6 +54,7 @@ class ApiGatewayRestService(AIOHTTPService):
                 app.router.add_route("*", f"/auth/{service.name}", authentication)
 
         app.router.add_route("POST", "/admin/login", AdminHandler.login)
+        app.router.add_route("GET", "/admin/endpoints", AdminHandler.get_endpoints)
         app.router.add_route("*", "/{endpoint:.*}", orchestrate)
 
         return app

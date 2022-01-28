@@ -202,6 +202,22 @@ class AdminHandler:
         except Exception:
             return web.json_response({"error": "Something went wrong!."}, status=web.HTTPUnauthorized.status_code)
 
+    @staticmethod
+    async def get_endpoints(request: web.Request) -> web.Response:
+        discovery_host = request.app["config"].discovery.host
+        discovery_port = request.app["config"].discovery.port
+
+        url = URL.build(scheme="http", host=discovery_host, port=discovery_port, path="/endpoints")
+
+        try:
+            async with ClientSession() as session:
+                async with session.get(url=url) as response:
+                    return await _clone_response(response)
+        except ClientConnectorError:
+            return web.json_response(
+                {"error": "The requested endpoint is not available."}, status=web.HTTPServiceUnavailable.status_code
+            )
+
 
 async def create_endpoint(engine):
     Session = sessionmaker()
