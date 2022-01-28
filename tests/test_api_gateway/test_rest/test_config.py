@@ -48,6 +48,15 @@ class TestApiGatewayConfig(unittest.TestCase):
         self.assertEqual("test_user", admin.username)
         self.assertEqual("Admin1234", admin.password)
 
+    def test_config_database(self):
+        config = ApiGatewayConfig(path=self.config_file_path)
+        database = config.database
+
+        self.assertEqual("api_gateway_db", database.dbname)
+        self.assertEqual("minos", database.user)
+        self.assertEqual("min0s", database.password)
+        self.assertEqual(5432, database.port)
+
     def test_config_rest_auth(self):
         config = ApiGatewayConfig(path=self.config_file_path)
         auth = config.rest.auth

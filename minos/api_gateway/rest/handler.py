@@ -220,9 +220,9 @@ class AdminHandler:
 
 
 async def create_endpoint(engine):
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
+    session = sessionmaker(bind=engine)
+
+    s = session()
 
     now = datetime.now()
 
@@ -233,11 +233,11 @@ async def create_endpoint(engine):
         updated_at=now,
     )
 
-    session.add(endpoint)
+    s.add(endpoint)
 
     # Commit to the database
-    session.commit()
+    s.commit()
 
-    r = session.query(Endpoint).first()
+    r = s.query(Endpoint).first()
     if r is not None:
         pass
