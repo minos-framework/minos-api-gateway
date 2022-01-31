@@ -18,8 +18,10 @@ from sqlalchemy.orm import sessionmaker
 from yarl import (
     URL,
 )
-
-from minos.api_gateway.rest.database.models import Endpoint
+from .database.repository import (
+    Repository,
+)
+from minos.api_gateway.rest.database.models import AuthRule
 from minos.api_gateway.rest.urlmatch.authmatch import (
     AuthMatch,
 )
@@ -218,26 +220,47 @@ class AdminHandler:
                 {"error": "The requested endpoint is not available."}, status=web.HTTPServiceUnavailable.status_code
             )
 
-
-async def create_endpoint(engine):
-    session = sessionmaker(bind=engine)
-
-    s = session()
-
-    now = datetime.now()
-
-    # Add a new book
-    endpoint = Endpoint(
-        endpoint="Test",
-        created_at=now,
-        updated_at=now,
-    )
-
-    s.add(endpoint)
-
-    # Commit to the database
-    s.commit()
-
-    r = s.query(Endpoint).first()
-    if r is not None:
+    @staticmethod
+    async def get_rules(request: web.Request) -> web.Response:
         pass
+
+    @staticmethod
+    async def get_rule(request: web.Request) -> web.Response:
+        pass
+
+    @staticmethod
+    async def create_rule(request: web.Request) -> web.Response:
+        try:
+            content = await request.json()
+
+            if "service" not in content and "rule" not in content and "methods" not in content:
+                return web.json_response(
+                    {"error": "Wrong data. Provide 'service', 'rule' and 'methods' parameters."}, status=web.HTTPBadRequest.status_code
+                )
+
+            now = datetime.now()
+
+            rule = AuthRule(
+                service=content['service'],
+                rule=content['rule'],
+                methods=content['methods'],
+                created_at=now,
+                updated_at=now,
+            )
+
+            record = Repository(request.app["db_engine"]).create(rule)
+
+            return web.json_response(record)
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)
+
+
+
+    @staticmethod
+    async def update_rule(request: web.Request) -> web.Response:
+        pass
+
+    @staticmethod
+    async def delete_rule(request: web.Request) -> web.Response:
+        pass
+

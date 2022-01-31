@@ -56,6 +56,11 @@ class ApiGatewayRestService(AIOHTTPService):
 
         app.router.add_route("POST", "/admin/login", AdminHandler.login)
         app.router.add_route("GET", "/admin/endpoints", AdminHandler.get_endpoints)
+        app.router.add_route("GET", "/admin/rule", AdminHandler.get_rules)
+        #app.router.add_route("GET", "/admin/rule", AdminHandler.get_rule)
+        app.router.add_route("POST", "/admin/rule", AdminHandler.create_rule)
+        app.router.add_route("PATCH", "/admin/rule", AdminHandler.update_rule)
+        app.router.add_route("DELETE", "/admin/rule", AdminHandler.delete_rule)
         app.router.add_route("*", "/{endpoint:.*}", orchestrate)
 
         return app
