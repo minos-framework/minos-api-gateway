@@ -1,29 +1,33 @@
 import json
 import logging
 import secrets
+from datetime import (
+    datetime,
+)
 from typing import (
     Any,
     Optional,
 )
-from datetime import (
-    datetime,
-)
+
 from aiohttp import (
     ClientConnectorError,
     ClientResponse,
     ClientSession,
     web,
 )
-from sqlalchemy.orm import sessionmaker
 from yarl import (
     URL,
 )
-from .database.repository import (
-    Repository,
+
+from minos.api_gateway.rest.database.models import (
+    AuthRule,
 )
-from minos.api_gateway.rest.database.models import AuthRule
 from minos.api_gateway.rest.urlmatch.authmatch import (
     AuthMatch,
+)
+
+from .database.repository import (
+    Repository,
 )
 
 logger = logging.getLogger(__name__)
@@ -222,7 +226,8 @@ class AdminHandler:
 
     @staticmethod
     async def get_rules(request: web.Request) -> web.Response:
-        pass
+        records = Repository(request.app["db_engine"]).get_all()
+        return web.json_response(records)
 
     @staticmethod
     async def get_rule(request: web.Request) -> web.Response:
@@ -235,15 +240,16 @@ class AdminHandler:
 
             if "service" not in content and "rule" not in content and "methods" not in content:
                 return web.json_response(
-                    {"error": "Wrong data. Provide 'service', 'rule' and 'methods' parameters."}, status=web.HTTPBadRequest.status_code
+                    {"error": "Wrong data. Provide 'service', 'rule' and 'methods' parameters."},
+                    status=web.HTTPBadRequest.status_code,
                 )
 
             now = datetime.now()
 
             rule = AuthRule(
-                service=content['service'],
-                rule=content['rule'],
-                methods=content['methods'],
+                service=content["service"],
+                rule=content["rule"],
+                methods=content["methods"],
                 created_at=now,
                 updated_at=now,
             )
@@ -254,13 +260,21 @@ class AdminHandler:
         except Exception as e:
             return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)
 
-
-
     @staticmethod
     async def update_rule(request: web.Request) -> web.Response:
-        pass
+        try:
+            id = int(request.url.name)
+            content = await request.json()
+            Repository(request.app["db_engine"]).update(id=id, **content)
+            return web.json_response(status=web.HTTPOk.status_code)
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)
 
     @staticmethod
     async def delete_rule(request: web.Request) -> web.Response:
-        pass
-
+        try:
+            id = int(request.url.name)
+            Repository(request.app["db_engine"]).delete(id)
+            return web.json_response(status=web.HTTPOk.status_code)
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)

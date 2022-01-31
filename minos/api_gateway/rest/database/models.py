@@ -1,11 +1,10 @@
-
 from sqlalchemy import (
+    JSON,
     TIMESTAMP,
     Column,
     Integer,
-    String,
-    JSON,
     Sequence,
+    String,
 )
 from sqlalchemy.ext.declarative import (
     declarative_base,
@@ -32,9 +31,38 @@ class AuthRule(Base):
         )
 
     def to_dict(self):
-        return {"id": self.id, "service": self.service, "rule": self.rule,
-            "methods": self.methods, "created_at": self.created_at, "updated_at": self.updated_at}
+        return {
+            "id": self.id,
+            "service": self.service,
+            "rule": self.rule,
+            "methods": self.methods,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
 
     def to_serializable_dict(self):
-        return {"id": self.id, "service": self.service, "rule": self.rule,
-            "methods": self.methods, "created_at": str(self.created_at), "updated_at": str(self.updated_at)}
+        return {
+            "id": self.id,
+            "service": self.service,
+            "rule": self.rule,
+            "methods": self.methods,
+            "created_at": str(self.created_at),
+            "updated_at": str(self.updated_at),
+        }
+
+
+class AuthRuleDTO:
+    id: int
+    service: str
+    rule: str
+    methods: list
+    created_at: str
+    updated_at: str
+
+    def __init__(self, model: AuthRule):
+        self.id = model.id
+        self.service = model.service
+        self.rule = model.rule
+        self.methods = model.methods
+        self.created_at = str(model.created_at)
+        self.updated_at = str(model.updated_at)
