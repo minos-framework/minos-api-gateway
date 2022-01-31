@@ -1,22 +1,37 @@
 import json
 import logging
 import secrets
+from datetime import (
+    datetime,
+)
 from typing import (
     Any,
     Optional,
 )
-from datetime import datetime
+
 from aiohttp import (
     ClientConnectorError,
     ClientResponse,
     ClientSession,
     web,
 )
-from sqlalchemy.orm import sessionmaker
-from yarl import URL
-from .database.repository import Repository
-from minos.api_gateway.rest.database.models import AuthRule
-from minos.api_gateway.rest.urlmatch.authmatch import AuthMatch
+from sqlalchemy.orm import (
+    sessionmaker,
+)
+from yarl import (
+    URL,
+)
+
+from minos.api_gateway.rest.database.models import (
+    AuthRule,
+)
+from minos.api_gateway.rest.urlmatch.authmatch import (
+    AuthMatch,
+)
+
+from .database.repository import (
+    Repository,
+)
 
 logger = logging.getLogger(__name__)
 

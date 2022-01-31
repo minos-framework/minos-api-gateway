@@ -1,5 +1,10 @@
-from sqlalchemy.orm import sessionmaker
-from .models import AuthRule
+from sqlalchemy.orm import (
+    sessionmaker,
+)
+
+from .models import (
+    AuthRule,
+)
 
 
 class Repository:
