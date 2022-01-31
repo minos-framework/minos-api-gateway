@@ -5,9 +5,7 @@ from typing import (
     Any,
     Optional,
 )
-from datetime import (
-    datetime,
-)
+from datetime import datetime
 from aiohttp import (
     ClientConnectorError,
     ClientResponse,
@@ -15,16 +13,10 @@ from aiohttp import (
     web,
 )
 from sqlalchemy.orm import sessionmaker
-from yarl import (
-    URL,
-)
-from .database.repository import (
-    Repository,
-)
+from yarl import URL
+from .database.repository import Repository
 from minos.api_gateway.rest.database.models import AuthRule
-from minos.api_gateway.rest.urlmatch.authmatch import (
-    AuthMatch,
-)
+from minos.api_gateway.rest.urlmatch.authmatch import AuthMatch
 
 logger = logging.getLogger(__name__)
 
@@ -235,15 +227,16 @@ class AdminHandler:
 
             if "service" not in content and "rule" not in content and "methods" not in content:
                 return web.json_response(
-                    {"error": "Wrong data. Provide 'service', 'rule' and 'methods' parameters."}, status=web.HTTPBadRequest.status_code
+                    {"error": "Wrong data. Provide 'service', 'rule' and 'methods' parameters."},
+                    status=web.HTTPBadRequest.status_code,
                 )
 
             now = datetime.now()
 
             rule = AuthRule(
-                service=content['service'],
-                rule=content['rule'],
-                methods=content['methods'],
+                service=content["service"],
+                rule=content["rule"],
+                methods=content["methods"],
                 created_at=now,
                 updated_at=now,
             )
@@ -254,8 +247,6 @@ class AdminHandler:
         except Exception as e:
             return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)
 
-
-
     @staticmethod
     async def update_rule(request: web.Request) -> web.Response:
         pass
@@ -263,4 +254,3 @@ class AdminHandler:
     @staticmethod
     async def delete_rule(request: web.Request) -> web.Response:
         pass
-

@@ -1,23 +1,11 @@
 import logging
 
-from aiohttp import (
-    web,
-)
-from aiohttp_middlewares import (
-    cors_middleware,
-)
-from aiomisc.service.aiohttp import (
-    AIOHTTPService,
-)
-from sqlalchemy import (
-    create_engine,
-)
-from .config import (
-    ApiGatewayConfig,
-)
-from .database.models import (
-    Base,
-)
+from aiohttp import web
+from aiohttp_middlewares import cors_middleware
+from aiomisc.service.aiohttp import AIOHTTPService
+from sqlalchemy import create_engine
+from .config import ApiGatewayConfig
+from .database.models import Base
 from .handler import (
     AdminHandler,
     authentication,
@@ -57,7 +45,7 @@ class ApiGatewayRestService(AIOHTTPService):
         app.router.add_route("POST", "/admin/login", AdminHandler.login)
         app.router.add_route("GET", "/admin/endpoints", AdminHandler.get_endpoints)
         app.router.add_route("GET", "/admin/rule", AdminHandler.get_rules)
-        #app.router.add_route("GET", "/admin/rule", AdminHandler.get_rule)
+        # app.router.add_route("GET", "/admin/rule", AdminHandler.get_rule)
         app.router.add_route("POST", "/admin/rule", AdminHandler.create_rule)
         app.router.add_route("PATCH", "/admin/rule", AdminHandler.update_rule)
         app.router.add_route("DELETE", "/admin/rule", AdminHandler.delete_rule)

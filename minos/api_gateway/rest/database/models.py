@@ -1,4 +1,3 @@
-
 from sqlalchemy import (
     TIMESTAMP,
     Column,
@@ -7,9 +6,7 @@ from sqlalchemy import (
     JSON,
     Sequence,
 )
-from sqlalchemy.ext.declarative import (
-    declarative_base,
-)
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
@@ -32,9 +29,21 @@ class AuthRule(Base):
         )
 
     def to_dict(self):
-        return {"id": self.id, "service": self.service, "rule": self.rule,
-            "methods": self.methods, "created_at": self.created_at, "updated_at": self.updated_at}
+        return {
+            "id": self.id,
+            "service": self.service,
+            "rule": self.rule,
+            "methods": self.methods,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
 
     def to_serializable_dict(self):
-        return {"id": self.id, "service": self.service, "rule": self.rule,
-            "methods": self.methods, "created_at": str(self.created_at), "updated_at": str(self.updated_at)}
+        return {
+            "id": self.id,
+            "service": self.service,
+            "rule": self.rule,
+            "methods": self.methods,
+            "created_at": str(self.created_at),
+            "updated_at": str(self.updated_at),
+        }
