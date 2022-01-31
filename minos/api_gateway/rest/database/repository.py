@@ -27,14 +27,18 @@ class Repository:
             records.append(AuthRuleDTO(record).__dict__)
         return records
 
-    def get(self, id: int):
-        r = self.session.query(AuthRule).filter(AuthRule.id == id).first()
-        return AuthRuleDTO(r).__dict__
-
     def update(self, id: int, **kwargs):
-        self.session.query(AuthRule).filter(AuthRule.id == id).filter(AuthRule.id == id).update(kwargs)
+        self.session.query(AuthRule).filter(AuthRule.id == id).update(kwargs)
         self.session.commit()
 
     def delete(self, id: int):
         self.session.query(AuthRule).filter(AuthRule.id == id).delete()
         self.session.commit()
+
+    def get_by_service(self, service: str):
+        r = self.session.query(AuthRule).filter(AuthRule.service == service).all()
+
+        records = list()
+        for record in r:
+            records.append(AuthRuleDTO(record))
+        return records

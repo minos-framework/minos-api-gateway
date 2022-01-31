@@ -30,16 +30,6 @@ class AuthRule(Base):
             )
         )
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "service": self.service,
-            "rule": self.rule,
-            "methods": self.methods,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at,
-        }
-
     def to_serializable_dict(self):
         return {
             "id": self.id,

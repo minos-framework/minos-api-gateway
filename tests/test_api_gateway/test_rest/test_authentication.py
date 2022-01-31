@@ -1,3 +1,4 @@
+import json
 import os
 import unittest
 from unittest import (
@@ -246,6 +247,10 @@ class TestAuthFailed(AioHTTPTestCase):
 
     @unittest_run_loop
     async def test_auth_unauthorized(self):
+        await self.client.post(
+            "/admin/rules",
+            data=json.dumps({"service": "merchants", "rule": "*://*/merchants/*", "methods": ["GET", "POST"]}),
+        )
         url = "/merchants/jksdksdjskd"
         headers = {"Authorization": "Bearer credential-token-test_01"}
 

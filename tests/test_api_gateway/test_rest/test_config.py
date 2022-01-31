@@ -57,18 +57,6 @@ class TestApiGatewayConfig(unittest.TestCase):
         self.assertEqual("min0s", database.password)
         self.assertEqual(5432, database.port)
 
-    def test_config_rest_auth(self):
-        config = ApiGatewayConfig(path=self.config_file_path)
-        auth = config.rest.auth
-
-        self.assertEqual(True, auth.enabled)
-        self.assertEqual("localhost", auth.host)
-        self.assertEqual(55909, auth.port)
-        self.assertEqual("/auth", auth.path)
-
-        endpoints = auth.endpoints
-        self.assertGreater(len(endpoints), 0)
-
     def test_config_rest_auth_none(self):
         config = ApiGatewayConfig(path=BASE_PATH / "config_without_auth.yml")
         self.assertIsNone(config.rest.auth)

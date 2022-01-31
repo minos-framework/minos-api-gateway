@@ -46,8 +46,8 @@ async def orchestrate(request: web.Request) -> web.Response:
     auth = request.app["config"].rest.auth
     user = None
     if auth is not None and auth.enabled:
-        if AuthMatch.match(
-            url=str(request.url), method=request.method, endpoints=request.app["config"].rest.auth.endpoints
+        if await check_auth_defined(
+            request=request, service=request.url.parts[1], url=str(request.url), method=request.method
         ):
             response = await validate_token(request)
             user = json.loads(response)
@@ -55,6 +55,11 @@ async def orchestrate(request: web.Request) -> web.Response:
 
     microservice_response = await call(**discovery_data, original_req=request, user=user)
     return microservice_response
+
+
+async def check_auth_defined(request: web.Request, service: str, url: str, method: str) -> bool:
+    records = Repository(request.app["db_engine"]).get_by_service(service)
+    return AuthMatch.match(url=url, method=method, records=records)
 
 
 async def authentication_default(request: web.Request) -> web.Response:
@@ -228,10 +233,6 @@ class AdminHandler:
     async def get_rules(request: web.Request) -> web.Response:
         records = Repository(request.app["db_engine"]).get_all()
         return web.json_response(records)
-
-    @staticmethod
-    async def get_rule(request: web.Request) -> web.Response:
-        pass
 
     @staticmethod
     async def create_rule(request: web.Request) -> web.Response:
