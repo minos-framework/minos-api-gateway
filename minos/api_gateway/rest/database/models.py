@@ -15,9 +15,9 @@ Base = declarative_base()
 
 class AuthRule(Base):
     __tablename__ = "auth_rules"
-    id = Column(Integer, Sequence("item_id_seq"), primary_key=True, nullable=False)
-    service = Column(String)
-    rule = Column(String)
+    id = Column(Integer, Sequence("item_id_seq"), nullable=False)
+    service = Column(String, primary_key=True, nullable=False)
+    rule = Column(String, primary_key=True, nullable=False)
     methods = Column(JSON)
     created_at = Column(TIMESTAMP)
     updated_at = Column(TIMESTAMP)

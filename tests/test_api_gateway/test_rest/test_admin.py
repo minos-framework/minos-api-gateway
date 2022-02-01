@@ -195,7 +195,7 @@ class TestApiGatewayAdminRules(AioHTTPTestCase):
         res = await self.client.request(
             "POST",
             url,
-            data=json.dumps({"service": "merchants", "rule": "*://*/merchants/*", "methods": ["GET", "POST"]}),
+            data=json.dumps({"service": "merchants", "rule": "test_rule_update", "methods": ["GET", "POST"]}),
         )
 
         data = json.loads(await res.text())
@@ -219,7 +219,7 @@ class TestApiGatewayAdminRules(AioHTTPTestCase):
         res = await self.client.request(
             "POST",
             url,
-            data=json.dumps({"service": "merchants", "rule": "*://*/merchants/*", "methods": ["GET", "POST"]}),
+            data=json.dumps({"service": "merchants", "rule": "test_rule_delete", "methods": ["GET", "POST"]}),
         )
 
         data = json.loads(await res.text())

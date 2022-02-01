@@ -46,7 +46,7 @@ async def orchestrate(request: web.Request) -> web.Response:
     auth = request.app["config"].rest.auth
     user = None
     if auth is not None and auth.enabled:
-        if await check_auth_defined(
+        if await check_auth(
             request=request, service=request.url.parts[1], url=str(request.url), method=request.method
         ):
             response = await validate_token(request)
@@ -57,7 +57,7 @@ async def orchestrate(request: web.Request) -> web.Response:
     return microservice_response
 
 
-async def check_auth_defined(request: web.Request, service: str, url: str, method: str) -> bool:
+async def check_auth(request: web.Request, service: str, url: str, method: str) -> bool:
     records = Repository(request.app["db_engine"]).get_by_service(service)
     return AuthMatch.match(url=url, method=method, records=records)
 
