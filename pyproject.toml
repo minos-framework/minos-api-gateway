@@ -33,11 +33,12 @@ include = [
 python = "^3.9"
 typer = "^0.3.2"
 cached-property = "^1.5.2"
-aiohttp-middlewares = "^1.2.1"
 aiomisc = "^15.2.16"
 PyYAML = "^6.0"
 SQLAlchemy = "1.4.22"
 psycopg2 = "^2.9.3"
+aiohttp = "^3.8.1"
+aiohttp-middlewares = "^1.2.1"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b"
