@@ -1,21 +1,31 @@
 import json
 import os
 import unittest
-from unittest import mock
-from uuid import uuid4
+from unittest import (
+    mock,
+)
+from uuid import (
+    uuid4,
+)
 
 from aiohttp.test_utils import (
     AioHTTPTestCase,
     unittest_run_loop,
 )
-from werkzeug.exceptions import abort
+from werkzeug.exceptions import (
+    abort,
+)
 
 from minos.api_gateway.rest import (
     ApiGatewayConfig,
     ApiGatewayRestService,
 )
-from tests.mock_servers.server import MockServer
-from tests.utils import BASE_PATH
+from tests.mock_servers.server import (
+    MockServer,
+)
+from tests.utils import (
+    BASE_PATH,
+)
 
 
 class TestApiGatewayAuthentication(AioHTTPTestCase):

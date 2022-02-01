@@ -1,6 +1,9 @@
-from sqlalchemy.orm import sessionmaker
-
-from sqlalchemy import or_
+from sqlalchemy import (
+    or_,
+)
+from sqlalchemy.orm import (
+    sessionmaker,
+)
 
 from .models import (
     AuthRule,

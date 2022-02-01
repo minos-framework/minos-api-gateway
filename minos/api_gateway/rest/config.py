@@ -1,16 +1,26 @@
-from __future__ import annotations
+from __future__ import (
+    annotations,
+)
 
 import abc
 import collections
 import os
 import typing as t
-from distutils import util
-from pathlib import Path
-from typing import Any
+from distutils import (
+    util,
+)
+from pathlib import (
+    Path,
+)
+from typing import (
+    Any,
+)
 
 import yaml
 
-from .exceptions import ApiGatewayConfigException
+from .exceptions import (
+    ApiGatewayConfigException,
+)
 
 REST = collections.namedtuple("Rest", "host port cors auth admin")
 DISCOVERY = collections.namedtuple("Discovery", "host port")
