@@ -1,9 +1,5 @@
-from ..database.models import (
-    AuthRuleDTO,
-)
-from .urlmatch import (
-    UrlMatch,
-)
+from ..database.models import AuthRuleDTO
+from .urlmatch import UrlMatch
 
 
 class AuthMatch(UrlMatch):

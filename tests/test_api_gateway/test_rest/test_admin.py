@@ -1,9 +1,7 @@
 import json
 import os
 import unittest
-from unittest import (
-    mock,
-)
+from unittest import mock
 
 from aiohttp.test_utils import (
     AioHTTPTestCase,
@@ -14,12 +12,8 @@ from minos.api_gateway.rest import (
     ApiGatewayConfig,
     ApiGatewayRestService,
 )
-from tests.mock_servers.server import (
-    MockServer,
-)
-from tests.utils import (
-    BASE_PATH,
-)
+from tests.mock_servers.server import MockServer
+from tests.utils import BASE_PATH
 
 
 class TestApiGatewayAdminLogin(AioHTTPTestCase):

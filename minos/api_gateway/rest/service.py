@@ -1,24 +1,12 @@
 import logging
 
-from aiohttp import (
-    web,
-)
-from aiohttp_middlewares import (
-    cors_middleware,
-)
-from aiomisc.service.aiohttp import (
-    AIOHTTPService,
-)
-from sqlalchemy import (
-    create_engine,
-)
+from aiohttp import web
+from aiohttp_middlewares import cors_middleware
+from aiomisc.service.aiohttp import AIOHTTPService
+from sqlalchemy import create_engine
 
-from .config import (
-    ApiGatewayConfig,
-)
-from .database.models import (
-    Base,
-)
+from .config import ApiGatewayConfig
+from .database.models import Base
 from .handler import (
     AdminHandler,
     authentication,
