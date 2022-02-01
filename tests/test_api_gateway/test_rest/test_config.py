@@ -126,7 +126,7 @@ class TestApiGatewayConfig(unittest.TestCase):
         self.assertEqual("/auth", auth.path)
 
     @mock.patch.dict(os.environ, {"API_GATEWAY_DATABASE_HOST": "test.com"})
-    def test_overwrite_with_environment_rest_auth_path(self):
+    def test_overwrite_with_environment_database_host(self):
         config = ApiGatewayConfig(path=self.config_file_path)
         database = config.database
 
