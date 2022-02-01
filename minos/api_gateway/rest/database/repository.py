@@ -1,9 +1,8 @@
-from sqlalchemy.orm import (
-    sessionmaker,
-)
-
 from sqlalchemy import (
     or_,
+)
+from sqlalchemy.orm import (
+    sessionmaker,
 )
 
 from .models import (
@@ -40,7 +39,7 @@ class Repository:
         self.session.commit()
 
     def get_by_service(self, service: str):
-        r = self.session.query(AuthRule).filter(or_(AuthRule.service == service, AuthRule.service == '*')).all()
+        r = self.session.query(AuthRule).filter(or_(AuthRule.service == service, AuthRule.service == "*")).all()
 
         records = list()
         for record in r:

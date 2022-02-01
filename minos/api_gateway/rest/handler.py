@@ -46,9 +46,7 @@ async def orchestrate(request: web.Request) -> web.Response:
     auth = request.app["config"].rest.auth
     user = None
     if auth is not None and auth.enabled:
-        if await check_auth(
-            request=request, service=request.url.parts[1], url=str(request.url), method=request.method
-        ):
+        if await check_auth(request=request, service=request.url.parts[1], url=str(request.url), method=request.method):
             response = await validate_token(request)
             user = json.loads(response)
             user = user["uuid"]
