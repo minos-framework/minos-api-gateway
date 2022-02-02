@@ -69,10 +69,8 @@ class ApiGatewayRestService(AIOHTTPService):
 
         # Administration routes
         aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader("minos/api_gateway/rest/backend/templates"))
-        # app.router.add_static('/admin', path='minos/api_gateway/rest/backend', name='static',
-        # follow_symlinks=True, show_index=True)
-        app.router.add_route("*", "/administration", self.handler)
-        app.router.add_route("GET", "/administration/{filename:.*}", self._serve_files)
+        app.router.add_route("*", "/administration{path:.*}", self.handler)
+        # app.router.add_route("GET", "/administration/{filename:.*}", self._serve_files)
 
         app.router.add_route("*", "/{endpoint:.*}", orchestrate)
 
@@ -90,12 +88,34 @@ class ApiGatewayRestService(AIOHTTPService):
         Base.metadata.create_all(self.engine)
 
     @aiohttp_jinja2.template("tmpl.jinja2")
-    def handler(self, request):
-        context = {}
-        response = aiohttp_jinja2.render_template("index.html", request, context)
+    async def handler(self, request):
+        try:
+            path = Path(Path.cwd())
+            self._directory = path.resolve()
+            filename = Path(request.match_info["path"].replace("/", "", 1))
+            filepath = self._directory.joinpath("minos", "api_gateway", "rest", "backend", "admin", filename).resolve()
+
+            if filepath.is_file():
+                return await self._get_file(filepath)
+        except Exception:
+            pass
+        response = aiohttp_jinja2.render_template("index.html", request, {})
         response.headers["Content-Language"] = "es"
         return response
 
+    @staticmethod
+    async def _get_file(file_path) -> web.FileResponse:
+        try:
+            return web.FileResponse(path=file_path, status=200)
+        except (ValueError, FileNotFoundError) as error:
+            # relatively safe
+            raise web.HTTPNotFound() from error
+        except web.HTTPForbidden:
+            raise
+        except Exception as error:
+            raise web.HTTPNotFound() from error
+
+    """
     async def _serve_files(self, request: web.Request) -> web.FileResponse:
         rel_url = request.match_info["filename"]
 
@@ -105,9 +125,6 @@ class ApiGatewayRestService(AIOHTTPService):
         try:
             filename = Path(rel_url)
             if filename.anchor:
-                # rel_url is an absolute name like
-                # /static/\\machine_name\c$ or /static/D:\path
-                # where the static dir is totally different
                 raise web.HTTPForbidden()
             filepath = self._directory.joinpath("minos", "api_gateway", "rest", "backend", "admin", filename).resolve()
 
@@ -123,3 +140,4 @@ class ApiGatewayRestService(AIOHTTPService):
             # perm error or other kind!
             request.app.logger.exception(error)
             raise web.HTTPNotFound() from error
+    """
