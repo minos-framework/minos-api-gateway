@@ -1,6 +1,9 @@
 import json
 import logging
 import secrets
+from datetime import (
+    datetime,
+)
 from typing import (
     Any,
     Optional,
@@ -16,8 +19,15 @@ from yarl import (
     URL,
 )
 
+from minos.api_gateway.rest.database.models import (
+    AuthRule,
+)
 from minos.api_gateway.rest.urlmatch.authmatch import (
     AuthMatch,
+)
+
+from .database.repository import (
+    Repository,
 )
 
 logger = logging.getLogger(__name__)
@@ -36,15 +46,18 @@ async def orchestrate(request: web.Request) -> web.Response:
     auth = request.app["config"].rest.auth
     user = None
     if auth is not None and auth.enabled:
-        if AuthMatch.match(
-            url=str(request.url), method=request.method, endpoints=request.app["config"].rest.auth.endpoints
-        ):
+        if await check_auth(request=request, service=request.url.parts[1], url=str(request.url), method=request.method):
             response = await validate_token(request)
             user = json.loads(response)
             user = user["uuid"]
 
     microservice_response = await call(**discovery_data, original_req=request, user=user)
     return microservice_response
+
+
+async def check_auth(request: web.Request, service: str, url: str, method: str) -> bool:
+    records = Repository(request.app["db_engine"]).get_by_service(service)
+    return AuthMatch.match(url=url, method=method, records=records)
 
 
 async def authentication_default(request: web.Request) -> web.Response:
@@ -197,3 +210,70 @@ class AdminHandler:
             return web.json_response({"error": "Wrong username or password!."}, status=web.HTTPUnauthorized.status_code)
         except Exception:
             return web.json_response({"error": "Something went wrong!."}, status=web.HTTPUnauthorized.status_code)
+
+    @staticmethod
+    async def get_endpoints(request: web.Request) -> web.Response:
+        discovery_host = request.app["config"].discovery.host
+        discovery_port = request.app["config"].discovery.port
+
+        url = URL.build(scheme="http", host=discovery_host, port=discovery_port, path="/endpoints")
+
+        try:
+            async with ClientSession() as session:
+                async with session.get(url=url) as response:
+                    return await _clone_response(response)
+        except ClientConnectorError:
+            return web.json_response(
+                {"error": "The requested endpoint is not available."}, status=web.HTTPServiceUnavailable.status_code
+            )
+
+    @staticmethod
+    async def get_rules(request: web.Request) -> web.Response:
+        records = Repository(request.app["db_engine"]).get_all()
+        return web.json_response(records)
+
+    @staticmethod
+    async def create_rule(request: web.Request) -> web.Response:
+        try:
+            content = await request.json()
+
+            if "service" not in content and "rule" not in content and "methods" not in content:
+                return web.json_response(
+                    {"error": "Wrong data. Provide 'service', 'rule' and 'methods' parameters."},
+                    status=web.HTTPBadRequest.status_code,
+                )
+
+            now = datetime.now()
+
+            rule = AuthRule(
+                service=content["service"],
+                rule=content["rule"],
+                methods=content["methods"],
+                created_at=now,
+                updated_at=now,
+            )
+
+            record = Repository(request.app["db_engine"]).create(rule)
+
+            return web.json_response(record)
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)
+
+    @staticmethod
+    async def update_rule(request: web.Request) -> web.Response:
+        try:
+            id = int(request.url.name)
+            content = await request.json()
+            Repository(request.app["db_engine"]).update(id=id, **content)
+            return web.json_response(status=web.HTTPOk.status_code)
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)
+
+    @staticmethod
+    async def delete_rule(request: web.Request) -> web.Response:
+        try:
+            id = int(request.url.name)
+            Repository(request.app["db_engine"]).delete(id)
+            return web.json_response(status=web.HTTPOk.status_code)
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)

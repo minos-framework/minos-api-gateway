@@ -26,9 +26,9 @@ REST = collections.namedtuple("Rest", "host port cors auth admin")
 DISCOVERY = collections.namedtuple("Discovery", "host port")
 CORS = collections.namedtuple("Cors", "enabled")
 AUTH_SERVICE = collections.namedtuple("AuthService", "name")
-ENDPOINT = collections.namedtuple("Endpoint", "url methods")
 REST_ADMIN = collections.namedtuple("RestAdmin", "username password")
-AUTH = collections.namedtuple("Auth", "enabled host port path services default endpoints")
+DATABASE = collections.namedtuple("Database", "dbname user password host port")
+AUTH = collections.namedtuple("Auth", "enabled host port path services default")
 
 _ENVIRONMENT_MAPPER = {
     "rest.host": "API_GATEWAY_REST_HOST",
@@ -38,6 +38,11 @@ _ENVIRONMENT_MAPPER = {
     "rest.auth.host": "API_GATEWAY_REST_AUTH_HOST",
     "rest.auth.port": "API_GATEWAY_REST_AUTH_PORT",
     "rest.auth.path": "API_GATEWAY_REST_AUTH_PATH",
+    "database.dbname": "API_GATEWAY_DATABASE_NAME",
+    "database.user": "API_GATEWAY_DATABASE_USER",
+    "database.password": "API_GATEWAY_DATABASE_PASSWORD",
+    "database.host": "API_GATEWAY_DATABASE_HOST",
+    "database.port": "API_GATEWAY_DATABASE_PORT",
     "discovery.host": "API_GATEWAY_DISCOVERY_HOST",
     "discovery.port": "API_GATEWAY_DISCOVERY_PORT",
 }
@@ -50,6 +55,11 @@ _PARAMETERIZED_MAPPER = {
     "rest.auth.host": "api_gateway_rest_auth_host",
     "rest.auth.port": "api_gateway_rest_auth_port",
     "rest.auth.path": "api_gateway_rest_auth_path",
+    "database.database": "api_gateway_database_name",
+    "database.user": "api_gateway_database_user",
+    "database.password": "api_gateway_database_password",
+    "database.host": "api_gateway_database_host",
+    "database.port": "api_gateway_database_port",
     "discovery.host": "api_gateway_discovery_host",
     "discovery.port": "api_gateway_discovery_port",
 }
@@ -136,7 +146,6 @@ class ApiGatewayConfig(abc.ABC):
     def _auth(self) -> t.Optional[AUTH]:
         try:
             services = self._auth_services
-            endpoints = self._auth_endpoints
             return AUTH(
                 enabled=self._get("rest.auth.enabled"),
                 host=self._get("rest.auth.host"),
@@ -144,7 +153,6 @@ class ApiGatewayConfig(abc.ABC):
                 path=self._get("rest.auth.path"),
                 services=services,
                 default=self._get("rest.auth.default"),
-                endpoints=endpoints,
             )
         except KeyError:
             return None
@@ -160,16 +168,18 @@ class ApiGatewayConfig(abc.ABC):
         return AUTH_SERVICE(name=service["name"],)
 
     @property
-    def _auth_endpoints(self) -> list[ENDPOINT]:
-        info = self._get("rest.auth.endpoints")
-        endpoints = [self._auth_endpoint_entry(service) for service in info]
-        return endpoints
+    def database(self) -> DATABASE:
+        """Get the rest config.
 
-    def _auth_endpoint_entry(self, service: dict[str, Any]) -> ENDPOINT:
-        return ENDPOINT(url=service["url"], methods=self._service_methods(service))
-
-    def _service_methods(self, service: dict[str, Any]) -> list[str]:
-        return service["methods"]
+        :return: A ``REST`` NamedTuple instance.
+        """
+        return DATABASE(
+            dbname=self._get("database.dbname"),
+            user=self._get("database.user"),
+            password=self._get("database.password"),
+            host=self._get("database.host"),
+            port=int(self._get("database.port")),
+        )
 
     @property
     def discovery(self) -> DISCOVERY:

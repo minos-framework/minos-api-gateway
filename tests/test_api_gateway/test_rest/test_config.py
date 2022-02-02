@@ -48,17 +48,14 @@ class TestApiGatewayConfig(unittest.TestCase):
         self.assertEqual("test_user", admin.username)
         self.assertEqual("Admin1234", admin.password)
 
-    def test_config_rest_auth(self):
+    def test_config_database(self):
         config = ApiGatewayConfig(path=self.config_file_path)
-        auth = config.rest.auth
+        database = config.database
 
-        self.assertEqual(True, auth.enabled)
-        self.assertEqual("localhost", auth.host)
-        self.assertEqual(55909, auth.port)
-        self.assertEqual("/auth", auth.path)
-
-        endpoints = auth.endpoints
-        self.assertGreater(len(endpoints), 0)
+        self.assertEqual("api_gateway_db", database.dbname)
+        self.assertEqual("minos", database.user)
+        self.assertEqual("min0s", database.password)
+        self.assertEqual(5432, database.port)
 
     def test_config_rest_auth_none(self):
         config = ApiGatewayConfig(path=BASE_PATH / "config_without_auth.yml")
@@ -127,6 +124,13 @@ class TestApiGatewayConfig(unittest.TestCase):
         auth = config.rest.auth
 
         self.assertEqual("/auth", auth.path)
+
+    @mock.patch.dict(os.environ, {"API_GATEWAY_DATABASE_HOST": "test.com"})
+    def test_overwrite_with_environment_database_host(self):
+        config = ApiGatewayConfig(path=self.config_file_path)
+        database = config.database
+
+        self.assertEqual("test.com", database.host)
 
     def test_overwrite_with_parameter(self):
         config = ApiGatewayConfig(path=self.config_file_path, api_gateway_rest_host="::1")

@@ -15,6 +15,12 @@ rest:
           - name: token
           - name: credentials
       default: token
+database:
+    dbname: api_gateway_db
+    user: minos
+    password: min0s
+    host: localhost
+    port: 5432
 discovery:
   host: localhost
   port: 5567

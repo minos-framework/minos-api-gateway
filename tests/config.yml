@@ -15,20 +15,12 @@ rest:
           - name: token
           - name: credentials
       default: token
-      endpoints:
-          - url: "*://*/merchants/*"
-            methods:
-          - url: "*://*/categories/*"
-            methods:
-                - GET
-          - url: "*://test_2/*"
-            methods:
-                - GET
-                - PUT
-                - POST
-          - url: "*://test_1/order*"
-            methods:
-                - GET
+database:
+    dbname: api_gateway_db
+    user: minos
+    password: min0s
+    host: localhost
+    port: 5432
 discovery:
   host: localhost
   port: 5567
