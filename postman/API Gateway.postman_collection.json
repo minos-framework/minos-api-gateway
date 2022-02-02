@@ -217,7 +217,159 @@
 			]
 		},
 		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5566/admin/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5566",
+							"path": [
+								"admin",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Endpoints",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5566/admin/endpoints",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5566",
+							"path": [
+								"admin",
+								"endpoints"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Rule",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"merchant\",\n    \"rule\": \"ABC\",\n    \"methods\": [\"GET\", \"POST\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5566/admin/rules",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5566",
+							"path": [
+								"admin",
+								"rules"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Rules",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5566/admin/rules",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5566",
+							"path": [
+								"admin",
+								"rules"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Rule",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5566/admin/rules/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5566",
+							"path": [
+								"admin",
+								"rules",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Merchant ms",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "59d74df41db7caacfd6e4c4b7bbdcec7eafc3450",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "fc6da8e1db82417ebde897a6b7267fe75dc8b800",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5566/merchants/72b0a7a3-6e96-4be8-8f6b-fa4ce9d5b395",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5566",
+					"path": [
+						"merchants",
+						"72b0a7a3-6e96-4be8-8f6b-fa4ce9d5b395"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "URL Match Test",
 			"request": {
 				"auth": {
 					"type": "bearer",
