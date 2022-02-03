@@ -3,6 +3,15 @@ rest:
     port: 55909
     cors:
       enabled: false
+    admin:
+        username: test_user
+        password: Admin1234
+database:
+    dbname: api_gateway_db
+    user: minos
+    password: min0s
+    host: localhost
+    port: 5432
 discovery:
     host: localhost
     port: 5567

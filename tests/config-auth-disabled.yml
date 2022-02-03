@@ -7,7 +7,7 @@ rest:
   cors:
     enabled: true
   auth:
-      enabled: true
+      enabled: false
       host: localhost
       port: 55909
       path: /auth
