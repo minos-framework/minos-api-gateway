@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>minos.api_gateway.rest.config module &mdash; API Gateway 0.1.2 documentation</title>
+  <title>minos.api_gateway.rest.config module &mdash; API Gateway 0.2.0 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.2
+                0.2.0
               </div>
             
           
@@ -171,6 +171,12 @@
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">minos.api_gateway.rest.config.Auth</span></code></p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.config.AUTH_SERVICE">
+<span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.config.</span></span><span class="sig-name descname"><span class="pre">AUTH_SERVICE</span></span><a class="headerlink" href="#minos.api_gateway.rest.config.AUTH_SERVICE" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">minos.api_gateway.rest.config.AuthService</span></code></p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="minos.api_gateway.rest.config.ApiGatewayConfig">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.config.</span></span><span class="sig-name descname"><span class="pre">ApiGatewayConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_environment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/config.html#ApiGatewayConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.config.ApiGatewayConfig" title="Permalink to this definition">¶</a></dt>
@@ -180,6 +186,20 @@
 <dt class="sig sig-object py" id="minos.api_gateway.rest.config.ApiGatewayConfig.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_environment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/config.html#ApiGatewayConfig.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.config.ApiGatewayConfig.__init__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.config.ApiGatewayConfig.database">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">database</span></span><em class="property"><span class="pre">:</span> <span class="pre">minos.api_gateway.rest.config.Database</span></em><a class="headerlink" href="#minos.api_gateway.rest.config.ApiGatewayConfig.database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the rest config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">minos.api_gateway.rest.config.Database</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">REST</span></code> NamedTuple instance.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="minos.api_gateway.rest.config.ApiGatewayConfig.discovery">
@@ -218,6 +238,12 @@
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.config.DATABASE">
+<span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.config.</span></span><span class="sig-name descname"><span class="pre">DATABASE</span></span><a class="headerlink" href="#minos.api_gateway.rest.config.DATABASE" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">minos.api_gateway.rest.config.Database</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="minos.api_gateway.rest.config.DISCOVERY">
 <span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.config.</span></span><span class="sig-name descname"><span class="pre">DISCOVERY</span></span><a class="headerlink" href="#minos.api_gateway.rest.config.DISCOVERY" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">minos.api_gateway.rest.config.Discovery</span></code></p>
@@ -227,6 +253,12 @@
 <dt class="sig sig-object py" id="minos.api_gateway.rest.config.REST">
 <span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.config.</span></span><span class="sig-name descname"><span class="pre">REST</span></span><a class="headerlink" href="#minos.api_gateway.rest.config.REST" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">minos.api_gateway.rest.config.Rest</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.config.REST_ADMIN">
+<span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.config.</span></span><span class="sig-name descname"><span class="pre">REST_ADMIN</span></span><a class="headerlink" href="#minos.api_gateway.rest.config.REST_ADMIN" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">minos.api_gateway.rest.config.RestAdmin</span></code></p>
 </dd></dl>
 
 </div>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>minos.api_gateway.rest.config &mdash; API Gateway 0.1.2 documentation</title>
+  <title>minos.api_gateway.rest.config &mdash; API Gateway 0.2.0 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.2
+                0.2.0
               </div>
             
           
@@ -176,6 +176,9 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Path</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">yaml</span>
 
@@ -183,10 +186,13 @@
     <span class="n">ApiGatewayConfigException</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">REST</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Rest&quot;</span><span class="p">,</span> <span class="s2">&quot;host port cors auth&quot;</span><span class="p">)</span>
+<span class="n">REST</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Rest&quot;</span><span class="p">,</span> <span class="s2">&quot;host port cors auth admin&quot;</span><span class="p">)</span>
 <span class="n">DISCOVERY</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Discovery&quot;</span><span class="p">,</span> <span class="s2">&quot;host port&quot;</span><span class="p">)</span>
 <span class="n">CORS</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Cors&quot;</span><span class="p">,</span> <span class="s2">&quot;enabled&quot;</span><span class="p">)</span>
-<span class="n">AUTH</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Auth&quot;</span><span class="p">,</span> <span class="s2">&quot;enabled host port method path&quot;</span><span class="p">)</span>
+<span class="n">AUTH_SERVICE</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;AuthService&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
+<span class="n">REST_ADMIN</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;RestAdmin&quot;</span><span class="p">,</span> <span class="s2">&quot;username password&quot;</span><span class="p">)</span>
+<span class="n">DATABASE</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Database&quot;</span><span class="p">,</span> <span class="s2">&quot;dbname user password host port&quot;</span><span class="p">)</span>
+<span class="n">AUTH</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Auth&quot;</span><span class="p">,</span> <span class="s2">&quot;enabled host port path services default&quot;</span><span class="p">)</span>
 
 <span class="n">_ENVIRONMENT_MAPPER</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;rest.host&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_REST_HOST&quot;</span><span class="p">,</span>
@@ -195,8 +201,12 @@
     <span class="s2">&quot;rest.auth.enabled&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_REST_AUTH_ENABLED&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rest.auth.host&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_REST_AUTH_HOST&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rest.auth.port&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_REST_AUTH_PORT&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rest.auth.method&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_REST_AUTH_METHOD&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rest.auth.path&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_REST_AUTH_PATH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;database.dbname&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_DATABASE_NAME&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;database.user&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_DATABASE_USER&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;database.password&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_DATABASE_PASSWORD&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;database.host&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_DATABASE_HOST&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;database.port&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_DATABASE_PORT&quot;</span><span class="p">,</span>
     <span class="s2">&quot;discovery.host&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_DISCOVERY_HOST&quot;</span><span class="p">,</span>
     <span class="s2">&quot;discovery.port&quot;</span><span class="p">:</span> <span class="s2">&quot;API_GATEWAY_DISCOVERY_PORT&quot;</span><span class="p">,</span>
 <span class="p">}</span>
@@ -208,8 +218,12 @@
     <span class="s2">&quot;rest.auth.enabled&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_rest_auth_enabled&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rest.auth.host&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_rest_auth_host&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rest.auth.port&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_rest_auth_port&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rest.auth.method&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_rest_auth_method&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rest.auth.path&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_rest_auth_path&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;database.database&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_database_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;database.user&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_database_user&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;database.password&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_database_password&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;database.host&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_database_host&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;database.port&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_database_port&quot;</span><span class="p">,</span>
     <span class="s2">&quot;discovery.host&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_discovery_host&quot;</span><span class="p">,</span>
     <span class="s2">&quot;discovery.port&quot;</span><span class="p">:</span> <span class="s2">&quot;api_gateway_discovery_port&quot;</span><span class="p">,</span>
 <span class="p">}</span>
@@ -268,7 +282,13 @@
 
 <span class="sd">        :return: A ``REST`` NamedTuple instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">REST</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.host&quot;</span><span class="p">),</span> <span class="n">port</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.port&quot;</span><span class="p">)),</span> <span class="n">cors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cors</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">REST</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.host&quot;</span><span class="p">),</span>
+            <span class="n">port</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.port&quot;</span><span class="p">)),</span>
+            <span class="n">cors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cors</span><span class="p">,</span>
+            <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth</span><span class="p">,</span>
+            <span class="n">admin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_admin</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_cors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CORS</span><span class="p">:</span>
@@ -279,17 +299,51 @@
         <span class="k">return</span> <span class="n">CORS</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.cors.enabled&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">REST_ADMIN</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the cors config.</span>
+
+<span class="sd">        :return: A ``CORS`` NamedTuple instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">REST_ADMIN</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.admin.username&quot;</span><span class="p">),</span> <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.admin.password&quot;</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_auth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">AUTH</span><span class="p">]:</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="n">services</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auth_services</span>
             <span class="k">return</span> <span class="n">AUTH</span><span class="p">(</span>
                 <span class="n">enabled</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.auth.enabled&quot;</span><span class="p">),</span>
                 <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.auth.host&quot;</span><span class="p">),</span>
                 <span class="n">port</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.auth.port&quot;</span><span class="p">)),</span>
-                <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.auth.method&quot;</span><span class="p">),</span>
                 <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.auth.path&quot;</span><span class="p">),</span>
+                <span class="n">services</span><span class="o">=</span><span class="n">services</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.auth.default&quot;</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_auth_services</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AUTH_SERVICE</span><span class="p">]:</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;rest.auth.services&quot;</span><span class="p">)</span>
+        <span class="n">services</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_service_entry</span><span class="p">(</span><span class="n">service</span><span class="p">)</span> <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">info</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">services</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_auth_service_entry</span><span class="p">(</span><span class="n">service</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AUTH_SERVICE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">AUTH_SERVICE</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">service</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">database</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DATABASE</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the rest config.</span>
+
+<span class="sd">        :return: A ``REST`` NamedTuple instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DATABASE</span><span class="p">(</span>
+            <span class="n">dbname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;database.dbname&quot;</span><span class="p">),</span>
+            <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;database.user&quot;</span><span class="p">),</span>
+            <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;database.password&quot;</span><span class="p">),</span>
+            <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;database.host&quot;</span><span class="p">),</span>
+            <span class="n">port</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="s2">&quot;database.port&quot;</span><span class="p">)),</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">discovery</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DISCOVERY</span><span class="p">:</span>

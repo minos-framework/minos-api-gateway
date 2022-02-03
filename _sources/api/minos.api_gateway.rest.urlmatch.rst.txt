@@ -1,0 +1,16 @@
+minos.api\_gateway.rest.urlmatch package
+========================================
+
+.. automodule:: minos.api_gateway.rest.urlmatch
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   minos.api_gateway.rest.urlmatch.authmatch
+   minos.api_gateway.rest.urlmatch.urlmatch

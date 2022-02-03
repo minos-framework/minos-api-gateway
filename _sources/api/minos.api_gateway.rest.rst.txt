@@ -6,6 +6,15 @@ minos.api\_gateway.rest package
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   minos.api_gateway.rest.database
+   minos.api_gateway.rest.urlmatch
+
 Submodules
 ----------
 

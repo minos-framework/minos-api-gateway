@@ -1,0 +1,11 @@
+minos.api\_gateway.rest.database namespace
+==========================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   minos.api_gateway.rest.database.models
+   minos.api_gateway.rest.database.repository

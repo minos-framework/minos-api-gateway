@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>minos.api_gateway.rest.handler &mdash; API Gateway 0.1.2 documentation</title>
+  <title>minos.api_gateway.rest.handler &mdash; API Gateway 0.2.0 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.2
+                0.2.0
               </div>
             
           
@@ -162,7 +162,12 @@
            <div itemprop="articleBody">
             
   <h1>Source code for minos.api_gateway.rest.handler</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">secrets</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">datetime</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
@@ -178,8 +183,15 @@
     <span class="n">URL</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">NoTokenException</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">minos.api_gateway.rest.database.models</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AuthRule</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">minos.api_gateway.rest.urlmatch.authmatch</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AuthMatch</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.database.repository</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Repository</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -195,29 +207,81 @@
 
     <span class="n">discovery_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">discover</span><span class="p">(</span><span class="n">discovery_host</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">discovery_port</span><span class="p">),</span> <span class="s2">&quot;/microservices&quot;</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
 
-    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_user</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">auth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">auth</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+        <span class="k">if</span> <span class="k">await</span> <span class="n">check_auth</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">url</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">):</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">validate_token</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]</span>
 
     <span class="n">microservice_response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">call</span><span class="p">(</span><span class="o">**</span><span class="n">discovery_data</span><span class="p">,</span> <span class="n">original_req</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">microservice_response</span></div>
 
 
-<div class="viewcode-block" id="get_user"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.get_user">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Get The user identifier if it is available.</span>
+<div class="viewcode-block" id="check_auth"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.check_auth">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">check_auth</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">,</span> <span class="n">service</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">records</span> <span class="o">=</span> <span class="n">Repository</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;db_engine&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">get_by_service</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">AuthMatch</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">records</span><span class="o">=</span><span class="n">records</span><span class="p">)</span></div>
 
-<span class="sd">    :param request: The external request.</span>
-<span class="sd">    :return: An string value containing the user identifier or ``None`` if no user information is available.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">auth</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span>
-    <span class="k">if</span> <span class="n">auth</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">auth</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="authentication_default"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.authentication_default">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">authentication_default</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Orchestrate discovery and microservice call &quot;&quot;&quot;</span>
+    <span class="n">auth_host</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">host</span>
+    <span class="n">auth_port</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">port</span>
+    <span class="n">auth_path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">path</span>
+    <span class="n">default_service</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">default</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">URL</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">auth_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">auth_port</span><span class="si">}{</span><span class="n">auth_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">default_service</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="k">await</span> <span class="n">authentication_call</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="authentication"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.authentication">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">authentication</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Orchestrate discovery and microservice call &quot;&quot;&quot;</span>
+
+    <span class="n">auth_host</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">host</span>
+    <span class="n">auth_port</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">port</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">URL</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">auth_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">auth_port</span><span class="si">}{</span><span class="n">request</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="k">await</span> <span class="n">authentication_call</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="authentication_call"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.authentication_call">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">authentication_call</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">URL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Orchestrate discovery and microservice call &quot;&quot;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">get_token</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">NoTokenException</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">_clone_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">ClientConnectorError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">web</span><span class="o">.</span><span class="n">HTTPServiceUnavailable</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;The requested endpoint is not available.&quot;</span><span class="p">)</span></div>
 
-    <span class="n">original_headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
-    <span class="k">return</span> <span class="k">await</span> <span class="n">authenticate</span><span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">auth</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">auth</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">auth</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">original_headers</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="validate_token"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.validate_token">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">validate_token</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Orchestrate discovery and microservice call &quot;&quot;&quot;</span>
+    <span class="n">auth_host</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">host</span>
+    <span class="n">auth_port</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">port</span>
+    <span class="n">auth_path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">path</span>
+
+    <span class="n">auth_url</span> <span class="o">=</span> <span class="n">URL</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">auth_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">auth_port</span><span class="si">}{</span><span class="n">auth_path</span><span class="si">}</span><span class="s2">/validate-token&quot;</span><span class="p">)</span>
+
+    <span class="n">headers</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">auth_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                <span class="n">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_clone_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">web</span><span class="o">.</span><span class="n">HTTPUnauthorized</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;The given request does not have authorization to be forwarded.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span>
+
+    <span class="k">except</span> <span class="n">ClientConnectorError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">web</span><span class="o">.</span><span class="n">HTTPServiceUnavailable</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;The requested endpoint is not available.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="discover"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.discover">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">discover</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">verb</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
@@ -263,10 +327,10 @@
 
     <span class="n">headers</span> <span class="o">=</span> <span class="n">original_req</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;User&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-User&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># Enforce that the &#39;User&#39; entry is only generated by the auth system.</span>
         <span class="c1"># noinspection PyTypeChecker</span>
-        <span class="n">headers</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;X-User&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="n">url</span> <span class="o">=</span> <span class="n">original_req</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">with_scheme</span><span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">with_host</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">with_port</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
     <span class="n">method</span> <span class="o">=</span> <span class="n">original_req</span><span class="o">.</span><span class="n">method</span>
@@ -289,41 +353,94 @@
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="authenticate"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.authenticate">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">authenticate</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">authorization_headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Authenticate a request based on its headers.</span>
+<div class="viewcode-block" id="AdminHandler"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.AdminHandler">[docs]</a><span class="k">class</span> <span class="nc">AdminHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="AdminHandler.login"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.AdminHandler.login">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Orchestrate discovery and microservice call &quot;&quot;&quot;</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">username</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">password</span>
 
-<span class="sd">    :param host: The authentication service host.</span>
-<span class="sd">    :param port: The authentication Service port.</span>
-<span class="sd">    :param method: The Authentication Service method.</span>
-<span class="sd">    :param path: The Authentication Service path.</span>
-<span class="sd">    :param authorization_headers: The headers that contain the authentication metadata.</span>
-<span class="sd">    :return: The authenticated user identifier.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">authentication_url</span> <span class="o">=</span> <span class="n">URL</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">authentication_method</span> <span class="o">=</span> <span class="n">method</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Authenticating request...&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="n">ClientSession</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">authorization_headers</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">authentication_method</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">authentication_url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">web</span><span class="o">.</span><span class="n">HTTPUnauthorized</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;The given request does not have authorization to be forwarded.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;user&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">content</span> <span class="ow">and</span> <span class="s2">&quot;password&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Wrong data. Provide user and password.&quot;</span><span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPUnauthorized</span><span class="o">.</span><span class="n">status_code</span>
+                <span class="p">)</span>
 
-                <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-                <span class="k">return</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">username</span> <span class="o">==</span> <span class="n">content</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">password</span> <span class="o">==</span> <span class="n">content</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">(</span><span class="mi">20</span><span class="p">)})</span>
 
-    <span class="k">except</span> <span class="n">ClientConnectorError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">web</span><span class="o">.</span><span class="n">HTTPGatewayTimeout</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;The Authentication Service is not available.&quot;</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Wrong username or password!.&quot;</span><span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPUnauthorized</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Something went wrong!.&quot;</span><span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPUnauthorized</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="AdminHandler.get_endpoints"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.AdminHandler.get_endpoints">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_endpoints</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="n">discovery_host</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">discovery</span><span class="o">.</span><span class="n">host</span>
+        <span class="n">discovery_port</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">discovery</span><span class="o">.</span><span class="n">port</span>
 
-<div class="viewcode-block" id="get_token"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.get_token">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_token</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">headers</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span>
-    <span class="k">if</span> <span class="s2">&quot;Authorization&quot;</span> <span class="ow">in</span> <span class="n">headers</span> <span class="ow">and</span> <span class="s2">&quot;Bearer&quot;</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]:</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">URL</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">scheme</span><span class="o">=</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">discovery_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">discovery_port</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/endpoints&quot;</span><span class="p">)</span>
 
-    <span class="k">raise</span> <span class="n">NoTokenException</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="n">_clone_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ClientConnectorError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;The requested endpoint is not available.&quot;</span><span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPServiceUnavailable</span><span class="o">.</span><span class="n">status_code</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="AdminHandler.get_rules"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.AdminHandler.get_rules">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_rules</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="n">records</span> <span class="o">=</span> <span class="n">Repository</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;db_engine&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">(</span><span class="n">records</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AdminHandler.create_rule"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.AdminHandler.create_rule">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_rule</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="s2">&quot;service&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">content</span> <span class="ow">and</span> <span class="s2">&quot;rule&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">content</span> <span class="ow">and</span> <span class="s2">&quot;methods&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Wrong data. Provide &#39;service&#39;, &#39;rule&#39; and &#39;methods&#39; parameters.&quot;</span><span class="p">},</span>
+                    <span class="n">status</span><span class="o">=</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPBadRequest</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+            <span class="n">rule</span> <span class="o">=</span> <span class="n">AuthRule</span><span class="p">(</span>
+                <span class="n">service</span><span class="o">=</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;service&quot;</span><span class="p">],</span>
+                <span class="n">rule</span><span class="o">=</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;rule&quot;</span><span class="p">],</span>
+                <span class="n">methods</span><span class="o">=</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;methods&quot;</span><span class="p">],</span>
+                <span class="n">created_at</span><span class="o">=</span><span class="n">now</span><span class="p">,</span>
+                <span class="n">updated_at</span><span class="o">=</span><span class="n">now</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">record</span> <span class="o">=</span> <span class="n">Repository</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;db_engine&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)},</span> <span class="n">status</span><span class="o">=</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPBadRequest</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AdminHandler.update_rule"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.AdminHandler.update_rule">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_rule</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="n">Repository</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;db_engine&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="o">**</span><span class="n">content</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPOk</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)},</span> <span class="n">status</span><span class="o">=</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPBadRequest</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AdminHandler.delete_rule"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.AdminHandler.delete_rule">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_rule</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">Repository</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;db_engine&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPOk</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">json_response</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)},</span> <span class="n">status</span><span class="o">=</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPBadRequest</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

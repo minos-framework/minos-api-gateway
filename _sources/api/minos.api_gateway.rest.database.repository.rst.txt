@@ -1,0 +1,7 @@
+minos.api\_gateway.rest.database.repository module
+==================================================
+
+.. automodule:: minos.api_gateway.rest.database.repository
+   :members:
+   :undoc-members:
+   :show-inheritance:
