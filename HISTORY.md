@@ -33,7 +33,7 @@
 
 * Fix bug related with byte-encoded requests forwarding.
 
-## 0.2.0 (2022-2-03)
+## 0.1.3 (2022-2-03)
 
 * Integration with `minos-auth`.
 * Add PostgreSQL database with SQLAlchemy dependency.
