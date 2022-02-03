@@ -32,3 +32,10 @@
 ## 0.1.2 (2021-11-04)
 
 * Fix bug related with byte-encoded requests forwarding.
+
+## 0.2.0 (2022-2-03)
+
+* Integration with `minos-auth`.
+* Add PostgreSQL database with SQLAlchemy dependency.
+* Auth Rules for authentication.
+* Administration section for rules management.
