@@ -39,3 +39,8 @@
 * Add PostgreSQL database with SQLAlchemy dependency.
 * Auth Rules for authentication.
 * Administration section for rules management.
+
+## 0.3.0 (2022-02-04)
+
+* Administration section BugFix getting index file.
+* Adjust default auth routes

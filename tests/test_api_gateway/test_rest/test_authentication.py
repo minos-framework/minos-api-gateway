@@ -120,7 +120,7 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
 
     @unittest_run_loop
     async def test_default_auth_headers(self):
-        url = "/auth"
+        url = "/auth/token"
         headers = {"Authorization": "Bearer credential-token-test"}
 
         response = await self.client.request("POST", url, headers=headers)

@@ -14,7 +14,7 @@ rest:
       services:
           - name: token
           - name: credentials
-      default: token
+      default: credentials
 database:
     dbname: api_gateway_db
     user: minos
