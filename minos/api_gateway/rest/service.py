@@ -71,8 +71,8 @@ class ApiGatewayRestService(AIOHTTPService):
         app.router.add_route("DELETE", "/admin/rules/{id}", AdminHandler.delete_rule)
 
         # Administration routes
-        path = Path(Path.cwd())
-        aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader(f"{path}/minos/api_gateway/rest/backend/templates"))
+        path = Path(__file__).parent
+        aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader(f"{path}/backend/templates"))
         app.router.add_route("*", "/administration{path:.*}", self.handler)
         # app.router.add_route("GET", "/administration/{filename:.*}", self._serve_files)
 
@@ -94,10 +94,9 @@ class ApiGatewayRestService(AIOHTTPService):
     @aiohttp_jinja2.template("tmpl.jinja2")
     async def handler(self, request):
         try:
-            path = Path(Path.cwd())
-            self._directory = path.resolve()
+            path = Path(__file__).parent
             filename = Path(request.match_info["path"].replace("/", "", 1))
-            filepath = self._directory.joinpath("minos", "api_gateway", "rest", "backend", "admin", filename).resolve()
+            filepath = path.joinpath("backend", "admin", filename).resolve()
 
             if filepath.is_file():
                 return await self._get_file(filepath)
