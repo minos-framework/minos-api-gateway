@@ -72,6 +72,18 @@ async def authentication_default(request: web.Request) -> web.Response:
     return await authentication_call(request, url)
 
 
+async def login_default(request: web.Request) -> web.Response:
+    """ Orchestrate discovery and microservice call """
+    auth_host = request.app["config"].rest.auth.host
+    auth_port = request.app["config"].rest.auth.port
+    auth_path = request.app["config"].rest.auth.path
+    default_service = request.app["config"].rest.auth.default
+
+    url = URL(f"http://{auth_host}:{auth_port}{auth_path}/{default_service}/login")
+
+    return await authentication_call(request, url)
+
+
 async def authentication(request: web.Request) -> web.Response:
     """ Orchestrate discovery and microservice call """
 
