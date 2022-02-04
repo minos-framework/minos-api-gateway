@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>minos.api_gateway.rest.handler &mdash; API Gateway 0.2.0 documentation</title>
+  <title>minos.api_gateway.rest.handler &mdash; API Gateway 0.3.0 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -232,6 +232,18 @@
     <span class="n">default_service</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">default</span>
 
     <span class="n">url</span> <span class="o">=</span> <span class="n">URL</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">auth_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">auth_port</span><span class="si">}{</span><span class="n">auth_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">default_service</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="k">await</span> <span class="n">authentication_call</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="login_default"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.handler.html#minos.api_gateway.rest.handler.login_default">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">login_default</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Orchestrate discovery and microservice call &quot;&quot;&quot;</span>
+    <span class="n">auth_host</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">host</span>
+    <span class="n">auth_port</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">port</span>
+    <span class="n">auth_path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">path</span>
+    <span class="n">default_service</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">default</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">URL</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">auth_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">auth_port</span><span class="si">}{</span><span class="n">auth_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">default_service</span><span class="si">}</span><span class="s2">/login&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="k">await</span> <span class="n">authentication_call</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span></div>
 
