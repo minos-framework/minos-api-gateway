@@ -28,6 +28,7 @@ from .handler import (
     AdminHandler,
     authentication,
     authentication_default,
+    login_default,
     orchestrate,
 )
 
@@ -57,8 +58,10 @@ class ApiGatewayRestService(AIOHTTPService):
         auth = self.config.rest.auth
         if auth is not None and auth.enabled:
             app.router.add_route("*", "/auth", authentication_default)
+            app.router.add_route("*", "/auth/login", login_default)
             for service in auth.services:
                 app.router.add_route("*", f"/auth/{service.name}", authentication)
+                app.router.add_route("POST", f"/auth/{service.name}/login", authentication)
 
         app.router.add_route("POST", "/admin/login", AdminHandler.login)
         app.router.add_route("GET", "/admin/endpoints", AdminHandler.get_endpoints)
@@ -68,7 +71,8 @@ class ApiGatewayRestService(AIOHTTPService):
         app.router.add_route("DELETE", "/admin/rules/{id}", AdminHandler.delete_rule)
 
         # Administration routes
-        aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader("minos/api_gateway/rest/backend/templates"))
+        path = Path(Path.cwd())
+        aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader(f"{path}/minos/api_gateway/rest/backend/templates"))
         app.router.add_route("*", "/administration{path:.*}", self.handler)
         # app.router.add_route("GET", "/administration/{filename:.*}", self._serve_files)
 
