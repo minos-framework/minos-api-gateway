@@ -21,6 +21,7 @@ from yarl import (
 
 from minos.api_gateway.rest.database.models import (
     AuthRule,
+    AutzRule,
 )
 from minos.api_gateway.rest.urlmatch.authmatch import (
     AuthMatch,
@@ -56,7 +57,7 @@ async def orchestrate(request: web.Request) -> web.Response:
 
 
 async def check_auth(request: web.Request, service: str, url: str, method: str) -> bool:
-    records = Repository(request.app["db_engine"]).get_by_service(service)
+    records = Repository(request.app["db_engine"]).get_auth_rule_by_service(service)
     return AuthMatch.match(url=url, method=method, records=records)
 
 
@@ -240,8 +241,25 @@ class AdminHandler:
             )
 
     @staticmethod
+    async def get_roles(request: web.Request) -> web.Response:
+        auth_host = request.app["config"].rest.auth.host
+        auth_port = request.app["config"].rest.auth.port
+        auth_path = request.app["config"].rest.auth.path
+
+        url = URL.build(scheme="http", host=auth_host, port=auth_port, path=f"{auth_path}/roles")
+
+        try:
+            async with ClientSession() as session:
+                async with session.get(url=url) as response:
+                    return await _clone_response(response)
+        except ClientConnectorError:
+            return web.json_response(
+                {"error": "The requested endpoint is not available."}, status=web.HTTPServiceUnavailable.status_code
+            )
+
+    @staticmethod
     async def get_rules(request: web.Request) -> web.Response:
-        records = Repository(request.app["db_engine"]).get_all()
+        records = Repository(request.app["db_engine"]).get_auth_rules()
         return web.json_response(records)
 
     @staticmethod
@@ -265,7 +283,7 @@ class AdminHandler:
                 updated_at=now,
             )
 
-            record = Repository(request.app["db_engine"]).create(rule)
+            record = Repository(request.app["db_engine"]).create_auth_rule(rule)
 
             return web.json_response(record)
         except Exception as e:
@@ -276,7 +294,17 @@ class AdminHandler:
         try:
             id = int(request.url.name)
             content = await request.json()
-            Repository(request.app["db_engine"]).update(id=id, **content)
+            Repository(request.app["db_engine"]).update_auth_rule(id=id, **content)
+            return web.json_response(status=web.HTTPOk.status_code)
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)
+
+    @staticmethod
+    async def update_autz_rule(request: web.Request) -> web.Response:
+        try:
+            id = int(request.url.name)
+            content = await request.json()
+            Repository(request.app["db_engine"]).update_autz_rule(id=id, **content)
             return web.json_response(status=web.HTTPOk.status_code)
         except Exception as e:
             return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)
@@ -285,7 +313,54 @@ class AdminHandler:
     async def delete_rule(request: web.Request) -> web.Response:
         try:
             id = int(request.url.name)
-            Repository(request.app["db_engine"]).delete(id)
+            Repository(request.app["db_engine"]).delete_auth_rule(id)
             return web.json_response(status=web.HTTPOk.status_code)
         except Exception as e:
             return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)
+
+    @staticmethod
+    async def delete_autz_rule(request: web.Request) -> web.Response:
+        try:
+            id = int(request.url.name)
+            Repository(request.app["db_engine"]).delete_autz_rule(id)
+            return web.json_response(status=web.HTTPOk.status_code)
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)
+
+    @staticmethod
+    async def create_autz_rule(request: web.Request) -> web.Response:
+        try:
+            content = await request.json()
+
+            if (
+                "service" not in content
+                and "rule" not in content
+                and "roles" not in content
+                and "methods" not in content
+            ):
+                return web.json_response(
+                    {"error": "Wrong data. Provide 'service', 'rule', 'roles' and 'methods' parameters."},
+                    status=web.HTTPBadRequest.status_code,
+                )
+
+            now = datetime.now()
+
+            rule = AutzRule(
+                service=content["service"],
+                rule=content["rule"],
+                roles=content["roles"],
+                methods=content["methods"],
+                created_at=now,
+                updated_at=now,
+            )
+
+            record = Repository(request.app["db_engine"]).create_autz_rule(rule)
+
+            return web.json_response(record)
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=web.HTTPBadRequest.status_code)
+
+    @staticmethod
+    async def get_autz_rules(request: web.Request) -> web.Response:
+        records = Repository(request.app["db_engine"]).get_autz_rules()
+        return web.json_response(records)

@@ -70,6 +70,12 @@ class ApiGatewayRestService(AIOHTTPService):
         app.router.add_route("PATCH", "/admin/rules/{id}", AdminHandler.update_rule)
         app.router.add_route("DELETE", "/admin/rules/{id}", AdminHandler.delete_rule)
 
+        app.router.add_route("GET", "/admin/roles", AdminHandler.get_roles)
+        app.router.add_route("POST", "/admin/autz-rules", AdminHandler.create_autz_rule)
+        app.router.add_route("GET", "/admin/autz-rules", AdminHandler.get_autz_rules)
+        app.router.add_route("PATCH", "/admin/autz-rules/{id}", AdminHandler.update_autz_rule)
+        app.router.add_route("DELETE", "/admin/autz-rules/{id}", AdminHandler.delete_autz_rule)
+
         # Administration routes
         path = Path(Path.cwd())
         aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader(f"{path}/minos/api_gateway/rest/backend/templates"))
