@@ -30,6 +30,9 @@ from minos.api_gateway.rest.urlmatch.authmatch import (
 from .database.repository import (
     Repository,
 )
+from .urlmatch.autzmatch import (
+    AutzMatch,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -47,18 +50,42 @@ async def orchestrate(request: web.Request) -> web.Response:
     auth = request.app["config"].rest.auth
     user = None
     if auth is not None and auth.enabled:
-        if await check_auth(request=request, service=request.url.parts[1], url=str(request.url), method=request.method):
+        if await check_authentication(
+            request=request, service=request.url.parts[1], url=str(request.url), method=request.method
+        ):
             response = await validate_token(request)
             user = json.loads(response)
             user = user["uuid"]
+
+        if await check_authorization(
+            request=request, service=request.url.parts[1], url=str(request.url), method=request.method
+        ):
+            response = await validate_token(request)
+            data = json.loads(response)
+            user = data["uuid"]
+            role = data["role"]
+            if not await is_authorized_role(
+                request=request, role=role, service=request.url.parts[1], url=str(request.url), method=request.method
+            ):
+                return web.HTTPUnauthorized()
 
     microservice_response = await call(**discovery_data, original_req=request, user=user)
     return microservice_response
 
 
-async def check_auth(request: web.Request, service: str, url: str, method: str) -> bool:
+async def check_authentication(request: web.Request, service: str, url: str, method: str) -> bool:
     records = Repository(request.app["db_engine"]).get_auth_rule_by_service(service)
     return AuthMatch.match(url=url, method=method, records=records)
+
+
+async def check_authorization(request: web.Request, service: str, url: str, method: str) -> bool:
+    records = Repository(request.app["db_engine"]).get_autz_rule_by_service(service)
+    return AuthMatch.match(url=url, method=method, records=records)
+
+
+async def is_authorized_role(request: web.Request, role: int, service: str, url: str, method: str) -> bool:
+    records = Repository(request.app["db_engine"]).get_autz_rule_by_service(service)
+    return AutzMatch.match(url=url, role=role, method=method, records=records)
 
 
 async def authentication_default(request: web.Request) -> web.Response:

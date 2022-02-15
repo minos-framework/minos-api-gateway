@@ -68,3 +68,11 @@ class Repository:
         for record in r:
             records.append(AuthRuleDTO(record))
         return records
+
+    def get_autz_rule_by_service(self, service: str):
+        r = self.session.query(AutzRule).filter(or_(AutzRule.service == service, AutzRule.service == "*")).all()
+
+        records = list()
+        for record in r:
+            records.append(AutzRuleDTO(record))
+        return records
