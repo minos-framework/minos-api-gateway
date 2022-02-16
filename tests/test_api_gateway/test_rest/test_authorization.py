@@ -45,7 +45,10 @@ class TestApiGatewayAuthorization(AioHTTPTestCase):
             "/order/5", "Microservice call correct!!!", methods=("GET", "PUT", "PATCH", "DELETE",)
         )
         self.microservice.add_json_response(
-            "/merchants/5", "Microservice call correct!!!", methods=("GET", "PUT", "PATCH", "DELETE",)
+            "/autz-merchants/5", "Microservice call correct!!!", methods=("GET", "PUT", "PATCH", "DELETE",)
+        )
+        self.microservice.add_json_response(
+            "/autz-merchants-2/5", "Microservice call correct!!!", methods=("GET", "PUT", "PATCH", "DELETE",)
         )
         self.microservice.add_json_response("/categories/5", "Microservice call correct!!!", methods=("GET",))
         self.microservice.add_json_response("/order", "Microservice call correct!!!", methods=("POST",))
@@ -94,21 +97,54 @@ class TestApiGatewayAuthorization(AioHTTPTestCase):
     async def test_auth_unauthorized(self):
         await self.client.post(
             "/admin/rules",
-            data=json.dumps({"service": "merchants", "rule": "*://*/merchants/*", "methods": ["GET", "POST"]}),
+            data=json.dumps(
+                {"service": "autz-merchants", "rule": "*://*/autz-merchants/*", "methods": ["GET", "POST"]}
+            ),
         )
         await self.client.post(
             "/admin/autz-rules",
             data=json.dumps(
-                {"service": "merchants", "roles": ["2"], "rule": "*://*/merchants/*", "methods": ["GET", "POST"]}
+                {
+                    "service": "autz-merchants",
+                    "roles": [2],
+                    "rule": "*://*/autz-merchants/*",
+                    "methods": ["GET", "POST"],
+                }
             ),
         )
-        url = "/merchants/5"
+        url = "/autz-merchants/5"
         headers = {"Authorization": "Bearer credential-token-test"}
 
         response = await self.client.request("POST", url, headers=headers)
 
         self.assertEqual(401, response.status)
         self.assertIn("401: Unauthorized", await response.text())
+
+    async def test_authorized(self):
+        await self.client.post(
+            "/admin/rules",
+            data=json.dumps(
+                {"service": "autz-merchants-2", "rule": "*://*/autz-merchants-2/*", "methods": ["GET", "POST"]}
+            ),
+        )
+        await self.client.post(
+            "/admin/autz-rules",
+            data=json.dumps(
+                {
+                    "service": "autz-merchants-2",
+                    "roles": [3],
+                    "rule": "*://*/autz-merchants-2/*",
+                    "methods": ["GET", "POST"],
+                }
+            ),
+        )
+        url = "/autz-merchants-2/5"
+        headers = {"Authorization": "Bearer credential-token-test"}
+
+        response = await self.client.request("GET", url, headers=headers)
+
+        self.assertEqual(200, response.status)
+        self.assertIn("Microservice call correct!!!", await response.text())
 
 
 class TestAutzFailed(AioHTTPTestCase):
