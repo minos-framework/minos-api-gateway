@@ -6,7 +6,6 @@ from unittest import (
 import attr
 from aiohttp.test_utils import (
     AioHTTPTestCase,
-    unittest_run_loop,
 )
 from aiohttp_middlewares.cors import (
     ACCESS_CONTROL_ALLOW_HEADERS,
@@ -77,7 +76,6 @@ class TestApiGatewayCORS(AioHTTPTestCase):
         if allow_methods:
             assert response.headers[ACCESS_CONTROL_ALLOW_METHODS] == ", ".join(allow_methods)
 
-    @unittest_run_loop
     async def test_cors_enabled(self):
         method = "GET"
         extra_headers = {}

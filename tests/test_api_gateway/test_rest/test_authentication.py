@@ -10,7 +10,6 @@ from uuid import (
 
 from aiohttp.test_utils import (
     AioHTTPTestCase,
-    unittest_run_loop,
 )
 from werkzeug.exceptions import (
     abort,
@@ -88,7 +87,6 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
-    @unittest_run_loop
     async def test_auth_headers_1(self):
         url = "/order"
         headers = {"Authorization": "Bearer credential-token-test"}
@@ -98,7 +96,6 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
         self.assertEqual(200, response.status)
         self.assertIn("Microservice call correct!!!", await response.text())
 
-    @unittest_run_loop
     async def test_auth_headers_2(self):
         url = "/merchants/5"
         headers = {"Authorization": "Bearer credential-token-test"}
@@ -108,7 +105,6 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
         self.assertEqual(200, response.status)
         self.assertIn("Microservice call correct!!!", await response.text())
 
-    @unittest_run_loop
     async def test_auth_headers_3(self):
         url = "/categories/5"
         headers = {"Authorization": "Bearer credential-token-test"}
@@ -118,7 +114,6 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
         self.assertEqual(200, response.status)
         self.assertIn("Microservice call correct!!!", await response.text())
 
-    @unittest_run_loop
     async def test_default_auth_headers(self):
         url = "/auth/token"
         headers = {"Authorization": "Bearer credential-token-test"}
@@ -128,7 +123,6 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
         self.assertEqual(200, response.status)
         self.assertIn("token", await response.text())
 
-    @unittest_run_loop
     async def test_auth(self):
         url = "/auth/credentials"
         headers = {"Authorization": "Bearer credential-token-test"}
@@ -138,7 +132,6 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
         self.assertEqual(200, response.status)
         self.assertIn("uuid", await response.text())
 
-    @unittest_run_loop
     async def test_wrong_auth_headers(self):
         url = "/order"
         headers = {"Authorization": "Bearer"}  # Missing token
@@ -147,7 +140,6 @@ class TestApiGatewayAuthentication(AioHTTPTestCase):
         self.assertEqual(200, response.status)
         self.assertIn("Microservice call correct!!!", await response.text())
 
-    @unittest_run_loop
     async def test_request_has_token(self):
         url = "/order"
         headers = {"Authorization": "Bearer"}  # Missing token
@@ -193,7 +185,6 @@ class TestAuthDisabled(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
-    @unittest_run_loop
     async def test_auth_disabled(self):
         url = "/order"
         headers = {"Authorization": "Bearer test_token"}
@@ -245,7 +236,6 @@ class TestAuthFailed(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
-    @unittest_run_loop
     async def test_auth_unauthorized(self):
         await self.client.post(
             "/admin/rules",
@@ -296,7 +286,6 @@ class TestAuthUnreachable(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
-    @unittest_run_loop
     async def test_auth_unreachable(self):
         url = "/merchants/iweuwieuwe"
         headers = {"Authorization": "Bearer test_token"}
@@ -305,7 +294,6 @@ class TestAuthUnreachable(AioHTTPTestCase):
         self.assertEqual(503, response.status)
         self.assertEqual("The requested endpoint is not available.", await response.text())
 
-    @unittest_run_loop
     async def test_auth(self):
         url = "/auth/credentials"
         headers = {"Authorization": "Bearer credential-token-test"}
