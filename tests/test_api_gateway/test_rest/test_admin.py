@@ -7,6 +7,7 @@ from unittest import (
 
 from aiohttp.test_utils import (
     AioHTTPTestCase,
+    unittest_run_loop,
 )
 
 from minos.api_gateway.rest import (
@@ -42,6 +43,7 @@ class TestApiGatewayAdminLogin(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
+    @unittest_run_loop
     async def test_admin_login(self):
         url = "/admin/login"
 
@@ -55,6 +57,7 @@ class TestApiGatewayAdminLogin(AioHTTPTestCase):
         self.assertIn("id", await response.text())
         self.assertIn("token", await response.text())
 
+    @unittest_run_loop
     async def test_admin_login_no_data(self):
         url = "/admin/login"
 
@@ -63,6 +66,7 @@ class TestApiGatewayAdminLogin(AioHTTPTestCase):
         self.assertEqual(401, response.status)
         self.assertDictEqual({"error": "Something went wrong!."}, json.loads(await response.text()))
 
+    @unittest_run_loop
     async def test_admin_login_wrong_data(self):
         url = "/admin/login"
 
@@ -101,6 +105,7 @@ class TestApiGatewayAdminEndpoints(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
+    @unittest_run_loop
     async def test_admin_get_endpoints(self):
         url = "/admin/endpoints"
 
@@ -132,6 +137,7 @@ class TestApiGatewayAdminEndpointsUnavailable(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
+    @unittest_run_loop
     async def test_admin_get_endpoints(self):
         url = "/admin/endpoints"
 
@@ -162,6 +168,7 @@ class TestApiGatewayAdminRules(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
+    @unittest_run_loop
     async def test_admin_get_rules(self):
         url = "/admin/rules"
 
@@ -169,6 +176,7 @@ class TestApiGatewayAdminRules(AioHTTPTestCase):
 
         self.assertEqual(200, response.status)
 
+    @unittest_run_loop
     async def test_admin_create_rule(self):
         url = "/admin/rules"
 
@@ -180,6 +188,7 @@ class TestApiGatewayAdminRules(AioHTTPTestCase):
 
         self.assertEqual(200, response.status)
 
+    @unittest_run_loop
     async def test_admin_update_rule(self):
         url = "/admin/rules"
 
@@ -203,6 +212,7 @@ class TestApiGatewayAdminRules(AioHTTPTestCase):
 
         self.assertEqual(200, response.status)
 
+    @unittest_run_loop
     async def test_admin_delete_rule(self):
         url = "/admin/rules"
 

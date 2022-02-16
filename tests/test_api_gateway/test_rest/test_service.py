@@ -5,6 +5,7 @@ import unittest
 
 from aiohttp.test_utils import (
     AioHTTPTestCase,
+    unittest_run_loop,
 )
 from werkzeug.exceptions import (
     abort,
@@ -59,6 +60,7 @@ class TestApiGatewayRestService(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
+    @unittest_run_loop
     async def test_get(self):
         url = "/order/5?verb=GET&path=12324"
         response = await self.client.request("GET", url)
@@ -66,6 +68,7 @@ class TestApiGatewayRestService(AioHTTPTestCase):
         self.assertEqual(200, response.status)
         self.assertIn("Microservice call correct!!!", await response.text())
 
+    @unittest_run_loop
     async def test_post(self):
         url = "/order"
         response = await self.client.request("POST", url)
@@ -73,6 +76,7 @@ class TestApiGatewayRestService(AioHTTPTestCase):
         self.assertEqual(200, response.status)
         self.assertIn("Microservice call correct!!!", await response.text())
 
+    @unittest_run_loop
     async def test_put(self):
         url = "/order/5"
         response = await self.client.request("PUT", url)
@@ -80,6 +84,7 @@ class TestApiGatewayRestService(AioHTTPTestCase):
         self.assertEqual(200, response.status)
         self.assertIn("Microservice call correct!!!", await response.text())
 
+    @unittest_run_loop
     async def test_patch(self):
         url = "/order/5"
         response = await self.client.request("PATCH", url)
@@ -87,6 +92,7 @@ class TestApiGatewayRestService(AioHTTPTestCase):
         self.assertEqual(200, response.status)
         self.assertIn("Microservice call correct!!!", await response.text())
 
+    @unittest_run_loop
     async def test_delete(self):
         url = "/order/5"
         response = await self.client.request("DELETE", url)
@@ -119,6 +125,7 @@ class TestApiGatewayRestServiceNotFoundDiscovery(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
+    @unittest_run_loop
     async def test_get(self):
         url = "/order/5?verb=GET&path=12324"
         response = await self.client.request("GET", url)
@@ -153,6 +160,7 @@ class TestApiGatewayRestServiceFailedDiscovery(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
+    @unittest_run_loop
     async def test_get(self):
         url = "/order/5?verb=GET&path=12324"
         response = await self.client.request("GET", url)
@@ -179,6 +187,7 @@ class TestApiGatewayRestServiceUnreachableDiscovery(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
+    @unittest_run_loop
     async def test_get(self):
         url = "/order/5?verb=GET&path=12324"
         response = await self.client.request("GET", url)
@@ -215,6 +224,7 @@ class TestApiGatewayRestServiceUnreachableMicroservice(AioHTTPTestCase):
 
         return await rest_service.create_application()
 
+    @unittest_run_loop
     async def test_get(self):
         url = "/order/5?verb=GET&path=12324"
         response = await self.client.request("GET", url)
