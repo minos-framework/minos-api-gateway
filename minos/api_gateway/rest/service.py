@@ -98,7 +98,7 @@ class ApiGatewayRestService(AIOHTTPService):
         Base.metadata.create_all(self.engine)
 
     @aiohttp_jinja2.template("tmpl.jinja2")
-    async def handler(self, request):
+    async def handler(self, request):  # pragma: no cover
         try:
             path = Path(Path.cwd())
             self._directory = path.resolve()
@@ -114,7 +114,7 @@ class ApiGatewayRestService(AIOHTTPService):
         return response
 
     @staticmethod
-    async def _get_file(file_path) -> web.FileResponse:
+    async def _get_file(file_path) -> web.FileResponse:  # pragma: no cover
         try:
             return web.FileResponse(path=file_path, status=200)
         except (ValueError, FileNotFoundError) as error:
