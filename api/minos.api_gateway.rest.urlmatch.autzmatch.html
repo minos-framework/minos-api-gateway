@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>minos.api_gateway.rest.urlmatch.authmatch module &mdash; API Gateway 0.4.0 documentation</title>
+  <title>minos.api_gateway.rest.urlmatch.autzmatch module &mdash; API Gateway 0.4.0 documentation</title>
   
 
   
@@ -144,13 +144,13 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>minos.api_gateway.rest.urlmatch.authmatch module</li>
+      <li>minos.api_gateway.rest.urlmatch.autzmatch module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/api/minos.api_gateway.rest.urlmatch.authmatch.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/minos.api_gateway.rest.urlmatch.autzmatch.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -163,15 +163,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-minos.api_gateway.rest.urlmatch.authmatch">
-<span id="minos-api-gateway-rest-urlmatch-authmatch-module"></span><h1>minos.api_gateway.rest.urlmatch.authmatch module<a class="headerlink" href="#module-minos.api_gateway.rest.urlmatch.authmatch" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-minos.api_gateway.rest.urlmatch.autzmatch">
+<span id="minos-api-gateway-rest-urlmatch-autzmatch-module"></span><h1>minos.api_gateway.rest.urlmatch.autzmatch module<a class="headerlink" href="#module-minos.api_gateway.rest.urlmatch.autzmatch" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="minos.api_gateway.rest.urlmatch.authmatch.AuthMatch">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.urlmatch.authmatch.</span></span><span class="sig-name descname"><span class="pre">AuthMatch</span></span><a class="reference internal" href="../_modules/minos/api_gateway/rest/urlmatch/authmatch.html#AuthMatch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.urlmatch.authmatch.AuthMatch" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="minos.api_gateway.rest.urlmatch.autzmatch.AutzMatch">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.urlmatch.autzmatch.</span></span><span class="sig-name descname"><span class="pre">AutzMatch</span></span><a class="reference internal" href="../_modules/minos/api_gateway/rest/urlmatch/autzmatch.html#AutzMatch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.urlmatch.autzmatch.AutzMatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="minos.api_gateway.rest.urlmatch.urlmatch.html#minos.api_gateway.rest.urlmatch.urlmatch.UrlMatch" title="minos.api_gateway.rest.urlmatch.urlmatch.UrlMatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">minos.api_gateway.rest.urlmatch.urlmatch.UrlMatch</span></code></a></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="minos.api_gateway.rest.urlmatch.authmatch.AuthMatch.match">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">records</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/urlmatch/authmatch.html#AuthMatch.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.urlmatch.authmatch.AuthMatch.match" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="minos.api_gateway.rest.urlmatch.autzmatch.AutzMatch.match">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">records</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/urlmatch/autzmatch.html#AutzMatch.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.urlmatch.autzmatch.AutzMatch.match" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
@@ -180,8 +180,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="minos.api_gateway.rest.urlmatch.authmatch.AuthMatch.parse_match_pattern">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">parse_match_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http_auth_allowed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#minos.api_gateway.rest.urlmatch.authmatch.AuthMatch.parse_match_pattern" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="minos.api_gateway.rest.urlmatch.autzmatch.AutzMatch.parse_match_pattern">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">parse_match_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http_auth_allowed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#minos.api_gateway.rest.urlmatch.autzmatch.AutzMatch.parse_match_pattern" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the regular expression for a given match pattern.</p>
 <dl>
 <dt>Args:</dt><dd><p>pattern: a <cite>urlmatch</cite> formatted match pattern
@@ -202,8 +202,8 @@ path_required: a <cite>bool</cite> which dicates whether the match pattern</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="minos.api_gateway.rest.urlmatch.authmatch.AuthMatch.urlmatch">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">urlmatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#minos.api_gateway.rest.urlmatch.authmatch.AuthMatch.urlmatch" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="minos.api_gateway.rest.urlmatch.autzmatch.AutzMatch.urlmatch">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">urlmatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#minos.api_gateway.rest.urlmatch.autzmatch.AutzMatch.urlmatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns whether a given match pattern matches a url</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>match_pattern: a <cite>urlmatch</cite> formatted match pattern_regex

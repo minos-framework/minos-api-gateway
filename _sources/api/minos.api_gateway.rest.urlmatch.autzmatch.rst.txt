@@ -1,0 +1,7 @@
+minos.api\_gateway.rest.urlmatch.autzmatch module
+=================================================
+
+.. automodule:: minos.api_gateway.rest.urlmatch.autzmatch
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>minos.api_gateway.rest.service &mdash; API Gateway 0.3.1 documentation</title>
+  <title>minos.api_gateway.rest.service &mdash; API Gateway 0.4.0 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.3.1
+                0.4.0
               </div>
             
           
@@ -234,6 +234,12 @@
         <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="s2">&quot;/admin/rules/</span><span class="si">{id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">AdminHandler</span><span class="o">.</span><span class="n">update_rule</span><span class="p">)</span>
         <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s2">&quot;/admin/rules/</span><span class="si">{id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">AdminHandler</span><span class="o">.</span><span class="n">delete_rule</span><span class="p">)</span>
 
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/admin/roles&quot;</span><span class="p">,</span> <span class="n">AdminHandler</span><span class="o">.</span><span class="n">get_roles</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;/admin/autz-rules&quot;</span><span class="p">,</span> <span class="n">AdminHandler</span><span class="o">.</span><span class="n">create_autz_rule</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/admin/autz-rules&quot;</span><span class="p">,</span> <span class="n">AdminHandler</span><span class="o">.</span><span class="n">get_autz_rules</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="s2">&quot;/admin/autz-rules/</span><span class="si">{id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">AdminHandler</span><span class="o">.</span><span class="n">update_autz_rule</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s2">&quot;/admin/autz-rules/</span><span class="si">{id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">AdminHandler</span><span class="o">.</span><span class="n">delete_autz_rule</span><span class="p">)</span>
+
         <span class="c1"># Administration routes</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
         <span class="n">aiohttp_jinja2</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">loader</span><span class="o">=</span><span class="n">jinja2</span><span class="o">.</span><span class="n">FileSystemLoader</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/backend/templates&quot;</span><span class="p">))</span>
@@ -256,7 +262,7 @@
         <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ApiGatewayRestService.handler"><a class="viewcode-back" href="../../../../api/minos.api_gateway.rest.service.html#minos.api_gateway.rest.service.ApiGatewayRestService.handler">[docs]</a>    <span class="nd">@aiohttp_jinja2</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="s2">&quot;tmpl.jinja2&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">match_info</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -271,7 +277,7 @@
         <span class="k">return</span> <span class="n">response</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">FileResponse</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">web</span><span class="o">.</span><span class="n">FileResponse</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">FileResponse</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>

@@ -13,4 +13,5 @@ Submodules
    :maxdepth: 4
 
    minos.api_gateway.rest.urlmatch.authmatch
+   minos.api_gateway.rest.urlmatch.autzmatch
    minos.api_gateway.rest.urlmatch.urlmatch

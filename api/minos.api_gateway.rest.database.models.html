@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>minos.api_gateway.rest.database.models module &mdash; API Gateway 0.3.1 documentation</title>
+  <title>minos.api_gateway.rest.database.models module &mdash; API Gateway 0.4.0 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.3.1
+                0.4.0
               </div>
             
           
@@ -264,6 +264,119 @@ for example, any mapped columns or relationships.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AuthRuleDTO.updated_at">
 <span class="sig-name descname"><span class="pre">updated_at</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#minos.api_gateway.rest.database.models.AuthRuleDTO.updated_at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.database.models.</span></span><span class="sig-name descname"><span class="pre">AutzRule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/database/models.html#AutzRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.orm.decl_api.Base</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
+<p>Only keys that are present as
+attributes of the instance’s class are allowed. These could be,
+for example, any mapped columns or relationships.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule.created_at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"> <span class="pre">=</span> <span class="pre">MetaData()</span></em><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule.metadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule.methods">
+<span class="sig-name descname"><span class="pre">methods</span></span><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule.methods" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule.registry">
+<span class="sig-name descname"><span class="pre">registry</span></span><em class="property"> <span class="pre">=</span> <span class="pre">&lt;sqlalchemy.orm.decl_api.registry</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule.registry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule.roles">
+<span class="sig-name descname"><span class="pre">roles</span></span><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule.roles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule.rule">
+<span class="sig-name descname"><span class="pre">rule</span></span><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule.rule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule.service">
+<span class="sig-name descname"><span class="pre">service</span></span><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule.service" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule.to_serializable_dict">
+<span class="sig-name descname"><span class="pre">to_serializable_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/database/models.html#AutzRule.to_serializable_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule.to_serializable_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRule.updated_at">
+<span class="sig-name descname"><span class="pre">updated_at</span></span><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRule.updated_at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRuleDTO">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">minos.api_gateway.rest.database.models.</span></span><span class="sig-name descname"><span class="pre">AutzRuleDTO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/database/models.html#AutzRuleDTO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRuleDTO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRuleDTO.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/minos/api_gateway/rest/database/models.html#AutzRuleDTO.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRuleDTO.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRuleDTO.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRuleDTO.created_at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRuleDTO.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRuleDTO.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRuleDTO.methods">
+<span class="sig-name descname"><span class="pre">methods</span></span><em class="property"><span class="pre">:</span> <span class="pre">list</span></em><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRuleDTO.methods" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRuleDTO.roles">
+<span class="sig-name descname"><span class="pre">roles</span></span><em class="property"><span class="pre">:</span> <span class="pre">list</span></em><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRuleDTO.roles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRuleDTO.rule">
+<span class="sig-name descname"><span class="pre">rule</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRuleDTO.rule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRuleDTO.service">
+<span class="sig-name descname"><span class="pre">service</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRuleDTO.service" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="minos.api_gateway.rest.database.models.AutzRuleDTO.updated_at">
+<span class="sig-name descname"><span class="pre">updated_at</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#minos.api_gateway.rest.database.models.AutzRuleDTO.updated_at" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
