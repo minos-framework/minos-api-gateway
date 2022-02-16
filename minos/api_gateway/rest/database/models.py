@@ -56,3 +56,51 @@ class AuthRuleDTO:
         self.methods = model.methods
         self.created_at = str(model.created_at)
         self.updated_at = str(model.updated_at)
+
+
+class AutzRule(Base):
+    __tablename__ = "autz_rules"
+    id = Column(Integer, Sequence("item_id_seq"), nullable=False, primary_key=True)
+    service = Column(String, primary_key=True, nullable=False)
+    rule = Column(String, primary_key=True, nullable=False)
+    roles = Column(JSON)
+    methods = Column(JSON)
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+
+    def __repr__(self):
+        return (
+            "<AuthRule(id='{}', service='{}', rule='{}',"
+            "methods={}, created_at={}, updated_at={})>".format(  # pragma: no cover
+                self.id, self.service, self.roles, self.methods, self.created_at, self.updated_at
+            )
+        )
+
+    def to_serializable_dict(self):
+        return {
+            "id": self.id,
+            "service": self.service,
+            "roles": self.roles,
+            "methods": self.methods,
+            "created_at": str(self.created_at),
+            "updated_at": str(self.updated_at),
+        }
+
+
+class AutzRuleDTO:
+    id: int
+    service: str
+    rule: str
+    roles: list
+    methods: list
+    created_at: str
+    updated_at: str
+
+    def __init__(self, model: AutzRule):
+        self.id = model.id
+        self.rule = model.rule
+        self.service = model.service
+        self.roles = model.roles
+        self.methods = model.methods
+        self.created_at = str(model.created_at)
+        self.updated_at = str(model.updated_at)

@@ -233,5 +233,95 @@ class TestApiGatewayAdminRules(AioHTTPTestCase):
         self.assertEqual(200, response.status)
 
 
+class TestApiGatewayAdminAutzRules(AioHTTPTestCase):
+    CONFIG_FILE_PATH = BASE_PATH / "config.yml"
+
+    @mock.patch.dict(os.environ, {"API_GATEWAY_REST_CORS_ENABLED": "true"})
+    def setUp(self) -> None:
+        self.config = ApiGatewayConfig(self.CONFIG_FILE_PATH)
+        super().setUp()
+
+    def tearDown(self) -> None:
+        super().tearDown()
+
+    async def get_application(self):
+        """
+        Override the get_app method to return your application.
+        """
+        rest_service = ApiGatewayRestService(
+            address=self.config.rest.host, port=self.config.rest.port, config=self.config
+        )
+
+        return await rest_service.create_application()
+
+    @unittest_run_loop
+    async def test_admin_get_rules(self):
+        url = "/admin/autz-rules"
+
+        response = await self.client.request("GET", url)
+
+        self.assertEqual(200, response.status)
+
+    @unittest_run_loop
+    async def test_admin_create_rule(self):
+        url = "/admin/autz-rules"
+
+        response = await self.client.request(
+            "POST",
+            url,
+            data=json.dumps({"service": "abc", "roles": ["*"], "rule": "*://*/abc/*", "methods": ["GET", "POST"]}),
+        )
+
+        self.assertEqual(200, response.status)
+
+    @unittest_run_loop
+    async def test_admin_update_rule(self):
+        url = "/admin/autz-rules"
+
+        res = await self.client.request(
+            "POST",
+            url,
+            data=json.dumps(
+                {"service": "abcd", "roles": ["*"], "rule": "test_rule_update", "methods": ["GET", "POST"]}
+            ),
+        )
+
+        data = json.loads(await res.text())
+
+        self.assertEqual(200, res.status)
+
+        url = f"/admin/autz-rules/{data['id']}"
+
+        response = await self.client.request(
+            "PATCH",
+            url,
+            data=json.dumps({"service": "abcde_modified", "rule": "*://*/abcde/*", "methods": ["GET", "POST"]}),
+        )
+
+        self.assertEqual(200, response.status)
+
+    @unittest_run_loop
+    async def test_admin_delete_rule(self):
+        url = "/admin/autz-rules"
+
+        res = await self.client.request(
+            "POST",
+            url,
+            data=json.dumps(
+                {"service": "efg", "roles": ["*"], "rule": "efg_test_rule_delete", "methods": ["GET", "POST"]}
+            ),
+        )
+
+        data = json.loads(await res.text())
+
+        self.assertEqual(200, res.status)
+
+        url = f"/admin/autz-rules/{data['id']}"
+
+        response = await self.client.request("DELETE", url)
+
+        self.assertEqual(200, response.status)
+
+
 if __name__ == "__main__":
     unittest.main()
