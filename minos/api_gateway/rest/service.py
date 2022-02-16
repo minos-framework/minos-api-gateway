@@ -70,6 +70,12 @@ class ApiGatewayRestService(AIOHTTPService):
         app.router.add_route("PATCH", "/admin/rules/{id}", AdminHandler.update_rule)
         app.router.add_route("DELETE", "/admin/rules/{id}", AdminHandler.delete_rule)
 
+        app.router.add_route("GET", "/admin/roles", AdminHandler.get_roles)
+        app.router.add_route("POST", "/admin/autz-rules", AdminHandler.create_autz_rule)
+        app.router.add_route("GET", "/admin/autz-rules", AdminHandler.get_autz_rules)
+        app.router.add_route("PATCH", "/admin/autz-rules/{id}", AdminHandler.update_autz_rule)
+        app.router.add_route("DELETE", "/admin/autz-rules/{id}", AdminHandler.delete_autz_rule)
+
         # Administration routes
         path = Path(Path.cwd())
         aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader(f"{path}/minos/api_gateway/rest/backend/templates"))
@@ -92,7 +98,7 @@ class ApiGatewayRestService(AIOHTTPService):
         Base.metadata.create_all(self.engine)
 
     @aiohttp_jinja2.template("tmpl.jinja2")
-    async def handler(self, request):
+    async def handler(self, request):  # pragma: no cover
         try:
             path = Path(Path.cwd())
             self._directory = path.resolve()
@@ -108,7 +114,7 @@ class ApiGatewayRestService(AIOHTTPService):
         return response
 
     @staticmethod
-    async def _get_file(file_path) -> web.FileResponse:
+    async def _get_file(file_path) -> web.FileResponse:  # pragma: no cover
         try:
             return web.FileResponse(path=file_path, status=200)
         except (ValueError, FileNotFoundError) as error:
