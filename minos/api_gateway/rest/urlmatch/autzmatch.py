@@ -1,5 +1,4 @@
 from ..database.models import (
-    AuthRuleDTO,
     AutzRuleDTO,
 )
 from .urlmatch import (
