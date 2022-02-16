@@ -45,6 +45,10 @@
 * Administration section BugFix getting index file.
 * Adjust default auth routes
 
+## 0.3.1 (2022-02-04)
+
+* Administration section BugFix getting index file.
+
 ## 0.4.0 (2022-02-16)
 
 * Add authorization rules to administration section.
